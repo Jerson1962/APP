@@ -259,8 +259,52 @@
         document.getElementById("incomeExpenseSection").style.display = 'block';
     }
 
+    // Verificar si la hora de la cita es la hora actual
+    function checkAppointmentTime() {
+        const now = new Date();
+        
+        appointments.forEach(appointment => {
+            const appointmentTime = new Date(appointment.appointmentDate);
+            if (Math.abs(now - appointmentTime) <= 1000 * 60) {  // Verificar si está dentro del rango de 1 minuto
+                showNotification(appointment);
+            }
+        });
+    }
+
+    // Función para mostrar la notificación
+    function showNotification(appointment) {
+        const notification = document.getElementById("notification");
+        notification.textContent = `¡Recordatorio! Cita con ${appointment.firstName} ${appointment.lastName} a las ${new Date(appointment.appointmentDate).toLocaleString()}`;
+
+        notification.classList.add('notification-alert');
+        notification.style.display = "block";
+
+        // Mostrar y ocultar la notificación dos veces con un intervalo
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 4000);
+
+        setTimeout(() => {
+            notification.style.display = "block";
+        }, 4000);
+        
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 8000);
+    }
+
+    // Función de búsqueda
+    function searchAppointments() {
+        const searchText = document.getElementById("searchInput").value.toLowerCase();
+        const filteredAppointments = appointments.filter(appointment => {
+            return appointment.firstName.toLowerCase().includes(searchText) || 
+                   appointment.lastName.toLowerCase().includes(searchText);
+        });
+        renderAppointments(filteredAppointments);
     // Cargar las citas al cargar la página
-    renderAppointments();
+    renderAppointments(); 
+    // Ejecutar la verificación de la hora de la cita cada 60 segundos
+    setInterval(checkAppointmentTime, 60000);
 </script>
 
 </body>
