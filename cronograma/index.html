@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -19,14 +19,28 @@
             padding: 10px;
             border-radius: 5px;
             display: none;
+            font-size: 16px;
+            font-weight: bold;
+            animation: slideIn 1s ease-out;
         }
 
         .notification-alert {
             background-color: #ffc107; /* Amarillo para cita pendiente */
+            border: 2px solid #f39c12;
         }
 
         .notification-confirm {
             background-color: #dc3545; /* Rojo para confirmar cita */
+            border: 2px solid #c0392b;
+        }
+
+        @keyframes slideIn {
+            from {
+                right: -100%;
+            }
+            to {
+                right: 10px;
+            }
         }
 
         .navbar {
@@ -35,6 +49,10 @@
 
         .section-content {
             margin-top: 20px;
+        }
+
+        .modal-body {
+            padding: 20px;
         }
     </style>
 </head>
@@ -111,26 +129,26 @@
     </div>
 </div>
 
-<!-- Sección de balances -->
-<div id="balancesSection" class="section-content" style="display: none;">
-    <div class="container mt-5">
-        <h1 class="text-center">𝐁𝐚𝐥𝐚𝐧𝐜𝐞𝐬</h1>
-        <p>Aquí puedes ver los balances generales.</p>
-        <!-- Puedes agregar más contenido relacionado con los balances aquí -->
-    </div>
-</div>
-
-<!-- Sección de control de ingresos y egresos -->
-<div id="incomeExpenseSection" class="section-content" style="display: none;">
-    <div class="container mt-5">
-        <h1 class="text-center">𝐂𝐨𝐧𝐭𝐫𝐨𝐥 𝐝𝐞 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬 𝐲 𝐄𝐠𝐫𝐞𝐬𝐨𝐬</h1>
-        <p>Aquí puedes controlar los ingresos y egresos de tu cuenta.</p>
-        <!-- Puedes agregar más contenido relacionado con ingresos y egresos aquí -->
-    </div>
-</div>
-
 <!-- Notificación -->
 <div id="notification" class="notification"></div>
+
+<!-- Modal de detalles de cita -->
+<div class="modal" id="appointmentDetailsModal" tabindex="-1" role="dialog" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appointmentDetailsModalLabel">Detalles de la Cita</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="appointmentDescription"></div>
+            <div class="modal-footer">
+                <a id="whatsappLink" href="#" class="btn btn-success" target="_blank">Enviar por WhatsApp</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Bootstrap JS y jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -176,7 +194,7 @@
             <strong>Nombre:</strong> ${appointment.firstName} ${appointment.lastName}<br>
             <strong>Fecha y Hora:</strong> ${new Date(appointment.appointmentDate).toLocaleString()}
         `;
-        
+
         // Actualizar el contenido del modal con los datos de la cita
         document.getElementById("appointmentDescription").innerHTML = description;
 
@@ -202,6 +220,7 @@
         notification.classList.add("notification-alert");
         notification.textContent = "Cita Pendiente. ¡No olvides tu cita!";
         notification.style.display = 'block';
+        new Audio('public-domain-beep-sound-100267.mp3').play(); // Sonido de notificación
         setTimeout(() => {
             notification.style.display = 'none';
         }, 5000); // Mostrar notificación por 5 segundos
@@ -214,6 +233,7 @@
         notification.classList.add("notification-confirm");
         notification.textContent = "¡Es hora de tu cita! Confirma tu asistencia.";
         notification.style.display = 'block';
+        new Audio(' public-domain-beep-sound-100267.mp3').play(); // Sonido de notificación
         setTimeout(() => {
             notification.style.display = 'none';
         }, 5000); // Mostrar notificación por 5 segundos
