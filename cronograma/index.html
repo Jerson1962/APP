@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma de Citas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Estilos adicionales -->
+    <style>
+        .notification {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            background-color: #28a745;
+            color: rgb(228, 222, 222);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .notification-alert {
+            background-color: #ffc107; /* Amarillo para cita pendiente */
+        }
+
+        .notification-confirm {
+            background-color: #dc3545; /* Rojo para confirmar cita */
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+
+        .section-content {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Barra de navegación (Menu) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#"> 𝐌𝐈 𝐀𝐏𝐏 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="#" onclick="showAppointmentsSection()">Citas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showBalancesSection()">Balances</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="showIncomeExpenseSection()">Control de Ingresos y Egresos</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Sección de citas -->
+<div id="appointmentsSection" class="section-content">
+    <div class="container mt-5">
+        <h1 class="text-center">𝐂𝐫𝐨𝐧𝐨𝐠𝐫𝐚𝐦𝐚 𝐝𝐞 𝐜𝐢𝐭𝐚𝐬</h1>
+
+        <!-- Campo de búsqueda -->
+        <div class="mb-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o apellido..." onkeyup="searchAppointments()">
+        </div>
+
+        <!-- Formulario para crear una cita -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"> 𝐂𝐑𝐄𝐀𝐑 𝐍𝐔𝐄𝐕𝐀 𝐂𝐈𝐓𝐀</h5>
+                <form id="appointmentForm">
+                    <div class="form-group">
+                        <label for="firstName">Nombre</label>
+                        <input type="text" class="form-control" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Apellidos</label>
+                        <input type="text" class="form-control" id="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentDate">Fecha y Hora de la Cita</label>
+                        <input type="datetime-local" class="form-control" id="appointmentDate" required onchange="showPendingNotification()">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cita</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla para mostrar las citas -->
+        <div class="mt-4">
+            <h5>𝐂𝐈𝐓𝐀𝐒 𝐏𝐑𝐎𝐆𝐑𝐀𝐌𝐀𝐃𝐀𝐒</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th> 𝐍𝐨𝐦𝐛𝐫𝐞</th>
+                        <th> 𝐀𝐩𝐞𝐥𝐥𝐢𝐝𝐨𝐬</th>
+                        <th> 𝐅𝐞𝐜𝐡𝐚 𝐲 𝐇𝐨𝐫𝐚</th>
+                        <th> 𝐀𝐜𝐜𝐢𝐨𝐧</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentsList"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de balances -->
+<div id="balancesSection" class="section-content" style="display: none;">
+    <div class="container mt-5">
+        <h1 class="text-center">𝐁𝐚𝐥𝐚𝐧𝐜𝐞𝐬</h1>
+        <p>Aquí puedes ver los balances generales.</p>
+        <!-- Puedes agregar más contenido relacionado con los balances aquí -->
+    </div>
+</div>
+
+<!-- Sección de control de ingresos y egresos -->
+<div id="incomeExpenseSection" class="section-content" style="display: none;">
+    <div class="container mt-5">
+        <h1 class="text-center">𝐂𝐨𝐧𝐭𝐫𝐨𝐥 𝐝𝐞 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬 𝐲 𝐄𝐠𝐫𝐞𝐬𝐨𝐬</h1>
+        <p>Aquí puedes controlar los ingresos y egresos de tu cuenta.</p>
+        <!-- Puedes agregar más contenido relacionado con ingresos y egresos aquí -->
+    </div>
+</div>
+
+<!-- Notificación -->
+<div id="notification" class="notification"></div>
+
+<!-- Bootstrap JS y jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Script para gestionar citas -->
+<script>
+    // Cargar las citas desde el localStorage al cargar la página
+    let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+    // Función para agregar una nueva cita
+    function addAppointment(firstName, lastName, appointmentDate) {
+        appointments.push({ firstName, lastName, appointmentDate });
+        localStorage.setItem("appointments", JSON.stringify(appointments)); // Guardar citas en localStorage
+        renderAppointments();
+        checkNotifications();
+    }
+
+    // Función para renderizar las citas
+    function renderAppointments(filteredAppointments = appointments) {
+        const appointmentsList = document.getElementById("appointmentsList");
+        appointmentsList.innerHTML = '';
+        filteredAppointments.forEach((appointment, index) => {
+            const appointmentRow = document.createElement("tr");
+            appointmentRow.innerHTML = `
+                <td>${appointment.firstName}</td>
+                <td>${appointment.lastName}</td>
+                <td>${new Date(appointment.appointmentDate).toLocaleString()}</td>
+                <td>
+                    <button class="btn btn-info" onclick="viewAppointmentDetails(${index})">Ver Detalles</button>
+                    <button class="btn btn-danger" onclick="deleteAppointment(${index})">Eliminar</button>
+                </td>
+            `;
+            appointmentsList.appendChild(appointmentRow);
+        });
+    }
+
+    // Función para ver los detalles de la cita
+    function viewAppointmentDetails(index) {
+        const appointment = appointments[index];
+        const description = `
+            <strong>Nombre:</strong> ${appointment.firstName} ${appointment.lastName}<br>
+            <strong>Fecha y Hora:</strong> ${new Date(appointment.appointmentDate).toLocaleString()}
+        `;
+        
+        // Actualizar el contenido del modal con los datos de la cita
+        document.getElementById("appointmentDescription").innerHTML = description;
+
+        // Crear el enlace de WhatsApp con el mensaje
+        const message = `Hola, tengo una cita programada para el ${new Date(appointment.appointmentDate).toLocaleString()}.`;
+        document.getElementById("whatsappLink").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+        // Mostrar el modal
+        $('#appointmentDetailsModal').modal('show');
+    }
+
+    // Función para eliminar una cita
+    function deleteAppointment(index) {
+        appointments.splice(index, 1);
+        localStorage.setItem("appointments", JSON.stringify(appointments)); // Actualizar el localStorage
+        renderAppointments();
+    }
+
+    // Función para mostrar la notificación de cita pendiente
+    function showPendingNotification() {
+        const notification = document.getElementById("notification");
+        notification.classList.remove("notification-confirm");
+        notification.classList.add("notification-alert");
+        notification.textContent = "Cita Pendiente. ¡No olvides tu cita!";
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000); // Mostrar notificación por 5 segundos
+    }
+
+    // Función para mostrar la notificación de confirmar cita
+    function showConfirmNotification() {
+        const notification = document.getElementById("notification");
+        notification.classList.remove("notification-alert");
+        notification.classList.add("notification-confirm");
+        notification.textContent = "¡Es hora de tu cita! Confirma tu asistencia.";
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000); // Mostrar notificación por 5 segundos
+    }
+
+    // Función para verificar si hay citas próximas y mostrar la notificación
+    function checkNotifications() {
+        const now = new Date();
+        appointments.forEach(appointment => {
+            const appointmentDate = new Date(appointment.appointmentDate);
+            // Si la cita es en el futuro y dentro de 1 hora, mostramos la notificación de confirmar cita
+            if (appointmentDate - now <= 3600000 && appointmentDate - now > 0) {
+                showConfirmNotification();
+            }
+        });
+    }
+
+    // Event Listener para guardar la cita desde el formulario
+    document.getElementById("appointmentForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
+        const appointmentDate = document.getElementById("appointmentDate").value;
+
+        if (firstName && lastName && appointmentDate) {
+            addAppointment(firstName, lastName, appointmentDate);
+            document.getElementById("appointmentForm").reset();
+        }
+    });
+
+    // Función de búsqueda
+    function searchAppointments() {
+        const searchText = document.getElementById("searchInput").value.toLowerCase();
+        const filteredAppointments = appointments.filter(appointment => {
+            return appointment.firstName.toLowerCase().includes(searchText) || 
+                   appointment.lastName.toLowerCase().includes(searchText);
+        });
+        renderAppointments(filteredAppointments);
+    }
+
+    // Función para mostrar la sección de citas
+    function showAppointmentsSection() {
+        document.getElementById("appointmentsSection").style.display = 'block';
+        document.getElementById("balancesSection").style.display = 'none';
+        document.getElementById("incomeExpenseSection").style.display = 'none';
+    }
+
+    // Función para mostrar la sección de balances
+    function showBalancesSection() {
+        document.getElementById("appointmentsSection").style.display = 'none';
+        document.getElementById("balancesSection").style.display = 'block';
+        document.getElementById("incomeExpenseSection").style.display = 'none';
+    }
+
+    // Función para mostrar la sección de control de ingresos y egresos
+    function showIncomeExpenseSection() {
+        document.getElementById("appointmentsSection").style.display = 'none';
+        document.getElementById("balancesSection").style.display = 'none';
+        document.getElementById("incomeExpenseSection").style.display = 'block';
+    }
+
+    // Iniciar el chequeo de notificaciones cada 30 segundos
+    setInterval(checkNotifications, 30000);
+</script>
+
+</body>
+</html>
