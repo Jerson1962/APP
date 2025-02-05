@@ -212,7 +212,9 @@
         localStorage.setItem("appointments", JSON.stringify(appointments)); // Actualizar el localStorage
         renderAppointments();
     }
-    // Función para mostrar la notificación de cita pendiente
+     // Crear un objeto de Audio
+    const notificationSound = new Audio('cronograma/public-domain-beep-sound-100267.mp3');
+ // Función para mostrar la notificación de cita pendiente
     function showPendingNotification() {
         const notification = document.getElementById("notification");
         notification.classList.remove("notification-confirm");
@@ -263,7 +265,8 @@
             document.getElementById("appointmentForm").reset();
         }
     });
-
+ // Iniciar el chequeo de notificaciones cada 30 segundos
+    setInterval(checkNotifications, 30000);
     // Función de búsqueda
     function searchAppointments() {
         const searchText = document.getElementById("searchInput").value.toLowerCase();
