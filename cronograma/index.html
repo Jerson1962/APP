@@ -9,95 +9,49 @@
     
     <!-- Estilos adicionales -->
     <style>
+        /* Estilos para la notificación */
         .notification {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 9999;
-            background-color: #28a745;
-            color: rgb(228, 222, 222);
-            padding: 10px;
-            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente */
+            color: white;
+            padding: 20px;
             display: none;
-            font-size: 16px;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
             font-weight: bold;
-            animation: slideIn 1s ease-out;
+            animation: fadeIn 1s ease-out;
+            text-align: center;
         }
 
         .notification-alert {
             background-color: #ffc107; /* Amarillo para cita pendiente */
-            border: 2px solid #f39c12;
         }
 
         .notification-confirm {
             background-color: #dc3545; /* Rojo para confirmar cita */
-            border: 2px solid #c0392b;
         }
 
-        @keyframes slideIn {
+        @keyframes fadeIn {
             from {
-                right: -100%;
+                opacity: 0;
             }
             to {
-                right: 10px;
+                opacity: 1;
             }
         }
-
-        .navbar {
-            margin-bottom: 20px;
-        }
-
-        .section-content {
-            margin-top: 20px;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-    </style><style>
-    /* Estilos para la notificación */
-    .notification {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-        background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente */
-        color: white;
-        padding: 20px;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        font-weight: bold;
-        animation: slideIn 1s ease-out;
-        text-align: center;
-    }
-
-    .notification-alert {
-        background-color: #ffc107; /* Amarillo para cita pendiente */
-    }
-
-    .notification-confirm {
-        background-color: #dc3545; /* Rojo para confirmar cita */
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-</style>
+    </style>
 </head>
 <body>
 
 <!-- Barra de navegación (Menu) -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#"> 𝐌𝐈 𝐀𝐏𝐏 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</a>
+    <a class="navbar-brand" href="#">𝐌𝐈 𝐀𝐏𝐏 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -169,24 +123,6 @@
 <!-- Notificación -->
 <div id="notification" class="notification"></div>
 
-<!-- Modal de detalles de cita -->
-<div class="modal" id="appointmentDetailsModal" tabindex="-1" role="dialog" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="appointmentDetailsModalLabel">Detalles de la Cita</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="appointmentDescription"></div>
-            <div class="modal-footer">
-                <a id="whatsappLink" href="#" class="btn btn-success" target="_blank">Enviar por WhatsApp</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Bootstrap JS y jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
@@ -249,19 +185,21 @@
         localStorage.setItem("appointments", JSON.stringify(appointments)); // Actualizar el localStorage
         renderAppointments();
     }
-     // Crear un objeto de Audio
+
+    // Función para reproducir sonido
     const notificationSound = new Audio('cronograma/public-domain-beep-sound-100267.mp3');
- // Función para mostrar la notificación de cita pendiente
+
+    // Función para mostrar la notificación de cita pendiente
     function showPendingNotification() {
         const notification = document.getElementById("notification");
         notification.classList.remove("notification-confirm");
         notification.classList.add("notification-alert");
         notification.textContent = "Cita Pendiente. ¡No olvides tu cita!";
-        notification.style.display = 'block';
-        new Audio(' livechat-129007.mp3 ').play(); // Sonido de notificación
+        notification.style.display = 'flex';
+        notificationSound.play(); // Reproducir sonido de notificación
         setTimeout(() => {
-            notification.style.display = 'none';
-        }, 5000); // Mostrar notificación por 5 segundos
+            notification.style.display = 'none'; // Ocultar notificación después de 4 segundos
+        }, 4000);
     }
 
     // Función para mostrar la notificación de confirmar cita
@@ -270,11 +208,11 @@
         notification.classList.remove("notification-alert");
         notification.classList.add("notification-confirm");
         notification.textContent = "¡Es hora de tu cita! Confirma tu asistencia.";
-        notification.style.display = 'block';
-        new Audio('  livechat-129007.mp3').play(); // Sonido de notificación
+        notification.style.display = 'flex';
+        notificationSound.play(); // Reproducir sonido de notificación
         setTimeout(() => {
-            notification.style.display = 'none';
-        }, 5000); // Mostrar notificación por 5 segundos
+            notification.style.display = 'none'; // Ocultar notificación después de 4 segundos
+        }, 4000);
     }
 
     // Función para verificar si hay citas próximas y mostrar la notificación
@@ -302,8 +240,10 @@
             document.getElementById("appointmentForm").reset();
         }
     });
- // Iniciar el chequeo de notificaciones cada 30 segundos
+
+    // Iniciar el chequeo de notificaciones cada 30 segundos
     setInterval(checkNotifications, 30000);
+
     // Función de búsqueda
     function searchAppointments() {
         const searchText = document.getElementById("searchInput").value.toLowerCase();
@@ -334,9 +274,6 @@
         document.getElementById("balancesSection").style.display = 'none';
         document.getElementById("incomeExpenseSection").style.display = 'block';
     }
-
-    // Iniciar el chequeo de notificaciones cada 30 segundos
-    setInterval(checkNotifications, 30000);
 </script>
 
 </body>
