@@ -176,7 +176,16 @@
         document.getElementById("whatsappLink").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
         $('#appointmentDetailsModal').modal('show');
     }
+// Actualizar el contenido del modal con los datos de la cita
+        document.getElementById("appointmentDescription").innerHTML = description;
 
+        // Crear el enlace de WhatsApp con el mensaje
+        const message = `Hola, tengo una cita programada para el ${new Date(appointment.appointmentDate).toLocaleString()}.`;
+        document.getElementById("whatsappLink").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+        // Mostrar el modal
+        $('#appointmentDetailsModal').modal('show');
+    }
     // Función para eliminar una cita
     function deleteAppointment(index) {
         appointments.splice(index, 1);
