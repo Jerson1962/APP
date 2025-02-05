@@ -1,5 +1,4 @@
- 
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -223,6 +222,10 @@
             // Si la cita es en el futuro y dentro de 1 hora, mostramos la notificación de confirmar cita
             if (appointmentDate - now <= 3600000 && appointmentDate - now > 0) {
                 showConfirmNotification();
+            }
+            // Si la cita es en el futuro y dentro de 24 horas, mostramos la notificación de cita pendiente
+            if (appointmentDate - now <= 86400000 && appointmentDate - now > 0) {
+                showPendingNotification();
             }
         });
     }
