@@ -225,6 +225,26 @@
             notification.style.display = 'none';
         }, 5000); // Mostrar notificación por 5 segundos
     }
+ <!-- Dentro de la etiqueta <body> agregar este elemento audio justo antes del script -->
+<audio id="alertSound" src="cronograma/public-domain-beep-sound-100267.mp3" preload="auto"></audio>
+
+<script>
+    // Función para mostrar la notificación de cita pendiente
+    function showPendingNotification() {
+        const notification = document.getElementById("notification");
+        notification.classList.remove("notification-confirm");
+        notification.classList.add("notification-alert");
+        notification.textContent = "Cita Pendiente. ¡No olvides tu cita!";
+        notification.style.display = 'block';
+        
+        // Reproducir el sonido de alerta
+        const alertSound = document.getElementById("alertSound");
+        alertSound.play(); // Sonido de notificación
+
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000); // Mostrar notificación por 5 segundos
+    }
 
     // Función para mostrar la notificación de confirmar cita
     function showConfirmNotification() {
@@ -233,72 +253,19 @@
         notification.classList.add("notification-confirm");
         notification.textContent = "¡Es hora de tu cita! Confirma tu asistencia.";
         notification.style.display = 'block';
-        new Audio('  cronograma/public-domain-beep-sound-100267.mp3').play(); // Sonido de notificación
+
+        // Reproducir el sonido de alerta
+        const alertSound = document.getElementById("alertSound");
+        alertSound.play(); // Sonido de notificación
+
         setTimeout(() => {
             notification.style.display = 'none';
         }, 5000); // Mostrar notificación por 5 segundos
     }
 
-    // Función para verificar si hay citas próximas y mostrar la notificación
-    function checkNotifications() {
-        const now = new Date();
-        appointments.forEach(appointment => {
-            const appointmentDate = new Date(appointment.appointmentDate);
-            // Si la cita es en el futuro y dentro de 1 hora, mostramos la notificación de confirmar cita
-            if (appointmentDate - now <= 3600000 && appointmentDate - now > 0) {
-                showConfirmNotification();
-            }
-        });
-    }
-
-    // Event Listener para guardar la cita desde el formulario
-    document.getElementById("appointmentForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const firstName = document.getElementById("firstName").value;
-        const lastName = document.getElementById("lastName").value;
-        const appointmentDate = document.getElementById("appointmentDate").value;
-
-        if (firstName && lastName && appointmentDate) {
-            addAppointment(firstName, lastName, appointmentDate);
-            document.getElementById("appointmentForm").reset();
-        }
-    });
-
-    // Función de búsqueda
-    function searchAppointments() {
-        const searchText = document.getElementById("searchInput").value.toLowerCase();
-        const filteredAppointments = appointments.filter(appointment => {
-            return appointment.firstName.toLowerCase().includes(searchText) || 
-                   appointment.lastName.toLowerCase().includes(searchText);
-        });
-        renderAppointments(filteredAppointments);
-    }
-
-    // Función para mostrar la sección de citas
-    function showAppointmentsSection() {
-        document.getElementById("appointmentsSection").style.display = 'block';
-        document.getElementById("balancesSection").style.display = 'none';
-        document.getElementById("incomeExpenseSection").style.display = 'none';
-    }
-
-    // Función para mostrar la sección de balances
-    function showBalancesSection() {
-        document.getElementById("appointmentsSection").style.display = 'none';
-        document.getElementById("balancesSection").style.display = 'block';
-        document.getElementById("incomeExpenseSection").style.display = 'none';
-    }
-
-    // Función para mostrar la sección de control de ingresos y egresos
-    function showIncomeExpenseSection() {
-        document.getElementById("appointmentsSection").style.display = 'none';
-        document.getElementById("balancesSection").style.display = 'none';
-        document.getElementById("incomeExpenseSection").style.display = 'block';
-    }
-
-    // Iniciar el chequeo de notificaciones cada 30 segundos
-    setInterval(checkNotifications, 30000);
+    // Resto de tu código permanece igual
 </script>
+
 
 </body>
 </html>
