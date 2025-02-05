@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -100,7 +100,7 @@
                     </div>
                     <div class="form-group">
                         <label for="appointmentDate">Fecha y Hora de la Cita</label>
-                        <input type="datetime-local" class="form-control" id="appointmentDate" required onchange="showPendingNotification()">
+                        <input type="datetime-local" class="form-control" id="appointmentDate" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Guardar Cita</button>
                 </form>
@@ -143,7 +143,6 @@
         appointments.push({ firstName, lastName, appointmentDate });
         localStorage.setItem("appointments", JSON.stringify(appointments)); // Guardar citas en localStorage
         renderAppointments();
-        checkNotifications();
     }
 
     // Función para renderizar las citas
@@ -172,15 +171,9 @@
             <strong>Nombre:</strong> ${appointment.firstName} ${appointment.lastName}<br>
             <strong>Fecha y Hora:</strong> ${new Date(appointment.appointmentDate).toLocaleString()}
         `;
-
-        // Actualizar el contenido del modal con los datos de la cita
         document.getElementById("appointmentDescription").innerHTML = description;
-
-        // Crear el enlace de WhatsApp con el mensaje
         const message = `Hola, tengo una cita programada para el ${new Date(appointment.appointmentDate).toLocaleString()}.`;
         document.getElementById("whatsappLink").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-        // Mostrar el modal
         $('#appointmentDetailsModal').modal('show');
     }
 
@@ -214,26 +207,26 @@
         notificationSound.play(); // Reproducir sonido de notificación
     }
 
-    // Función para verificar si hay citas próximas y mostrar la notificación
-    function checkNotifications() {
+    // Función para verificar si alguna cita está programada para el momento exacto
+    function checkExactAppointmentTime() {
         const now = new Date();
         appointments.forEach(appointment => {
             const appointmentDate = new Date(appointment.appointmentDate);
-            // Si la cita es en el futuro y dentro de 1 hora, mostramos la notificación de confirmar cita
-            if (appointmentDate - now <= 3600000 && appointmentDate - now > 0) {
+            // Si la cita es exactamente en este momento, muestra la notificación
+            if (appointmentDate.getHours() === now.getHours() &&
+                appointmentDate.getMinutes() === now.getMinutes() &&
+                appointmentDate.getSeconds() === now.getSeconds()) {
                 showConfirmNotification();
-            }
-            // Si la cita es en el futuro y dentro de 24 horas, mostramos la notificación de cita pendiente
-            if (appointmentDate - now <= 86400000 && appointmentDate - now > 0) {
-                showPendingNotification();
             }
         });
     }
 
+    // Iniciar la verificación de la hora exacta de la cita cada segundo
+    setInterval(checkExactAppointmentTime, 1000);
+
     // Event Listener para guardar la cita desde el formulario
     document.getElementById("appointmentForm").addEventListener("submit", (e) => {
         e.preventDefault();
-
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
         const appointmentDate = document.getElementById("appointmentDate").value;
@@ -243,9 +236,6 @@
             document.getElementById("appointmentForm").reset();
         }
     });
-
-    // Iniciar el chequeo de notificaciones cada 30 segundos
-    setInterval(checkNotifications, 30000);
 
     // Función de búsqueda
     function searchAppointments() {
@@ -277,13 +267,8 @@
         document.getElementById("balancesSection").style.display = 'none';
         document.getElementById("incomeExpenseSection").style.display = 'block';
     }
-
-    // Ocultar la notificación después de 3 segundos
-    setTimeout(() => {
-        document.getElementById("notification").style.display = 'none';
-    }, 3000);
-
 </script>
 
 </body>
 </html>
+
