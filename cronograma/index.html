@@ -213,18 +213,8 @@
         renderAppointments();
     }
 
-    // Función para mostrar la notificación de cita pendiente
-    function showPendingNotification() {
-        const notification = document.getElementById("notification");
-        notification.classList.remove("notification-confirm");
-        notification.classList.add("notification-alert");
-        notification.textContent = "Cita Pendiente. ¡No olvides tu cita!";
-        notification.style.display = 'block';
-        new Audio(' cronograma/public-domain-beep-sound-100267.mp3').play(); // Sonido de notificación
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 5000); // Mostrar notificación por 5 segundos
-    }
+    
+    
  <!-- Dentro de la etiqueta <body> agregar este elemento audio justo antes del script -->
 <audio id="alertSound" src="cronograma/public-domain-beep-sound-100267.mp3" preload="auto"></audio>
 
