@@ -14,8 +14,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* Centrado de la notificación */
-            background-color: rgba(0, 0, 0, 0.8); /* Fondo semi-transparente */
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 15px 25px;
             border-radius: 10px;
@@ -125,6 +125,28 @@
     </div>
 </div>
 
+<!-- Modal de Detalles de Cita -->
+<div class="modal fade" id="appointmentDetailsModal" tabindex="-1" role="dialog" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appointmentDetailsModalLabel">Detalles de la Cita</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Nombre:</strong> <span id="appointmentFirstName"></span> <span id="appointmentLastName"></span></p>
+                <p><strong>Fecha y Hora:</strong> <span id="appointmentDateTime"></span></p>
+                <button id="whatsappButton" class="btn btn-success" onclick="sendWhatsAppReminder()">Enviar Recordatorio por WhatsApp</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Notificación -->
 <div id="notification" class="notification"></div>
 
@@ -135,13 +157,12 @@
 
 <!-- Script para gestionar citas -->
 <script>
-    // Cargar las citas desde el localStorage al cargar la página
     let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
 
     // Función para agregar una nueva cita
     function addAppointment(firstName, lastName, appointmentDate) {
         appointments.push({ firstName, lastName, appointmentDate });
-        localStorage.setItem("appointments", JSON.stringify(appointments)); // Guardar citas en localStorage
+        localStorage.setItem("appointments", JSON.stringify(appointments)); 
         renderAppointments();
     }
 
@@ -167,71 +188,32 @@
     // Función para ver los detalles de la cita
     function viewAppointmentDetails(index) {
         const appointment = appointments[index];
-        const description = `
-            <strong>Nombre:</strong> ${appointment.firstName} ${appointment.lastName}<br>
-            <strong>Fecha y Hora:</strong> ${new Date(appointment.appointmentDate).toLocaleString()}
-        `;
-        document.getElementById("appointmentDescription").innerHTML = description;
-        const message = `Hola, tengo una cita programada para el ${new Date(appointment.appointmentDate).toLocaleString()}.`;
-        document.getElementById("whatsappLink").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        $('#appointmentDetailsModal').modal('show');
+        document.getElementById("appointmentFirstName").textContent = appointment.firstName;
+        document.getElementById("appointmentLastName").textContent = appointment.lastName;
+        document.getElementById("appointmentDateTime").textContent = new Date(appointment.appointmentDate).toLocaleString();
+        $('#appointmentDetailsModal').modal('show'); // Mostrar el modal con los detalles
     }
-// Actualizar el contenido del modal con los datos de la cita
-        document.getElementById("appointmentDescription").innerHTML = description;
 
-        // Crear el enlace de WhatsApp con el mensaje
-        const message = `Hola, tengo una cita programada para el ${new Date(appointment.appointmentDate).toLocaleString()}.`;
-        document.getElementById("whatsappLink").href = `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-        // Mostrar el modal
-        $('#appointmentDetailsModal').modal('show');
-    }
     // Función para eliminar una cita
     function deleteAppointment(index) {
         appointments.splice(index, 1);
-        localStorage.setItem("appointments", JSON.stringify(appointments)); // Actualizar el localStorage
+        localStorage.setItem("appointments", JSON.stringify(appointments)); 
         renderAppointments();
     }
 
-    // Función para reproducir sonido
-    const notificationSound = new Audio('cronograma/public-domain-beep-sound-100267.mp3');
+    // Función para enviar recordatorio por WhatsApp
+    function sendWhatsAppReminder() {
+        const firstName = document.getElementById("appointmentFirstName").textContent;
+        const lastName = document.getElementById("appointmentLastName").textContent;
+        const dateTime = document.getElementById("appointmentDateTime").textContent;
+        const message = `¡Recordatorio! Cita con ${firstName} ${lastName} programada para el ${dateTime}.`;
 
-    // Función para mostrar la notificación de cita pendiente
-    function showPendingNotification() {
-        const notification = document.getElementById("notification");
-        notification.classList.remove("notification-confirm");
-        notification.classList.add("notification-alert");
-        notification.textContent = "Cita Pendiente. ¡No olvides tu cita!";
-        notification.style.display = 'block';
-        notificationSound.play(); // Reproducir sonido de notificación
+        // Reemplaza este número de teléfono con el número deseado
+        const phoneNumber = "573001234567";
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        
+        window.open(url, '_blank');
     }
-
-    // Función para mostrar la notificación de confirmar cita
-    function showConfirmNotification() {
-        const notification = document.getElementById("notification");
-        notification.classList.remove("notification-alert");
-        notification.classList.add("notification-confirm");
-        notification.textContent = "¡Es hora de tu cita! Confirma tu asistencia.";
-        notification.style.display = 'block';
-        notificationSound.play(); // Reproducir sonido de notificación
-    }
-
-    // Función para verificar si alguna cita está programada para el momento exacto
-    function checkExactAppointmentTime() {
-        const now = new Date();
-        appointments.forEach(appointment => {
-            const appointmentDate = new Date(appointment.appointmentDate);
-            // Si la cita es exactamente en este momento, muestra la notificación
-            if (appointmentDate.getHours() === now.getHours() &&
-                appointmentDate.getMinutes() === now.getMinutes() &&
-                appointmentDate.getSeconds() === now.getSeconds()) {
-                showConfirmNotification();
-            }
-        });
-    }
-
-    // Iniciar la verificación de la hora exacta de la cita cada segundo
-    setInterval(checkExactAppointmentTime, 1000);
 
     // Event Listener para guardar la cita desde el formulario
     document.getElementById("appointmentForm").addEventListener("submit", (e) => {
@@ -276,8 +258,12 @@
         document.getElementById("balancesSection").style.display = 'none';
         document.getElementById("incomeExpenseSection").style.display = 'block';
     }
+
+    // Cargar las citas al cargar la página
+    renderAppointments();
 </script>
 
 </body>
 </html>
+
 
