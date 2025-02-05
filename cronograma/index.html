@@ -238,76 +238,40 @@
         renderAppointments(filteredAppointments);
     }
 
-    // Función para mostrar la sección de citas
-    function showAppointmentsSection() {
-        document.getElementById("appointmentsSection").style.display = 'block';
-        document.getElementById("balancesSection").style.display = 'none';
-        document.getElementById("incomeExpenseSection").style.display = 'none';
-    }
-
-    // Función para mostrar la sección de balances
-    function showBalancesSection() {
-        document.getElementById("appointmentsSection").style.display = 'none';
-        document.getElementById("balancesSection").style.display = 'block';
-        document.getElementById("incomeExpenseSection").style.display = 'none';
-    }
-
-    // Función para mostrar la sección de control de ingresos y egresos
-    function showIncomeExpenseSection() {
-        document.getElementById("appointmentsSection").style.display = 'none';
-        document.getElementById("balancesSection").style.display = 'none';
-        document.getElementById("incomeExpenseSection").style.display = 'block';
-    }
-
-    // Verificar si la hora de la cita es la hora actual
+    // Función para verificar la hora de la cita
     function checkAppointmentTime() {
-        const now = new Date();
-        
+        const currentDateTime = new Date();
         appointments.forEach(appointment => {
-            const appointmentTime = new Date(appointment.appointmentDate);
-            if (Math.abs(now - appointmentTime) <= 1000 * 60) {  // Verificar si está dentro del rango de 1 minuto
-                showNotification(appointment);
+            const appointmentDate = new Date(appointment.appointmentDate);
+            if (appointmentDate - currentDateTime <= 0 && appointmentDate - currentDateTime > -4 * 60 * 1000) {
+                showNotification('Tienes una cita pendiente. Confirma tu cita ahora.', 'alert');
+            }
+            if (appointmentDate - currentDateTime <= 0 && appointmentDate - currentDateTime > -2 * 60 * 1000) {
+                showNotification('¡CONFIRMAR cita ya!', 'confirm');
             }
         });
     }
 
-    // Función para mostrar la notificación
-    function showNotification(appointment) {
-        const notification = document.getElementById("notification");
-        notification.textContent = `¡Recordatorio! Cita con ${appointment.firstName} ${appointment.lastName} a las ${new Date(appointment.appointmentDate).toLocaleString()}`;
-
-        notification.classList.add('notification-alert');
-        notification.style.display = "block";
-
-        // Mostrar y ocultar la notificación dos veces con un intervalo
+    // Mostrar notificación
+    function showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.classList.remove('notification-alert', 'notification-confirm');
+        notification.classList.add(type === 'alert' ? 'notification-alert' : 'notification-confirm');
+        notification.style.display = 'block';
         setTimeout(() => {
-            notification.style.display = "none";
-        }, 4000);
-
-        setTimeout(() => {
-            notification.style.display = "block";
-        }, 4000);
-        
-        setTimeout(() => {
-            notification.style.display = "none";
-        }, 8000);
+            notification.style.display = 'none';
+        }, 3000); // Desaparece después de 3 segundos
     }
 
-    // Función de búsqueda
-    function searchAppointments() {
-        const searchText = document.getElementById("searchInput").value.toLowerCase();
-        const filteredAppointments = appointments.filter(appointment => {
-            return appointment.firstName.toLowerCase().includes(searchText) || 
-                   appointment.lastName.toLowerCase().includes(searchText);
-        });
-        renderAppointments(filteredAppointments);
-    // Cargar las citas al cargar la página
-    renderAppointments(); 
-    // Ejecutar la verificación de la hora de la cita cada 60 segundos
-    setInterval(checkAppointmentTime, 60000);
+    // Comprobar citas cada minuto
+    setInterval(checkAppointmentTime, 60 * 1000);
+    
+    // Inicialización
+    renderAppointments();
 </script>
-
 </body>
 </html>
+
 
 
