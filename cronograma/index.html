@@ -264,6 +264,16 @@
         }, 3000); // Desaparece después de 3 segundos
     }
 
+    // Ocultar la notificación cuando se hace clic
+    function hideNotification() {
+        document.getElementById('notification').style.display = 'none';
+    }
+
+    // Comprobar citas cada minuto
+    setInterval(checkAppointmentTime, 60 * 1000);
+    
+    // Inicialización
+    renderAppointments();
     // Comprobar citas cada minuto
     setInterval(checkAppointmentTime, 60 * 1000);
     
