@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -50,7 +50,42 @@
                 transform: translate(-50%, -50%) scale(0.8);
             }
         }
-    </style>
+    </style><style>
+    /* Estilo para subrayar la cita en rojo */
+    .highlight {
+        text-decoration: underline;
+        text-decoration-color: red;
+    }
+</style><style>
+    /* Estilo para el menú colorido */
+    .navbar {
+        background-color: #20ff45; /* Verde brillante */
+        border-bottom: 3px solid #dc3545; /* Línea roja en la parte inferior del menú */
+    }
+    .navbar-brand {
+        font-weight: bold;
+    }
+    .nav-link {
+        color: white !important;
+    }
+    .nav-link:hover {
+        background-color: #0fe0e085; /* Verde oscuro cuando se pasa el ratón */
+        color: #fff !important;
+    }
+
+    /* Estilo para subrayar las citas */
+    .highlight {
+        text-decoration: underline;
+        text-decoration-color: red;
+    }
+
+    /* Resaltar el texto cuando la cita está cerca (1 minuto antes) */
+    .highlight-soon {
+        border: 2px solid rgba(255, 0, 0, 0.5); /* Delineado rojo transparente */
+        background-color: rgba(255, 0, 0, 0.1); /* Fondo suave para la cita próxima */
+    }
+</style>
+
 </head>
 <body>
 
@@ -63,13 +98,13 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#" onclick="showAppointmentsSection()"> 𝐂𝐈𝐓𝐀𝐒</a>
+                <a class="nav-link" href="#" onclick="showAppointmentsSection()"></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" onclick="showBalancesSection()"> 𝐁𝐀𝐋𝐀𝐍𝐂𝐄</a>
+                <a class="nav-link" href="#" onclick="showBalancesSection()">  𝐁𝐀𝐋𝐀𝐍𝐂𝐄</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="controlmercaderia.html" onclick="showIncomeExpenseSection()">𝐂𝐎𝐍𝐓𝐑𝐎𝐋 𝐃𝐄 𝐌𝐄𝐑𝐂𝐀𝐃𝐄𝐑𝐈𝐀 </a>
+                <a class="nav-link" href="controlmercaderia.html" onclick="showIncomeExpenseSection()"> 𝐂𝐎𝐍𝐓𝐑𝐎𝐋 𝐃𝐄 𝐌𝐄𝐑𝐂𝐀𝐃𝐄𝐑𝐈𝐀          </a>
             </li>
         </ul>
     </div>
@@ -78,7 +113,7 @@
 <!-- Sección de citas -->
 <div id="appointmentsSection" class="section-content">
     <div class="container mt-5">
-        <h1 class="text-center">𝐂𝐫𝐨𝐧𝐨𝐠𝐫𝐚𝐦𝐚 𝐝𝐞 𝐜𝐢𝐭𝐚𝐬</h1>
+        <h1 class="text-center"> 𝐂𝐑𝐎𝐍𝐎𝐆𝐑𝐀𝐌𝐀 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</h1>
 
         <!-- Campo de búsqueda -->
         <div class="mb-4">
@@ -177,7 +212,7 @@
                 <td>${appointment.lastName}</td>
                 <td>${new Date(appointment.appointmentDate).toLocaleString()}</td>
                 <td>
-                    <button class="btn btn-info" onclick="viewAppointmentDetails(${index})">Ver Detalles</button>
+                    <button class="btn btn-info" onclick="viewAppointmentDetails(${index})">Enviar Detalles</button>
                     <button class="btn btn-danger" onclick="deleteAppointment(${index})">Eliminar</button>
                 </td>
             `;
@@ -267,7 +302,42 @@
     // Ocultar la notificación cuando se hace clic
     function hideNotification() {
         document.getElementById('notification').style.display = 'none';
-    }
+    }// Función para renderizar las citas con resaltado de la más próxima
+function renderAppointments(filteredAppointments = appointments) {
+    const appointmentsList = document.getElementById("appointmentsList");
+    appointmentsList.innerHTML = '';
+    
+    const currentDateTime = new Date();
+    
+    filteredAppointments.forEach((appointment, index) => {
+        const appointmentDate = new Date(appointment.appointmentDate);
+        const timeDifference = appointmentDate - currentDateTime;
+        
+        // Verifica si la cita está próxima (1 minuto antes)
+        const isHighlight = timeDifference <= 60 * 1000 && timeDifference > 0;
+        
+        const appointmentRow = document.createElement("tr");
+        appointmentRow.classList.toggle('highlight-soon', isHighlight); // Agrega la clase si es próxima
+        
+        appointmentRow.innerHTML = `
+            <td>${appointment.firstName}</td>
+            <td>${appointment.lastName}</td>
+            <td>${appointmentDate.toLocaleString()}</td>
+            <td>
+                <button class="btn btn-info" onclick="viewAppointmentDetails(${index})">Enviar Detalles</button>
+                <button class="btn btn-danger" onclick="deleteAppointment(${index})">Eliminar</button>
+            </td>
+        `;
+        
+        // Resaltar la cita más próxima si está a 1 minuto
+        if (isHighlight) {
+            appointmentRow.classList.add('highlight');
+        }
+
+        appointmentsList.appendChild(appointmentRow);
+    });
+}
+
 
     // Comprobar citas cada minuto
     setInterval(checkAppointmentTime, 60 * 1000);
@@ -278,10 +348,10 @@
     setInterval(checkAppointmentTime, 60 * 1000);
     
     // Inicialización
-    renderAppointments();
+    renderAppointments(); 
+    
 </script>
 </body>
 </html>
- 
-
+  
 
