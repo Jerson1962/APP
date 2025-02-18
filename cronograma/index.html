@@ -241,8 +241,12 @@
         const firstName = document.getElementById("appointmentFirstName").textContent;
         const lastName = document.getElementById("appointmentLastName").textContent;
         const dateTime = document.getElementById("appointmentDateTime").textContent;
-        const message = `¡Recordatorio! Cita con ${firstName} ${lastName} programada para el ${dateTime}.`;
+        const message =  `¡Recordatorio! Estimado/a ${firstName} ${lastName} este es un recordatorio de que tienes una cita programada para el día  ${dateTime} . Por favor, asegúrate de llegar 10 minutos antes para completar cualquier trámite necesario.
 
+Si necesitas reprogramar o cancelar la cita, no dudes en contactarnos con al menos 1 dia anticipacion 
+Gracias por tu atención. ¡Te esperamos! 
+
+Saludos cordiales.`;
         // Reemplaza este número de teléfono con el número deseado
         const phoneNumber = "573001234567";
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
