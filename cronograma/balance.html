@@ -78,7 +78,124 @@
     .highlight-soon {
         border: 2px solid rgba(255, 5, 5, 0.5); /* Delineado rojo transparente */
         background-color: rgba(255, 0, 0, 0.1); /* Fondo suave para la cita próxima */
+    }<style>
+    .container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
     }
+
+    .panel {
+        flex: 1;
+        margin-right: 20px;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff; /* Fondo blanco para mayor formalidad */
+        border: 1px solid #e0e0e0; /* Borde suave */
+    }
+
+    .panel h3 {
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+        color: #333333; /* Gris oscuro para los títulos */
+        font-size: 1.5em;
+    }
+
+    .total {
+        font-weight: bold;
+        font-size: 1.2em;
+        margin-top: 20px;
+        color: #333333; /* Gris oscuro para los totales */
+    }
+
+    .highlight {
+        text-decoration: underline;
+        text-decoration-color: #007bff; /* Subrayado azul para resaltar */
+    }
+
+    /* Colores más neutros y formales para los paneles */
+    #incomePanel {
+        background-color: #f8f9fa; /* Gris claro para ingresos */
+        border: 1px solid #ced4da;
+    }
+
+    #expensePanel {
+        background-color: #f8f9fa; /* Gris claro para egresos */
+        border: 1px solid #ced4da;
+    }
+
+    #summaryPanel {
+        background-color: #f8f9fa; /* Gris claro para resumen */
+        border: 1px solid #ced4da;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil para el panel */
+    }
+
+    .navbar {
+        background-color: #343a40;  /* Gris oscuro para el menú */
+        border-bottom: 3px solid #007bff; /* Línea azul abajo */
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        color: white;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .nav-link {
+        color: white !important;
+    }
+
+    .nav-link:hover {
+        background-color: #495057; /* Gris más oscuro al pasar el ratón */
+        color: #ffffff !important;
+    }
+
+    /* Estilos para los botones */
+    .btn {
+        border-radius: 5px;
+        font-size: 1em;
+        padding: 10px 15px;
+    }
+
+    .btn-success {
+        background-color: #28a745; /* Verde elegante */
+        border: 1px solid #28a745;
+    }
+
+    .btn-danger {
+        background-color: #dc3545; /* Rojo más suave */
+        border: 1px solid #dc3545;
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Azul profesional */
+        border: 1px solid #007bff;
+    }
+
+    .btn-warning {
+        background-color: #ffc107; /* Amarillo suave */
+        border: 1px solid #ffc107;
+    }
+
+    /* Cambio de color a los campos de formulario */
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 12px;
+        font-size: 1em;
+        background-color: #f8f9fa; /* Fondo claro */
+    }
+
+    /* Agregar espaciado y márgenes */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+</style>
+
 </style>
 
 </head>
