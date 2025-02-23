@@ -1,15 +1,64 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Balance Financiero</title>
-    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Estilos adicionales -->
     <style>
+        /* Estilo para los paneles y la barra lateral, sin cambios */
+         /* Estilo para el menú lateral */
+         .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #343a40;
+            padding-top: 20px;
+            color: white;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+        }
+
+        .sidebar a:hover {
+            background-color: #575d63;
+        }
+
+        .content {
+            margin-left: 260px; /* Espacio para el menú lateral */
+            padding: 20px;
+        }
+
         .container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .panel {
+            flex: 1;
+            margin-right: 20px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .panel h3 {
+            text-align: center;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+ .container {
             display: flex;
             justify-content: space-between;
             margin-top: 30px;
@@ -28,256 +77,97 @@
             font-size: 1.2em;
             margin-top: 20px;
         }
-        .highlight {
-            text-decoration: underline;
-        }
-        /* Colores simpáticos para los paneles */
-        #incomePanel {
-            background-color:  #9fcaa8; /* Azul claro */
-            border: 1px solid #020503;
-        }
-        #expensePanel {
-            background-color:  #9fcaa8; /* Rojo claro */
-            border: 1px solid #020101;
-        }
-        #summaryPanel {
-            background-color: #9fcaa8; /* Verde claro */
-            border: 1px solid #010201;
-            padding: 30px;
-            border-radius: 10px;
-        }
-        .total {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-top: 20px;
-        }
-    </style><style>
-    /* Estilo para el menú colorido */
-    .navbar {
-        background-color:   #2daa53d0;  /* Verde brillante */
-        border-bottom: 3px solid #160b0c; /* Línea roja en la parte inferior del menú */
-    }
-    .navbar-brand {
-        font-weight: bold;
-    }
-    .nav-link {
-        color: white !important;
-    }
-    .nav-link:hover {
-        background-color:  #31834a;   /* Verde oscuro cuando se pasa el ratón */
-        color: #fff !important;
-    }
-
-    /* Estilo para subrayar las citas */
-    .highlight {
-        text-decoration: underline;
-        text-decoration-color: red;
-    }
-
-    /* Resaltar el texto cuando la cita está cerca (1 minuto antes) */
-    .highlight-soon {
-        border: 2px solid rgba(255, 5, 5, 0.5); /* Delineado rojo transparente */
-        background-color: rgba(255, 0, 0, 0.1); /* Fondo suave para la cita próxima */
-    }<style>
-    .container {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30px;
-    }
-
-    .panel {
-        flex: 1;
-        margin-right: 20px;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        background-color: #ffffff; /* Fondo blanco para mayor formalidad */
-        border: 1px solid #e0e0e0; /* Borde suave */
-    }
-
-    .panel h3 {
-        text-align: center;
-        font-family: 'Arial', sans-serif;
-        color: #333333; /* Gris oscuro para los títulos */
-        font-size: 1.5em;
-    }
-
-    .total {
-        font-weight: bold;
-        font-size: 1.2em;
-        margin-top: 20px;
-        color: #333333; /* Gris oscuro para los totales */
-    }
-
-    .highlight {
-        text-decoration: underline;
-        text-decoration-color: #007bff; /* Subrayado azul para resaltar */
-    }
-
-    /* Colores más neutros y formales para los paneles */
-    #incomePanel {
-        background-color: #f8f9fa; /* Gris claro para ingresos */
-        border: 1px solid #ced4da;
-    }
-
-    #expensePanel {
-        background-color: #f8f9fa; /* Gris claro para egresos */
-        border: 1px solid #ced4da;
-    }
-
-    #summaryPanel {
-        background-color: #f8f9fa; /* Gris claro para resumen */
-        border: 1px solid #ced4da;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil para el panel */
-    }
-
-    .navbar {
-        background-color: #343a40;  /* Gris oscuro para el menú */
-        border-bottom: 3px solid #007bff; /* Línea azul abajo */
-    }
-
-    .navbar-brand {
-        font-weight: bold;
-        color: white;
-        font-family: 'Arial', sans-serif;
-    }
-
-    .nav-link {
-        color: white !important;
-    }
-
-    .nav-link:hover {
-        background-color: #495057; /* Gris más oscuro al pasar el ratón */
-        color: #ffffff !important;
-    }
-
-    /* Estilos para los botones */
-    .btn {
-        border-radius: 5px;
-        font-size: 1em;
-        padding: 10px 15px;
-    }
-
-    .btn-success {
-        background-color: #28a745; /* Verde elegante */
-        border: 1px solid #28a745;
-    }
-
-    .btn-danger {
-        background-color: #dc3545; /* Rojo más suave */
-        border: 1px solid #dc3545;
-    }
-
-    .btn-primary {
-        background-color: #007bff; /* Azul profesional */
-        border: 1px solid #007bff;
-    }
-
-    .btn-warning {
-        background-color: #ffc107; /* Amarillo suave */
-        border: 1px solid #ffc107;
-    }
-
-    /* Cambio de color a los campos de formulario */
-    .form-control {
-        border-radius: 5px;
-        border: 1px solid #ced4da;
-        padding: 12px;
-        font-size: 1em;
-        background-color: #f8f9fa; /* Fondo claro */
-    }
-
-    /* Agregar espaciado y márgenes */
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-</style>
-
-</style>
-
+        /* Otros estilos aquí... */
+    </style>
 </head>
 <body>
-    <!-- Barra de navegación (Menu) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#"> 𝐀𝐏𝐏 𝐃𝐄 𝐁𝐀𝐋𝐀𝐍𝐂𝐄</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="index.html" onclick="showAppointmentsSection()"> 𝖛𝖔𝖑𝖛𝖊𝖗 </a>
-                </li>
-    </nav>
-
-    <!-- Sección de Balance -->
-    <div class="container">
-        <!-- Panel de Ingresos -->
-        <div class="panel" id="incomePanel">
-            <h3> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬</h3>
-            <form id="incomeForm">
-                <div class="form-group">
-                    <label for="incomeDate">Fecha</label>
-                    <input type="date" class="form-control" id="incomeDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="incomeConcept">Concepto</label>
-                    <input type="text" class="form-control" id="incomeConcept" required>
-                </div>
-                <div class="form-group">
-                    <label for="incomeDoc">DOC</label>
-                    <input type="text" class="form-control" id="incomeDoc" required>
-                </div>
-                <div class="form-group">
-                    <label for="incomeMedium">Medio</label>
-                    <input type="text" class="form-control" id="incomeMedium" required>
-                </div>
-                <div class="form-group">
-                    <label for="incomeAmount">Efectivo</label>
-                    <input type="number" class="form-control" id="incomeAmount" required>
-                </div>
-                <button type="submit" class="btn btn-success">𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐫 𝐈𝐧𝐠𝐫𝐞𝐬𝐨 </button>
-            </form>
-            <div class="total" id="totalIncome">Total Ingresos: $0</div>
-        </div>
-
-        <!-- Panel de Egresos -->
-        <div class="panel" id="expensePanel">
-            <h3> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐄𝐠𝐫𝐞𝐬𝐨𝐬</h3>
-            <form id="expenseForm">
-                <div class="form-group">
-                    <label for="expenseDate">Fecha</label>
-                    <input type="date" class="form-control" id="expenseDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="expenseConcept">Concepto</label>
-                    <input type="text" class="form-control" id="expenseConcept" required>
-                </div>
-                <div class="form-group">
-                    <label for="expenseAmount">Egreso</label>
-                    <input type="number" class="form-control" id="expenseAmount" required>
-                </div>
-                <button type="submit" class="btn btn-danger"> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐫 𝐄𝐠𝐫𝐞𝐬𝐨</button>
-            </form>
-            <div class="total" id="totalExpense"> 𝐓𝐨𝐭𝐚𝐥 𝐄𝐠𝐫𝐞𝐬𝐨𝐬: $0</div>
-        </div>
+    <!-- Menú Lateral -->
+    <div class="sidebar">
+        <h3 class="text-center">𝐀𝐏𝐏</h3>
+        <a href="index.html" onclick="showAppointmentsSection()">𝖛𝖔𝖑𝖛𝖊𝖗</a>
+        <a href="#" onclick="alert('Función en construcción')"> </a>
+        <a href="#" onclick="alert('Función en construcción')"> </a>
     </div>
 
-    <!-- Panel de Resumen (Mostrar Datos) -->
-    <div class="container">
-        <div class="panel" id="summaryPanel">
-            <h3>  𝐃𝐚𝐭𝐨𝐬 𝐢𝐧𝐠𝐫𝐞𝐬𝐨𝐬 𝐲 𝐞𝐠𝐫𝐞𝐬𝐨𝐬 𝐩𝐨𝐫 𝐟𝐞𝐜𝐡𝐚</h3>
-            <input type="date" class="form-control" id="searchDate" placeholder="Buscar por Fecha">
-            <button class="btn btn-primary mt-2" onclick="searchSummary()">Buscar</button>
-            <button class="btn btn-warning mt-2" onclick="resetTotals()">Reiniciar Totales</button>
-            <div class="mt-4">
-                <h5> 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬: <span id="summaryIncome">$0</span></h5>
-                <h5> 𝐄𝐠𝐫𝐞𝐬𝐨𝐬 : <span id="summaryExpense">$0</span></h5>
+    <!-- Sección de contenido -->
+    <div class="content">
+        <!-- Sección de Balance -->
+        <div class="container">
+            <!-- Panel de Ingresos -->
+            <div class="panel" id="incomePanel">
+                <h3> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬</h3>
+                <form id="incomeForm">
+                    <div class="form-group">
+                        <label for="incomeDate">Fecha</label>
+                        <input type="date" class="form-control" id="incomeDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeConcept">Concepto</label>
+                        <input type="text" class="form-control" id="incomeConcept" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeDoc">DOC</label>
+                        <input type="text" class="form-control" id="incomeDoc" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeMedium">Medio</label>
+                        <input type="text" class="form-control" id="incomeMedium" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="incomeAmount">Efectivo</label>
+                        <input type="number" class="form-control" id="incomeAmount" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Registrar Ingreso</button>
+                </form>
+                <div class="total" id="totalIncome">Total Ingresos: $0</div>
             </div>
-            <div id="searchResults"></div>
+
+            <!-- Panel de Egresos -->
+            <div class="panel" id="expensePanel">
+                <h3> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐄𝐠𝐫𝐞𝐬𝐨𝐬</h3>
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label for="expenseDate">Fecha</label>
+                        <input type="date" class="form-control" id="expenseDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseConcept">Concepto</label>
+                        <input type="text" class="form-control" id="expenseConcept" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expenseAmount">Egreso</label>
+                        <input type="number" class="form-control" id="expenseAmount" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Registrar Egreso</button>
+                </form>
+                <div class="total" id="totalExpense">Total Egresos: $0</div>
+            </div>
+        </div>
+
+        <!-- Panel de Resumen -->
+        <div class="container">
+            <div class="panel" id="summaryPanel">
+                <h3>Datos Ingresos y Egresos por Fecha</h3>
+                <input type="date" class="form-control" id="searchDate" placeholder="Buscar por Fecha" onchange="updateDate()">
+                <button class="btn btn-primary mt-2" onclick="searchSummary()">Buscar</button>
+                <button class="btn btn-warning mt-2" onclick="resetTotals()">Reiniciar Totales</button>
+                <div class="mt-4">
+                    <h5>Ingresos: <span id="summaryIncome">$0</span></h5>
+                    <h5>Egresos : <span id="summaryExpense">$0</span></h5>
+                </div>
+
+                <table class="table table-bordered mt-4" id="searchResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Concepto</th>
+                            <th>Tipo</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchResults"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -289,8 +179,66 @@
     <script>
         let incomes = JSON.parse(localStorage.getItem("incomes")) || [];
         let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+        let storedSearchResults = JSON.parse(localStorage.getItem("searchResults")) || [];
 
-        // Función para registrar un ingreso
+        // Función para actualizar la fecha y mostrar los registros en la tabla
+        function updateDate() {
+            const selectedDate = document.getElementById("searchDate").value;
+            searchSummary(selectedDate);
+        }
+
+        // Función para buscar registros por fecha
+        function searchSummary(searchDate = document.getElementById("searchDate").value) {
+            const filteredIncomes = incomes.filter(income => income.date === searchDate);
+            const filteredExpenses = expenses.filter(expense => expense.date === searchDate);
+
+            let totalIncome = filteredIncomes.reduce((acc, income) => acc + income.amount, 0);
+            let totalExpense = filteredExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+
+            document.getElementById("summaryIncome").textContent = `$${totalIncome.toFixed(2)}`;
+            document.getElementById("summaryExpense").textContent = `$${totalExpense.toFixed(2)}`;
+
+            // Guardar los resultados de búsqueda en localStorage
+            storedSearchResults.push({
+                date: searchDate,
+                incomes: filteredIncomes,
+                expenses: filteredExpenses
+            });
+            localStorage.setItem("searchResults", JSON.stringify(storedSearchResults));
+
+            renderFilteredResults(filteredIncomes, filteredExpenses);
+        }
+
+        // Función para mostrar los resultados filtrados
+        function renderFilteredResults(filteredIncomes, filteredExpenses) {
+            const resultsContainer = document.getElementById("searchResults");
+            resultsContainer.innerHTML = "";
+
+            // Agregar filas a la tabla
+            filteredIncomes.forEach(income => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${income.date}</td>
+                    <td>${income.concept}</td>
+                    <td>Ingreso</td>
+                    <td>$${income.amount.toFixed(2)}</td>
+                `;
+                resultsContainer.appendChild(row);
+            });
+
+            filteredExpenses.forEach(expense => {
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${expense.date}</td>
+                    <td>${expense.concept}</td>
+                    <td>Egreso</td>
+                    <td>$${expense.amount.toFixed(2)}</td>
+                `;
+                resultsContainer.appendChild(row);
+            });
+        }
+
+        // Función para actualizar los totales de ingresos y egresos
         document.getElementById("incomeForm").addEventListener("submit", function(e) {
             e.preventDefault();
             const date = document.getElementById("incomeDate").value;
@@ -302,18 +250,13 @@
             const income = { date, concept, doc, medium, amount };
             incomes.push(income);
             localStorage.setItem("incomes", JSON.stringify(incomes));
-            updateIncomeTotal();
-            renderIncomes();
 
-            // Limpiar los campos después de agregar
+            // Llamar a searchSummary automáticamente para actualizar la tabla
+            searchSummary();
+
+            // Limpiar campos
             document.getElementById("incomeForm").reset();
         });
-
-        // Función para actualizar el total de ingresos
-        function updateIncomeTotal() {
-            const total = incomes.reduce((acc, income) => acc + income.amount, 0);
-            document.getElementById("totalIncome").textContent = `Total Ingresos: $${total.toFixed(2)}`;
-        }
 
         // Función para registrar un egreso
         document.getElementById("expenseForm").addEventListener("submit", function(e) {
@@ -325,65 +268,13 @@
             const expense = { date, concept, amount };
             expenses.push(expense);
             localStorage.setItem("expenses", JSON.stringify(expenses));
-            updateExpenseTotal();
-            renderExpenses();
 
-            // Limpiar los campos después de agregar
+            // Llamar a searchSummary automáticamente para actualizar la tabla
+            searchSummary();
+
+            // Limpiar campos
             document.getElementById("expenseForm").reset();
         });
-
-        // Función para actualizar el total de egresos
-        function updateExpenseTotal() {
-            const total = expenses.reduce((acc, expense) => acc + expense.amount, 0);
-            document.getElementById("totalExpense").textContent = `Total Egresos: $${total.toFixed(2)}`;
-        }
-
-        // Función para reiniciar los totales
-        function resetTotals() {
-            incomes = [];
-            expenses = [];
-            localStorage.setItem("incomes", JSON.stringify(incomes));
-            localStorage.setItem("expenses", JSON.stringify(expenses));
-            updateIncomeTotal();
-            updateExpenseTotal();
-            renderIncomes();
-            renderExpenses();
-        }
-
-        // Función para mostrar los resultados de búsqueda
-        function searchSummary() {
-            const searchDate = document.getElementById("searchDate").value;
-            const filteredIncomes = incomes.filter(income => income.date === searchDate);
-            const filteredExpenses = expenses.filter(expense => expense.date === searchDate);
-
-            const totalIncome = filteredIncomes.reduce((acc, income) => acc + income.amount, 0);
-            const totalExpense = filteredExpenses.reduce((acc, expense) => acc + expense.amount, 0);
-
-            document.getElementById("summaryIncome").textContent = `$${totalIncome.toFixed(2)}`;
-            document.getElementById("summaryExpense").textContent = `$${totalExpense.toFixed(2)}`;
-
-            let resultsHTML = `<h4> 𝐑𝐞𝐬𝐮𝐥𝐭𝐚𝐝𝐨𝐬 𝐝𝐞 𝐥𝐚 𝐛𝐮𝐬𝐪𝐮𝐞𝐝𝐚:</h4><ul>`;
-
-            filteredIncomes.forEach(income => {
-                resultsHTML += `
-                    <li><strong>Ingreso:</strong> ${income.concept} - $${income.amount.toFixed(2)} (Fecha: ${income.date}, Medio: ${income.medium}, Doc: ${income.doc})</li>
-                `;
-            });
-
-            filteredExpenses.forEach(expense => {
-                resultsHTML += `
-                    <li><strong>Egreso:</strong> ${expense.concept} - $${expense.amount.toFixed(2)} (Fecha: ${expense.date})</li>
-                `;
-            });
-
-            resultsHTML += `</ul>`;
-
-            document.getElementById("searchResults").innerHTML = resultsHTML;
-        }
-
-        // Inicialización
-        updateIncomeTotal();
-        updateExpenseTotal();
     </script>
 </body>
 </html>
