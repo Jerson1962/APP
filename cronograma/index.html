@@ -9,153 +9,140 @@
     
     <!-- Estilos adicionales -->
     <style>
-        /* Estilos para la notificación */
-        .notification {
+        /* Estilos para el menú lateral */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 250px;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
+            top: 0;
+            left: 0;
+            background-color: #58695d;
+            padding-top: 20px;
+            z-index: 999;
+        }
+
+        .sidebar a {
+            display: block;
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 20px;
+            padding: 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .sidebar .navbar-brand {
+            color: white;
+            font-size: 24px;
             font-weight: bold;
+            padding-left: 20px;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .navbar-toggler {
             display: none;
-            z-index: 9999;
-            animation: fadeInOut 6s ease-out forwards;
-            text-align: center;
         }
 
-        .notification-alert {
-            background-color: #ffc107; /* Amarillo para cita pendiente */
+        /* Estilo para subrayar la cita en rojo */
+        .highlight {
+            text-decoration: underline;
+            text-decoration-color: red;
         }
 
-        .notification-confirm {
-            background-color: #dc3545; /* Rojo para confirmar cita */
+        /* Estilo para el menú colorido */
+        .navbar {
+            background-color: #20ff45;
+            border-bottom: 3px solid #dc3545;
+        }
+        
+        .nav-link {
+            color: white !important;
         }
 
-        /* Animación de aparición y desaparición */
-        @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.8);
-            }
+        .nav-link:hover {
+            background-color: #0fe0e085;
+            color: #fff !important;
         }
-    </style><style>
-    /* Estilo para subrayar la cita en rojo */
-    .highlight {
-        text-decoration: underline;
-        text-decoration-color: red;
-    }
-</style><style>
-    /* Estilo para el menú colorido */
-    .navbar {
-        background-color: #20ff45; /* Verde brillante */
-        border-bottom: 3px solid #dc3545; /* Línea roja en la parte inferior del menú */
-    }
-    .navbar-brand {
-        font-weight: bold;
-    }
-    .nav-link {
-        color: white !important;
-    }
-    .nav-link:hover {
-        background-color: #0fe0e085; /* Verde oscuro cuando se pasa el ratón */
-        color: #fff !important;
-    }
 
-    /* Estilo para subrayar las citas */
-    .highlight {
-        text-decoration: underline;
-        text-decoration-color: red;
-    }
-
-    /* Resaltar el texto cuando la cita está cerca (1 minuto antes) */
-    .highlight-soon {
-        border: 2px solid rgba(255, 0, 0, 0.5); /* Delineado rojo transparente */
-        background-color: rgba(255, 0, 0, 0.1); /* Fondo suave para la cita próxima */
-    }
-</style>
+        /* Resaltar el texto cuando la cita está cerca (1 minuto antes) */
+        .highlight-soon {
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+    </style>
 
 </head>
 <body>
 
-<!-- Barra de navegación (Menu) -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">𝐀𝐏𝐏 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="#" onclick="showAppointmentsSection()"></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="balance.html" onclick="showBalancesSection()">   𝕭𝖆𝖑𝖆𝖓𝖈𝖊</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="controlmercaderia.html" onclick="showIncomeExpenseSection()">  𝕮𝖔𝖓𝖙𝖗𝖔𝖑 𝖉𝖊 𝕸𝖊𝖗𝖈𝖆𝖉𝖊𝖗𝖎𝖆    </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+<!-- Menú lateral -->
+<div class="sidebar">
+    <a href="#" class="navbar-brand">𝐀𝐏𝐏 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</a>
+    <a href="balance.html" onclick="showBalancesSection()">𝕭𝖆𝖑𝖆𝖓𝖈𝖊</a>
+    <a href="controlmercaderia.html" onclick="showIncomeExpenseSection()">𝕮𝖔𝖓𝖙𝖗𝖔𝖑 𝖑𝖊 𝕸𝖊𝖗𝖈𝖆𝖉𝖊𝖗𝖎𝖆</a>
+</div>
 
-<!-- Sección de citas -->
-<div id="appointmentsSection" class="section-content">
-    <div class="container mt-5">
-        <h1 class="text-center"> 𝐂𝐑𝐎𝐍𝐎𝐆𝐑𝐀𝐌𝐀 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</h1>
+<!-- Contenido principal -->
+<div class="content">
+    <!-- Sección de citas -->
+    <div id="appointmentsSection" class="section-content">
+        <div class="container mt-5">
+            <h1 class="text-center">𝐂𝐑𝐎𝐍𝐎𝐆𝐑𝐀𝐌𝐀 𝐃𝐄 𝐂𝐈𝐓𝐀𝐒</h1>
 
-        <!-- Campo de búsqueda -->
-        <div class="mb-4">
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o apellido..." onkeyup="searchAppointments()">
-        </div>
-
-        <!-- Formulario para crear una cita -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"> 𝐂𝐑𝐄𝐀𝐑 𝐍𝐔𝐄𝐕𝐀 𝐂𝐈𝐓𝐀</h5>
-                <form id="appointmentForm">
-                    <div class="form-group">
-                        <label for="firstName">Nombre</label>
-                        <input type="text" class="form-control" id="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Apellidos</label>
-                        <input type="text" class="form-control" id="lastName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="appointmentDate">Fecha y Hora de la Cita</label>
-                        <input type="datetime-local" class="form-control" id="appointmentDate" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Guardar Cita</button>
-                </form>
+            <!-- Campo de búsqueda -->
+            <div class="mb-4">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o apellido..." onkeyup="searchAppointments()">
             </div>
-        </div>
 
-        <!-- Tabla para mostrar las citas -->
-        <div class="mt-4">
-            <h5>𝐂𝐈𝐓𝐀𝐒 𝐏𝐑𝐎𝐆𝐑𝐀𝐌𝐀𝐃𝐀𝐒</h5>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th> 𝐍𝐨𝐦𝐛𝐫𝐞</th>
-                        <th> 𝐀𝐩𝐞𝐥𝐥𝐢𝐝𝐨𝐬</th>
-                        <th> 𝐅𝐞𝐜𝐡𝐚 𝐲 𝐇𝐨𝐫𝐚</th>
-                        <th> 𝐀𝐜𝐜𝐢𝐨𝐧</th>
-                    </tr>
-                </thead>
-                <tbody id="appointmentsList"></tbody>
-            </table>
+            <!-- Formulario para crear una cita -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">𝐂𝐑𝐄𝐀𝐑 𝐍𝐔𝐄𝐕𝐀 𝐂𝐈𝐓𝐀</h5>
+                    <form id="appointmentForm">
+                        <div class="form-group">
+                            <label for="firstName">Nombre</label>
+                            <input type="text" class="form-control" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Apellidos</label>
+                            <input type="text" class="form-control" id="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointmentDate">Fecha y Hora de la Cita</label>
+                            <input type="datetime-local" class="form-control" id="appointmentDate" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cita</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabla para mostrar las citas -->
+            <div class="mt-4">
+                <h5>𝐂𝐈𝐓𝐀𝐒 𝐏𝐑𝐎𝐆𝐑𝐀𝐌𝐀𝐃𝐀𝐒</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>𝐍𝐨𝐦𝐛𝐫𝐞</th>
+                            <th>𝐀𝐩𝐞𝐥𝐥𝐢𝐝𝐨𝐬</th>
+                            <th>𝐅𝐞𝐜𝐡𝐚 𝐲 𝐇𝐨𝐫𝐚</th>
+                            <th>𝐀𝐜𝐜𝐢𝐨𝐧</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsList"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -247,10 +234,8 @@ Si necesitas reprogramar o cancelar la cita, no dudes en contactarnos con al men
 Gracias por tu atención. ¡Te esperamos! 
 
 Saludos cordiales.`;
-        // Reemplaza este número de teléfono con el número deseado
         const phoneNumber = "573001234567";
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-        
         window.open(url, '_blank');
     }
 
@@ -303,59 +288,15 @@ Saludos cordiales.`;
         }, 3000); // Desaparece después de 3 segundos
     }
 
-    // Ocultar la notificación cuando se hace clic
-    function hideNotification() {
-        document.getElementById('notification').style.display = 'none';
-    }// Función para renderizar las citas con resaltado de la más próxima
-function renderAppointments(filteredAppointments = appointments) {
-    const appointmentsList = document.getElementById("appointmentsList");
-    appointmentsList.innerHTML = '';
-    
-    const currentDateTime = new Date();
-    
-    filteredAppointments.forEach((appointment, index) => {
-        const appointmentDate = new Date(appointment.appointmentDate);
-        const timeDifference = appointmentDate - currentDateTime;
-        
-        // Verifica si la cita está próxima (1 minuto antes)
-        const isHighlight = timeDifference <= 60 * 1000 && timeDifference > 0;
-        
-        const appointmentRow = document.createElement("tr");
-        appointmentRow.classList.toggle('highlight-soon', isHighlight); // Agrega la clase si es próxima
-        
-        appointmentRow.innerHTML = `
-            <td>${appointment.firstName}</td>
-            <td>${appointment.lastName}</td>
-            <td>${appointmentDate.toLocaleString()}</td>
-            <td>
-                <button class="btn btn-info" onclick="viewAppointmentDetails(${index})">Enviar Detalles</button>
-                <button class="btn btn-danger" onclick="deleteAppointment(${index})">Eliminar</button>
-            </td>
-        `;
-        
-        // Resaltar la cita más próxima si está a 1 minuto
-        if (isHighlight) {
-            appointmentRow.classList.add('highlight');
-        }
-
-        appointmentsList.appendChild(appointmentRow);
-    });
-}
-
-
     // Comprobar citas cada minuto
     setInterval(checkAppointmentTime, 60 * 1000);
     
     // Inicialización
     renderAppointments();
-    // Comprobar citas cada minuto
-    setInterval(checkAppointmentTime, 60 * 1000);
-    
-    // Inicialización
-    renderAppointments(); 
-    
 </script>
+
 </body>
 </html>
+
   
 
