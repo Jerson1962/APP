@@ -1,4 +1,5 @@
- <!DOCTYPE html>
+ 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -6,9 +7,8 @@
     <title>Balance Financiero</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilo para los paneles y la barra lateral, sin cambios */
-         /* Estilo para el menú lateral */
-         .sidebar {
+        /* Estilo para el menú lateral */
+        .sidebar {
             position: fixed;
             top: 0;
             left: 0;
@@ -17,6 +17,7 @@
             background-color: #343a40;
             padding-top: 20px;
             color: white;
+            transition: all 0.3s ease;
         }
 
         .sidebar a {
@@ -36,51 +37,45 @@
             padding: 20px;
         }
 
-        .container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
+        /* Estilo del botón de hamburguesa */
+        .hamburger {
+            display: none;
+            font-size: 30px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
 
-        .panel {
-            flex: 1;
-            margin-right: 20px;
-            padding: 20px;
-            border-radius: 10px;
+        /* Mostrar el menú lateral al hacer clic en el botón de hamburguesa en dispositivos móviles */
+        .sidebar.show {
+            left: 0;
         }
 
-        .panel h3 {
-            text-align: center;
-        }
+        /* Para pantallas pequeñas */
+        @media (max-width: 767px) {
+            .sidebar {
+                left: -250px; /* Inicialmente oculta */
+            }
 
-        .total {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-top: 20px;
+            .content {
+                margin-left: 0; /* El contenido ocupa todo el espacio */
+            }
+
+            .hamburger {
+                display: block; /* Mostrar el botón hamburguesa */
+            }
         }
- .container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-        .panel {
-            flex: 1;
-            margin-right: 20px;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .panel h3 {
-            text-align: center;
-        }
-        .total {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-top: 20px;
-        }
-        /* Otros estilos aquí... */
     </style>
 </head>
 <body>
+    <!-- Botón de Menú Hamburguesa (para móviles) -->
+    <button class="hamburger" id="hamburgerMenu">&#9776;</button>
+
     <!-- Menú Lateral -->
     <div class="sidebar">
         <h3 class="text-center">𝐀𝐏𝐏</h3>
@@ -274,6 +269,14 @@
 
             // Limpiar campos
             document.getElementById("expenseForm").reset();
+        });
+        
+        // Función para abrir y cerrar el menú lateral
+        const hamburgerMenu = document.getElementById("hamburgerMenu");
+        const sidebar = document.querySelector(".sidebar");
+
+        hamburgerMenu.addEventListener("click", function() {
+            sidebar.classList.toggle("show");
         });
     </script>
 </body>
