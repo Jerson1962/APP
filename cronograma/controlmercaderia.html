@@ -1,375 +1,259 @@
  <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Ingresos y Egresos</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Estilos adicionales -->
-    <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: Arial, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control de Ingresos y Egresos</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-        .navbar {
-            background-color: #32924f;
-        }
+  <style>
+    :root {
+      --verde-principal: #111b14;
+      --verde-hover:    #09110b;
+      --azul-info:      #0f3255;
+      --gris-claro:     #f4f6f9;
+    }
+    body {
+      background-color: var(--gris-claro);
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden; /* evita scroll horizontal al mostrar sidebar */
+    }
 
-        .navbar-brand {
-            color: white;
-            font-weight: bold;
-        }
+    /* Menú lateral */
+    #sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 220px; height: 100%;
+      background: var(--verde-principal);
+      transform: translateX(-100%);
+      transition: transform .3s ease;
+      z-index: 1050;
+      padding-top: 60px;
+    }
+    #sidebar.open {
+      transform: translateX(0);
+    }
+    #sidebar a {
+      display: block;
+      color: #fff;
+      padding: 12px 20px;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    #sidebar a:hover {
+      background: var(--verde-hover);
+    }
 
-        .navbar-nav .nav-link {
-            color: white !important;
-        }
+    /* Botón de toggle */
+    .btn-toggle {
+      position: fixed;
+      top: 15px; left: 15px;
+      z-index: 1100;
+      background: var(--verde-principal);
+      color: #fff;
+      border: none;
+      width: 40px; height: 40px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background .2s;
+    }
+    .btn-toggle:hover {
+      background: var(--verde-hover);
+    }
 
-        .navbar-nav .nav-link:hover {
-            color: #f1f1f1 !important;
-        }
-
-        .section-content {
-            margin-top: 20px;
-        }
-
-        .table th, .table td {
-            text-align: center;
-        }
-
-        .card-body h5 {
-            margin-bottom: 15px;
-            color: #060d14;
-            font-weight: bold;
-        }
-
-        .card {
-            margin-bottom: 30px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-
-        .d-flex {
-            display: flex;
-        }
-
-        .mr-4 {
-            margin-right: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-control {
-            border-radius: 5px;
-            padding: 10px;
-        }
-
-        #editButton, #deleteButton {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .edit-btn-container {
-            margin-top: 20px;
-        }
-
-        /* Botones coloridos */
-        .btn-primary {
-            background-color: #1e90ff;
-            border-color: #1e90ff;
-        }
-
-        .btn-primary:hover {
-            background-color: #4682b4;
-            border-color: #4682b4;
-        }
-
-        .btn-danger {
-            background-color: #ff6347;
-            border-color: #ff6347;
-        }
-
-        .btn-danger:hover {
-            background-color: #4ea1e6;
-            border-color: #00eeff;
-        }
-
-        .btn-success {
-            background-color: #4db34d;
-            border-color:  #2daa53;  
-        }
-
-        .btn-success:hover {
-            background-color: #5de65d;
-            border-color:  #2daa53;  ;
-        }
-
-        .alert {
-            margin-top: 20px;
-            background-color: #ffcc00;
-            color: #000;
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #f9f9f9;
-        }
-
-        .table-striped tbody tr:nth-of-type(even) {
-            background-color: #eaf7ff;
-        }
-
-        .table th {
-            background-color:  #4dc070ec; 
-            color: rgb(238, 237, 237);
-        }
-
-        .table td {
-            background-color: white;
-            color: #333;
-        }
-    </style><style>
-    /* Estilo para el menú colorido */
     .navbar {
-        background-color:     #0e1d12d0;  /* Verde brillante */
-        border-bottom: 3px solid  #da1b2b; /* Línea roja en la parte inferior del menú */
+      background-color: var(--verde-principal);
+      border-bottom: 3px solid #da1b2b;
+      margin-left: 0; /* compensa el toggle */
     }
-    .navbar-brand {
-        font-weight: bold;
-    }
-    .nav-link {
-        color: white !important;
-    }
-    .nav-link:hover {
-        background-color:  #31834a;   /* Verde oscuro cuando se pasa el ratón */
-        color: #fff !important;
-    }
+    .card { border: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform .3s, box-shadow .3s; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+    .form-control:focus { border-color: var(--azul-info); box-shadow: 0 0 0 3px rgba(30,144,255,0.2); }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .table { background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .table th { background-color: var(--verde-principal); color: #fff; border: none; }
+    .mercaderia-row { animation: fadeInUp .4s ease both; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
 
-    /* Estilo para subrayar las citas */
-    .highlight {
-        text-decoration: underline;
-        text-decoration-color: red;
+    /* Botones fila ocultos al inicio */
+    .row-edit-btn, .row-delete-btn {
+      visibility: hidden;
     }
-
-    /* Resaltar el texto cuando la cita está cerca (1 minuto antes) */
-    .highlight-soon {
-        border: 2px solid rgba(255, 0, 0, 0.5); /* Delineado rojo transparente */
-        background-color: rgba(255, 0, 0, 0.1); /* Fondo suave para la cita próxima */
-    }
-</style>
-
+  </style>
 </head>
 <body>
 
-<!-- Barra de navegación -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="#"> 𝐂𝐎𝐍𝐓𝐑𝐎𝐋 𝐃𝐄 𝐌𝐄𝐑𝐂𝐀𝐃𝐄𝐑𝐈𝐀</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="index.html" onclick="showIncomeExpenseSection()">  𝔰𝔢𝔤𝔲𝔦𝔯 𝔢𝔵𝔭𝔩𝔬𝔯𝔞𝔫𝔡𝔬𝔬   </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+  <!-- Toggle sidebar -->
+  <button class="btn-toggle" id="toggleSidebar" aria-label="Menú">
+    ☰
+  </button>
 
-<!-- Sección de Ingresos y Egresos -->
-<div id="incomeExpenseSection" class="section-content">
-    <div class="container mt-5">
-        <h1 class="text-center text-info"> </h1>
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <a href="index.html">🏠  𝐈𝐧𝐢𝐜𝐢𝐨</a>
+    <a href="#">📦  𝐎𝐭𝐫𝐚 𝐬𝐞𝐜𝐜𝐢ó𝐧</a>
+    <a href="#">⚙️  𝐀𝐣𝐮𝐬𝐭𝐞𝐬</a>
+  </nav>
 
-        <!-- Contenedor Flex para formulario y panel de mercadería -->
-        <div class="d-flex">
-            <!-- Formulario de Mercadería Obtenida -->
-            <div class="card mr-4" style="width: 30%">
-                <div class="card-body">
-                    <h5> 𝐑𝐄𝐆𝐈𝐒𝐓. 𝐌𝐄𝐑𝐂𝐀𝐃𝐄𝐑𝐈𝐀 </h5>
-                    <form id="mercaderiaForm">
-                        <div class="form-group">
-                            <label for="codigoMercaderia">Código de Mercadería</label>
-                            <input type="text" class="form-control" id="codigoMercaderia" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="nombreMercaderia">Nombre de Mercadería</label>
-                            <input type="text" class="form-control" id="nombreMercaderia" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="precioMercaderia">Precio</label>
-                            <input type="number" class="form-control" id="precioMercaderia" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Agregar Mercadería</button>
-                    </form>
-                </div>
-            </div>
+   
 
-            <!-- Panel para mostrar la mercadería obtenida -->
-            <div class="card" style="flex: 1;">
-                <div class="card-body">
-                    <h5>  𝐃𝐀𝐓𝐎𝐒 𝐃𝐄 𝐌𝐄𝐑𝐂𝐀𝐃𝐄𝐑𝐈𝐀 </h5>
-
-                    <!-- Barra de búsqueda -->
-                    <div class="form-group">
-                        <input type="text" id="searchMercaderia" class="form-control" placeholder="Buscar mercadería..." onkeyup="searchMercaderia()">
-                    </div>
-
-                    <!-- Tabla para mostrar la mercadería obtenida -->
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mercaderiaList"></tbody>
-                    </table>
-
-                    <!-- Campo de contraseña para desbloquear la edición -->
-                    <div class="form-group">
-                        <label for="passwordInput">Contraseña para editar/eliminar</label>
-                        <input type="password" class="form-control" id="passwordInput" placeholder="Ingresa la contraseña">
-                        <button class="btn btn-success mt-2" onclick="checkPassword()"> 𝐯𝐞𝐫𝐢𝐟𝐢𝐜𝐚𝐫 𝐜𝐨𝐧𝐭𝐫𝐚𝐬𝐞ñ𝐚  </button>
-                    </div>
-
-                    <!-- Contenedor del botón de editar y eliminar -->
-                    <div id="editButtonContainer" class="edit-btn-container">
-                        <!-- Este botón es el azul que aparece solo si la contraseña es correcta -->
-                        <button id="editButton" class="btn btn-primary" onclick="toggleEditMode()">Editar Mercadería</button>
-                        <!-- Botón de Eliminar que aparece solo si la contraseña es correcta -->
-                        <button id="deleteButton" class="btn btn-danger ml-2" onclick="deleteMercaderia()">Eliminar Mercadería</button>
-                    </div>
-
-                    <!-- Mensaje de error si la contraseña es incorrecta -->
-                    <div id="errorMessage" class="alert alert-danger" style="display: none;">Contraseña incorrecta. Intenta nuevamente.</div>
-                </div>
-            </div>
+  <!-- Contenido -->
+  <div class="container py-5" style="margin-left:20px;">
+    <div class="row">
+      <!-- Formulario -->
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐫 𝐌𝐞𝐫𝐜𝐚𝐝𝐞𝐫í𝐚</h5>
+            <form id="mercaderiaForm">
+              <div class="form-group">
+                <label for="codigoMercaderia">Código Mercaderia :</label>
+                <input type="text" class="form-control" id="codigoMercaderia" required>
+              </div>
+              <div class="form-group">
+                <label for="nombreMercaderia">Nombre Mercaderia :</label>
+                <input type="text" class="form-control" id="nombreMercaderia" required>
+              </div>
+              <div class="form-group">
+                <label for="precioMercaderia">Precio Mercaderia :</label>
+                <input type="number" class="form-control" id="precioMercaderia" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Agregar</button>
+            </form>
+          </div>
         </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"> 𝐃𝐚𝐭𝐨𝐬 𝐌𝐞𝐫𝐜𝐚𝐝𝐞𝐫í𝐚</h5>
+            <div class="form-group mb-3">
+              <input type="text" id="searchMercaderia" class="form-control" placeholder="Buscar..." onkeyup="searchMercaderia()">
+            </div>
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr>
+              </thead>
+              <tbody id="mercaderiaList"></tbody>
+            </table>
+            <div class="form-group mt-4">
+              <label for="passwordInput">Contraseña</label>
+              <input type="password" class="form-control" id="passwordInput" placeholder="Ingresa la contraseña">
+              <button class="btn btn-success mt-2" onclick="checkPassword()">Verificar</button>
+            </div>
+            <div id="errorMessage" class="alert alert-danger mt-3" style="display:none;">
+              Contraseña incorrecta.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- Bootstrap JS y jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Bootstrap + jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- Script para gestionar mercadería -->
-<script>
-    // Arreglo para almacenar la mercadería
-    let mercaderia = JSON.parse(localStorage.getItem("mercaderia")) || [];
-    let isEditing = false; // Estado de la edición (si está activada o no)
-    let selectedIndex = null; // Índice del elemento seleccionado para eliminar
-
-    // Función para agregar mercadería
-    function addMercaderia(codigo, nombre, precio) {
-        mercaderia.push({ codigo, nombre, precio });
-        localStorage.setItem("mercaderia", JSON.stringify(mercaderia)); // Guardar mercadería en localStorage
-        renderMercaderia();
-    }
-
-    // Función para renderizar la mercadería en el panel
-    function renderMercaderia() {
-        const mercaderiaList = document.getElementById("mercaderiaList");
-        mercaderiaList.innerHTML = '';
-        mercaderia.forEach((item, index) => {
-            const mercaderiaRow = document.createElement("tr");
-            mercaderiaRow.innerHTML = `
-                <td>${item.codigo}</td>
-                <td>${item.nombre}</td>
-                <td>${item.precio}</td>
-                <td>
-                    <button class="btn btn-info btn-sm" onclick="editMercaderia(${index})">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="selectMercaderia(${index})">Eliminar</button>
-                </td>
-            `;
-            mercaderiaList.appendChild(mercaderiaRow);
-        });
-    }
-
-    // Función para buscar mercadería
-    function searchMercaderia() {
-        const searchText = document.getElementById("searchMercaderia").value.toLowerCase();
-        const filteredMercaderia = mercaderia.filter(item => {
-            return item.codigo.toLowerCase().includes(searchText) ||
-                   item.nombre.toLowerCase().includes(searchText);
-        });
-        renderMercaderia(filteredMercaderia);
-    }
-
-    // Función para verificar la contraseña
-    function checkPassword() {
-        const password = document.getElementById("passwordInput").value;
-        const errorMessage = document.getElementById("errorMessage");
-        if (password === "fernandez") {
-            document.getElementById("editButton").style.display = "inline-block"; // Mostrar el botón de edición
-            document.getElementById("deleteButton").style.display = "inline-block"; // Mostrar el botón de eliminar
-            errorMessage.style.display = "none"; // Ocultar el mensaje de error
-        } else {
-            document.getElementById("editButton").style.display = "none"; // Ocultar el botón de edición
-            document.getElementById("deleteButton").style.display = "none"; // Ocultar el botón de eliminar
-            errorMessage.style.display = "block"; // Mostrar el mensaje de error
-        }
-    }
-
-    // Función para alternar el modo de edición
-    function toggleEditMode() {
-        isEditing = !isEditing; // Cambiar el estado de edición
-        const mercaderiaList = document.getElementById("mercaderiaList");
-        const rows = mercaderiaList.querySelectorAll("tr");
-
-        // Permitir edición solo si el modo está activado
-        rows.forEach(row => {
-            const cells = row.querySelectorAll("td");
-            cells.forEach((cell, index) => {
-                if (isEditing && index !== 3) { // Permitir editar todos los campos excepto los de acción
-                    const currentValue = cell.innerText;
-                    cell.innerHTML = `<input type="text" value="${currentValue}" class="form-control">`;
-                } else if (!isEditing && index !== 3) {
-                    const inputValue = cell.querySelector("input");
-                    cell.innerHTML = inputValue ? inputValue.value : cell.innerText;
-                }
-            });
-        });
-    }
-
-    // Función para seleccionar mercadería para eliminar
-    function selectMercaderia(index) {
-        selectedIndex = index; // Guardar el índice de la mercadería seleccionada
-    }
-
-    // Función para eliminar mercadería seleccionada
-    function deleteMercaderia() {
-        if (selectedIndex !== null) {
-            mercaderia.splice(selectedIndex, 1); // Eliminar el elemento del arreglo
-            localStorage.setItem("mercaderia", JSON.stringify(mercaderia)); // Guardar cambios en localStorage
-            renderMercaderia(); // Volver a renderizar la lista
-        }
-    }
-
-    // Event Listener para guardar mercadería desde el formulario
-    document.getElementById("mercaderiaForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const codigo = document.getElementById("codigoMercaderia").value;
-        const nombre = document.getElementById("nombreMercaderia").value;
-        const precio = document.getElementById("precioMercaderia").value;
-
-        if (codigo && nombre && precio) {
-            addMercaderia(codigo, nombre, precio);
-            document.getElementById("mercaderiaForm").reset();
-        }
+  <script>
+    // Sidebar toggle
+    document.getElementById('toggleSidebar').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
     });
 
-    // Función para mostrar la sección de ingresos y egresos
-    function showIncomeExpenseSection() {
-        document.getElementById("incomeExpenseSection").style.display = 'block';
+    // Datos y lógica
+    let mercaderia = JSON.parse(localStorage.getItem("mercaderia")) || [];
+    let isEditing = false;
+
+    function renderMercaderia(lista = mercaderia) {
+      const container = document.getElementById("mercaderiaList");
+      container.innerHTML = "";
+      lista.forEach((item, i) => {
+        const row = document.createElement("tr");
+        row.classList.add("mercaderia-row");
+        row.innerHTML = `
+          <td>${item.codigo}</td>
+          <td>${item.nombre}</td>
+          <td>${item.precio}</td>
+          <td>
+            <button id="editBtn-${i}" class="btn btn-info btn-sm row-edit-btn" onclick="editMercaderia(${i}, this)">Editar</button>
+            <button id="delBtn-${i}" class="btn btn-danger btn-sm row-delete-btn" onclick="deleteMercaderia(${i})">Eliminar</button>
+          </td>
+        `;
+        container.appendChild(row);
+      });
     }
 
-    // Cargar la mercadería al iniciar la página
-    renderMercaderia();
-</script>
+    function addMercaderia(c, n, p) {
+      mercaderia.push({ codigo: c, nombre: n, precio: p });
+      localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
+      renderMercaderia();
+    }
 
+    function searchMercaderia() {
+      const txt = document.getElementById("searchMercaderia").value.toLowerCase();
+      const filtrado = mercaderia.filter(item =>
+        item.codigo.toLowerCase().includes(txt) ||
+        item.nombre.toLowerCase().includes(txt)
+      );
+      renderMercaderia(filtrado);
+    }
+
+    function checkPassword() {
+      const valid = document.getElementById("passwordInput").value === "fernandez";
+      document.getElementById("errorMessage").style.display = valid ? "none" : "block";
+      document.querySelectorAll(".row-edit-btn, .row-delete-btn").forEach(btn => {
+        btn.style.visibility = valid ? "visible" : "hidden";
+        btn.disabled = !valid;
+      });
+    }
+
+    function editMercaderia(i, btn) {
+      const row = document.getElementById("mercaderiaList").children[i];
+      const cells = row.querySelectorAll("td");
+      if (!isEditing) {
+        isEditing = true;
+        for (let j = 0; j < 3; j++) {
+          const val = cells[j].innerText;
+          cells[j].innerHTML = `<input class="form-control form-control-sm" value="${val}">`;
+        }
+        btn.textContent = "Guardar";
+        btn.classList.replace("btn-info", "btn-success");
+      } else {
+        const newC = cells[0].querySelector("input").value;
+        const newN = cells[1].querySelector("input").value;
+        const newP = cells[2].querySelector("input").value;
+        mercaderia[i] = { codigo: newC, nombre: newN, precio: newP };
+        localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
+        isEditing = false;
+        btn.textContent = "Editar";
+        btn.classList.replace("btn-success", "btn-info");
+        renderMercaderia();
+      }
+    }
+
+    function deleteMercaderia(i) {
+      mercaderia.splice(i, 1);
+      localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
+      renderMercaderia();
+    }
+
+    document.getElementById("mercaderiaForm").addEventListener("submit", e => {
+      e.preventDefault();
+      addMercaderia(
+        document.getElementById("codigoMercaderia").value,
+        document.getElementById("nombreMercaderia").value,
+        document.getElementById("precioMercaderia").value
+      );
+      e.target.reset();
+    });
+
+    window.onload = () => renderMercaderia();
+  </script>
 </body>
 </html>
+
