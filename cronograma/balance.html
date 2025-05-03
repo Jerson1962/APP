@@ -1,283 +1,294 @@
  
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balance Financiero</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Estilo para el menú lateral */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #343a40;
-            padding-top: 20px;
-            color: white;
-            transition: all 0.3s ease;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Balance Financiero</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Sidebar */
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 250px; height: 100%;
+      background: #343a40; color: #fff;
+      padding-top: 20px;
+      transition: left .3s ease, opacity .3s ease;
+    }
+    .sidebar.show { left: 0; }
+    .sidebar a {
+      display: block; padding: 10px 20px;
+      color: #fff; text-decoration: none;
+      transition: background .3s, transform .2s, box-shadow .2s;
+    }
+    .sidebar a:hover,
+    .sidebar a:focus {
+      background: #575d63;
+      transform: translateX(5px);
+      box-shadow: 2px 2px 8px rgba(0,0,0,.3);
+      outline: none;
+    }
 
-        .sidebar a {
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-        }
+    /* Hamburger */
+    .hamburger {
+      display: none; position: absolute;
+      top: 20px; left: 20px;
+      font-size: 30px; color: #fff;
+      background: none; border: none;
+      cursor: pointer; transition: transform .2s;
+    }
+    .hamburger:hover,
+    .hamburger:focus { transform: rotate(90deg) scale(1.1); outline: none; }
 
-        .sidebar a:hover {
-            background-color: #575d63;
-        }
+    @media(max-width:767px) {
+      .sidebar { left: -250px; }
+      .content { margin-left: 0; }
+      .hamburger { display: block; }
+    }
 
-        .content {
-            margin-left: 260px; /* Espacio para el menú lateral */
-            padding: 20px;
-        }
+    /* Content */
+    .content { margin-left: 260px; padding: 20px; transition: margin-left .3s; }
 
-        /* Estilo del botón de hamburguesa */
-        .hamburger {
-            display: none;
-            font-size: 30px;
-            color: white;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
+    /* Panels */
+    .panel {
+      background: #f8f9fa; border-radius: 8px;
+      padding: 20px; margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,.05);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .panel:hover,
+    .panel:focus-within {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.1);
+    }
 
-        /* Mostrar el menú lateral al hacer clic en el botón de hamburguesa en dispositivos móviles */
-        .sidebar.show {
-            left: 0;
-        }
+    /* Fade-in filas */
+    @keyframes fadeInRow {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #searchResults tr { animation: fadeInRow .5s ease forwards; }
 
-        /* Para pantallas pequeñas */
-        @media (max-width: 767px) {
-            .sidebar {
-                left: -250px; /* Inicialmente oculta */
-            }
+    /* Totales animados */
+    .total, #summaryPanel.updated h5 span {
+      display: inline-block;
+      transition: transform .3s, color .3s;
+    }
+    .updated .total, .updated #summaryPanel h5 span {
+      animation: pulseTotal .8s ease;
+    }
+    @keyframes pulseTotal {
+      0%,100% { transform: scale(1); color: #000; }
+      50%     { transform: scale(1.2); color: #28a745; }
+    }
 
-            .content {
-                margin-left: 0; /* El contenido ocupa todo el espacio */
-            }
-
-            .hamburger {
-                display: block; /* Mostrar el botón hamburguesa */
-            }
-        }
-    </style>
+    /* Focus outline */
+    button:focus, input:focus, select:focus, textarea:focus, a:focus {
+      outline: 2px dashed #007bff; outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
-    <!-- Botón de Menú Hamburguesa (para móviles) -->
-    <button class="hamburger" id="hamburgerMenu">&#9776;</button>
+  <!-- Hamburguesa móvil -->
+  <button class="hamburger" id="hamburgerMenu" aria-label="Mostrar menú">☰</button>
 
-    <!-- Menú Lateral -->
-    <div class="sidebar">
-        <h3 class="text-center">𝐀𝐏𝐏</h3>
-        <a href="index.html" onclick="showAppointmentsSection()">𝖛𝖔𝖑𝖛𝖊𝖗</a>
-        <a href="#" onclick="alert('Función en construcción')"> </a>
-        <a href="#" onclick="alert('Función en construcción')"> </a>
+  <!-- Sidebar -->
+  <nav class="sidebar" aria-label="Navegación principal">
+    <h3 class="text-center">𝐀𝐏𝐏</h3>
+    <a href="index.html" onclick="showAppointmentsSection()">𝖛𝖔𝖑𝖛𝖊𝖗</a>
+    <a href="#" onclick="alert('Función en construcción')">Función 01</a>
+    <a href="#" onclick="alert('Función en construcción')">Función 02</a>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+    <div class="container">
+      <!-- Ingresos -->
+      <section class="panel" id="incomePanel" tabindex="0">
+        <h3>-------𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬-------</h3>
+        <form id="incomeForm">
+          <div class="form-group">
+            <label for="incomeDate">Fecha</label>
+            <input type="date" id="incomeDate" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="incomeConcept">Concepto</label>
+            <input type="text" id="incomeConcept" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="incomeDoc">DOC o NRO :</label>
+            <input type="text" id="incomeDoc" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="incomeMedium">Medio de pago : </label>
+            <input type="text" id="incomeMedium" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="incomeAmount">Cantidad soles :</label>
+            <input type="number" id="incomeAmount" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-success">Registrar Ingreso :</button>
+        </form>
+        <div class="total" id="totalIncome">Total Ingresos: $0</div>
+      </section>
+
+      <!-- Egresos -->
+      <section class="panel" id="expensePanel" tabindex="0">
+        <h3>-------𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐄𝐠𝐫𝐞𝐬𝐨𝐬-------</h3>
+        <form id="expenseForm">
+          <div class="form-group">
+            <label for="expenseDate">Fecha</label>
+            <input type="date" id="expenseDate" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="expenseConcept">Concepto :</label>
+            <input type="text" id="expenseConcept" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="expenseAmount">cantidad :</label>
+            <input type="number" id="expenseAmount" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-danger">Registrar Egreso</button>
+        </form>
+        <div class="total" id="totalExpense">Total Egresos: $0</div>
+      </section>
     </div>
 
-    <!-- Sección de contenido -->
-    <div class="content">
-        <!-- Sección de Balance -->
-        <div class="container">
-            <!-- Panel de Ingresos -->
-            <div class="panel" id="incomePanel">
-                <h3> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬</h3>
-                <form id="incomeForm">
-                    <div class="form-group">
-                        <label for="incomeDate">Fecha</label>
-                        <input type="date" class="form-control" id="incomeDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="incomeConcept">Concepto</label>
-                        <input type="text" class="form-control" id="incomeConcept" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="incomeDoc">DOC</label>
-                        <input type="text" class="form-control" id="incomeDoc" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="incomeMedium">Medio</label>
-                        <input type="text" class="form-control" id="incomeMedium" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="incomeAmount">Efectivo</label>
-                        <input type="number" class="form-control" id="incomeAmount" required>
-                    </div>
-                    <button type="submit" class="btn btn-success">Registrar Ingreso</button>
-                </form>
-                <div class="total" id="totalIncome">Total Ingresos: $0</div>
-            </div>
-
-            <!-- Panel de Egresos -->
-            <div class="panel" id="expensePanel">
-                <h3> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐨 𝐝𝐞 𝐄𝐠𝐫𝐞𝐬𝐨𝐬</h3>
-                <form id="expenseForm">
-                    <div class="form-group">
-                        <label for="expenseDate">Fecha</label>
-                        <input type="date" class="form-control" id="expenseDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="expenseConcept">Concepto</label>
-                        <input type="text" class="form-control" id="expenseConcept" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="expenseAmount">Egreso</label>
-                        <input type="number" class="form-control" id="expenseAmount" required>
-                    </div>
-                    <button type="submit" class="btn btn-danger">Registrar Egreso</button>
-                </form>
-                <div class="total" id="totalExpense">Total Egresos: $0</div>
-            </div>
+    <!-- Resumen -->
+    <div class="container">
+      <section class="panel" id="summaryPanel" tabindex="0">
+        <h3> ------𝐃𝐚𝐭𝐨𝐬 𝐈𝐧𝐠𝐫𝐞𝐬𝐨𝐬 𝐲 𝐄𝐠𝐫𝐞𝐬𝐨𝐬 𝐩𝐨𝐫 𝐅𝐞𝐜𝐡𝐚------</h3>
+        <div class="form-row">
+          <div class="col">
+            <label for="searchDate">Fecha</label>
+            <input type="date" id="searchDate" class="form-control" onchange="updateDate()">
+          </div>
+          <div class="col-auto align-self-end">
+            <button id="btnSearch" class="btn btn-primary mt-2" onclick="searchSummary()">Buscar</button>
+            <button class="btn btn-warning mt-2" onclick="resetTotals()">Reiniciar Totales</button>
+          </div>
         </div>
-
-        <!-- Panel de Resumen -->
-        <div class="container">
-            <div class="panel" id="summaryPanel">
-                <h3>Datos Ingresos y Egresos por Fecha</h3>
-                <input type="date" class="form-control" id="searchDate" placeholder="Buscar por Fecha" onchange="updateDate()">
-                <button class="btn btn-primary mt-2" onclick="searchSummary()">Buscar</button>
-                <button class="btn btn-warning mt-2" onclick="resetTotals()">Reiniciar Totales</button>
-                <div class="mt-4">
-                    <h5>Ingresos: <span id="summaryIncome">$0</span></h5>
-                    <h5>Egresos : <span id="summaryExpense">$0</span></h5>
-                </div>
-
-                <table class="table table-bordered mt-4" id="searchResultsTable">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Concepto</th>
-                            <th>Tipo</th>
-                            <th>Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody id="searchResults"></tbody>
-                </table>
-            </div>
+        <div class="mt-4">
+          <h5>Ingresos: <span id="summaryIncome">$0</span></h5>
+          <h5>Egresos : <span id="summaryExpense">$0</span></h5>
         </div>
+        <table class="table table-bordered mt-4" id="searchResultsTable">
+          <thead>
+            <tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th></tr>
+          </thead>
+          <tbody id="searchResults"></tbody>
+        </table>
+      </section>
     </div>
+  </main>
 
-    <!-- Bootstrap JS y jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    let incomes  = JSON.parse(localStorage.getItem("incomes"))  || [];
+    let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+    let history  = JSON.parse(localStorage.getItem("searchResults")) || [];
 
-    <script>
-        let incomes = JSON.parse(localStorage.getItem("incomes")) || [];
-        let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
-        let storedSearchResults = JSON.parse(localStorage.getItem("searchResults")) || [];
+    const btnSearch = document.getElementById("btnSearch");
+    const totalInc  = document.getElementById("totalIncome");
+    const totalExp  = document.getElementById("totalExpense");
+    const summary   = document.getElementById("summaryPanel");
 
-        // Función para actualizar la fecha y mostrar los registros en la tabla
-        function updateDate() {
-            const selectedDate = document.getElementById("searchDate").value;
-            searchSummary(selectedDate);
-        }
+    function markUpdated(el) {
+      el.classList.add("updated");
+      setTimeout(() => el.classList.remove("updated"), 800);
+    }
 
-        // Función para buscar registros por fecha
-        function searchSummary(searchDate = document.getElementById("searchDate").value) {
-            const filteredIncomes = incomes.filter(income => income.date === searchDate);
-            const filteredExpenses = expenses.filter(expense => expense.date === searchDate);
+    function updateDate() {
+      searchSummary(document.getElementById("searchDate").value);
+    }
 
-            let totalIncome = filteredIncomes.reduce((acc, income) => acc + income.amount, 0);
-            let totalExpense = filteredExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+    function searchSummary(date = document.getElementById("searchDate").value) {
+      btnSearch.disabled = true;
+      const fi = incomes.filter(i => i.date === date);
+      const fe = expenses.filter(e => e.date === date);
 
-            document.getElementById("summaryIncome").textContent = `$${totalIncome.toFixed(2)}`;
-            document.getElementById("summaryExpense").textContent = `$${totalExpense.toFixed(2)}`;
+      const ti = fi.reduce((s,i)=>s+i.amount, 0);
+      const te = fe.reduce((s,e)=>s+e.amount, 0);
 
-            // Guardar los resultados de búsqueda en localStorage
-            storedSearchResults.push({
-                date: searchDate,
-                incomes: filteredIncomes,
-                expenses: filteredExpenses
-            });
-            localStorage.setItem("searchResults", JSON.stringify(storedSearchResults));
+      document.getElementById("summaryIncome").textContent = `$${ti.toFixed(2)}`;
+      document.getElementById("summaryExpense").textContent = `$${te.toFixed(2)}`;
+      markUpdated(summary);
 
-            renderFilteredResults(filteredIncomes, filteredExpenses);
-        }
+      history.push({ date, incomes: fi, expenses: fe });
+      localStorage.setItem("searchResults", JSON.stringify(history));
 
-        // Función para mostrar los resultados filtrados
-        function renderFilteredResults(filteredIncomes, filteredExpenses) {
-            const resultsContainer = document.getElementById("searchResults");
-            resultsContainer.innerHTML = "";
+      renderFilteredResults(fi, fe);
+      btnSearch.disabled = false;
+    }
 
-            // Agregar filas a la tabla
-            filteredIncomes.forEach(income => {
-                let row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${income.date}</td>
-                    <td>${income.concept}</td>
-                    <td>Ingreso</td>
-                    <td>$${income.amount.toFixed(2)}</td>
-                `;
-                resultsContainer.appendChild(row);
-            });
-
-            filteredExpenses.forEach(expense => {
-                let row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${expense.date}</td>
-                    <td>${expense.concept}</td>
-                    <td>Egreso</td>
-                    <td>$${expense.amount.toFixed(2)}</td>
-                `;
-                resultsContainer.appendChild(row);
-            });
-        }
-
-        // Función para actualizar los totales de ingresos y egresos
-        document.getElementById("incomeForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const date = document.getElementById("incomeDate").value;
-            const concept = document.getElementById("incomeConcept").value;
-            const doc = document.getElementById("incomeDoc").value;
-            const medium = document.getElementById("incomeMedium").value;
-            const amount = parseFloat(document.getElementById("incomeAmount").value);
-
-            const income = { date, concept, doc, medium, amount };
-            incomes.push(income);
-            localStorage.setItem("incomes", JSON.stringify(incomes));
-
-            // Llamar a searchSummary automáticamente para actualizar la tabla
-            searchSummary();
-
-            // Limpiar campos
-            document.getElementById("incomeForm").reset();
+    function renderFilteredResults(fi, fe) {
+      const ct = document.getElementById("searchResults");
+      ct.innerHTML = "";
+      if (fi.length===0 && fe.length===0) {
+        ct.innerHTML = `<tr><td colspan="4" class="text-center">No hay movimientos en esta fecha.</td></tr>`;
+      } else {
+        fi.forEach(i=>{
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${i.date}</td>
+            <td>${i.concept}</td>
+            <td>Ingreso</td>
+            <td>$${i.amount.toFixed(2)}</td>
+          `;
+          ct.appendChild(row);
         });
-
-        // Función para registrar un egreso
-        document.getElementById("expenseForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const date = document.getElementById("expenseDate").value;
-            const concept = document.getElementById("expenseConcept").value;
-            const amount = parseFloat(document.getElementById("expenseAmount").value);
-
-            const expense = { date, concept, amount };
-            expenses.push(expense);
-            localStorage.setItem("expenses", JSON.stringify(expenses));
-
-            // Llamar a searchSummary automáticamente para actualizar la tabla
-            searchSummary();
-
-            // Limpiar campos
-            document.getElementById("expenseForm").reset();
+        fe.forEach(e=>{
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${e.date}</td>
+            <td>${e.concept}</td>
+            <td>Egreso</td>
+            <td>$${e.amount.toFixed(2)}</td>
+          `;
+          ct.appendChild(row);
         });
-        
-        // Función para abrir y cerrar el menú lateral
-        const hamburgerMenu = document.getElementById("hamburgerMenu");
-        const sidebar = document.querySelector(".sidebar");
+      }
+    }
 
-        hamburgerMenu.addEventListener("click", function() {
-            sidebar.classList.toggle("show");
-        });
-    </script>
+    document.getElementById("incomeForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const i = {
+        date:   document.getElementById("incomeDate").value,
+        concept:document.getElementById("incomeConcept").value,
+        doc:    document.getElementById("incomeDoc").value,
+        medium: document.getElementById("incomeMedium").value,
+        amount: parseFloat(document.getElementById("incomeAmount").value)
+      };
+      incomes.push(i);
+      localStorage.setItem("incomes", JSON.stringify(incomes));
+      markUpdated(totalInc);
+      searchSummary();
+      e.target.reset();
+    });
+
+    document.getElementById("expenseForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const ex = {
+        date:   document.getElementById("expenseDate").value,
+        concept:document.getElementById("expenseConcept").value,
+        amount: parseFloat(document.getElementById("expenseAmount").value)
+      };
+      expenses.push(ex);
+      localStorage.setItem("expenses", JSON.stringify(expenses));
+      markUpdated(totalExp);
+      searchSummary();
+      e.target.reset();
+    });
+
+    document.getElementById("hamburgerMenu").addEventListener("click", ()=>{
+      document.querySelector(".sidebar").classList.toggle("show");
+    });
+
+    // Inicial
+    searchSummary();
+  </script>
 </body>
 </html>
+
