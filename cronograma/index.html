@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -26,7 +26,12 @@
             background-color: #58695d;
             padding-top: 20px;
             z-index: 999;
-            transition: all 0.3s ease;
+            transition: width 0.3s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .sidebar:not(.open) {
+            opacity: 0.8;
         }
 
         .sidebar a {
@@ -35,10 +40,13 @@
             padding: 15px;
             text-decoration: none;
             font-size: 18px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .sidebar a:hover {
             background-color: #575757;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .sidebar .navbar-brand {
@@ -59,10 +67,25 @@
             display: none;
         }
 
-        /* Estilo para subrayar la cita en rojo */
+        /* Estilo para subrayar la cita en rojo con pulso */
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(220,53,69, 0.7); }
+            50%      { box-shadow: 0 0 10px 5px rgba(220,53,69, 0.3); }
+        }
+
         .highlight {
             text-decoration: underline;
             text-decoration-color: red;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Animación de fade-in para filas nuevas */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
 
         /* Estilo para el menú colorido */
@@ -105,34 +128,44 @@
             font-weight: bold;
         }
 
+        /* Micro-interacción en botones */
+        .btn {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Animación suave del modal */
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: translateY(-30px);
+        }
+        .modal.show .modal-dialog {
+            transform: translateY(0);
+        }
+
         /* Estilos para hacer el menú lateral flexible en dispositivos móviles */
         @media (max-width: 768px) {
-            /* Ocultar el menú lateral en pantallas pequeñas y hacer que se pueda desplegar */
             .sidebar {
                 width: 0;
                 position: fixed;
                 z-index: 999;
-                top: 0;
-                left: 0;
-                transition: width 0.3s ease;
             }
 
             .content {
                 margin-left: 0;
-                transition: margin-left 0.3s ease;
             }
 
-            /* Botón para mostrar el menú lateral */
             .navbar-toggler {
                 display: block;
             }
 
-            /* Menú lateral visible cuando se abre */
             .sidebar.open {
                 width: 250px;
             }
 
-            /* Ajustar el contenido cuando el menú lateral está abierto */
             .content.open {
                 margin-left: 250px;
             }
@@ -276,6 +309,8 @@
             }
 
             appointmentsList.appendChild(appointmentRow);
+            // Animación fade-in
+            appointmentRow.classList.add("fade-in");
         });
     }
 
@@ -349,6 +384,5 @@ Saludos cordiales.`;
 
 </body>
 </html>
-
-  
+ 
 
