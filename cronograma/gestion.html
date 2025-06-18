@@ -8,34 +8,25 @@
     body {
       background-color: #728abb;
     }
+
     .container {
       background: white;
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(114, 100, 100, 0.473);
     }
+
     h2 {
       font-weight: bold;
     }
+
     .form-control::placeholder {
       font-size: 0.9rem;
     }
-    /* animación para el link de revisar */
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(-5px); }
-    }
-    .revisar {
-      display: inline-block;
-      animation: bounce 1s infinite;
-      font-weight: bold;
-      color: #0d6efd;
-      cursor: pointer;
-      margin-left: 5px;
-      font-size: 0.9rem;
-    }
+
     /* ocultar botones de editar/eliminar hasta validar contraseña */
-    .edit-btn, .delete-btn {
+    .edit-btn,
+    .delete-btn {
       visibility: hidden;
     }
   </style>
@@ -52,8 +43,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarMenu">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="controlmercaderia.html">Control Mercadería</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Inicio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="controlmercaderia.html">Control Mercadería</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -62,26 +57,37 @@
   <div class="container mt-5">
     <h2 class="mb-4 text-dark">📦 Gestión de Mercadería</h2>
 
-    <!-- password universal -->
+    <!-- contraseña universal -->
     <div class="mb-3">
-      <input type="password" id="masterPassword" class="form-control" placeholder="Ingrese contraseña para editar/eliminar">
-      <button class="btn btn-outline-primary mt-2" onclick="unlockEditing()">Validar contraseña</button>
+      <input type="password" id="masterPassword" class="form-control"
+             placeholder="Ingrese contraseña para editar/eliminar">
+      <button class="btn btn-outline-primary mt-2" onclick="unlockEditing()">
+        Validar contraseña
+      </button>
     </div>
 
     <form id="formulario" class="row g-3">
-      <div class="col-md-2"><input type="text" class="form-control" placeholder="Producto" id="producto" required></div>
-      <div class="col-md-1"><input type="number" class="form-control" placeholder="Ingreso" id="ingreso" required></div>
-      <div class="col-md-2"><input type="number" class="form-control" placeholder="Precio Compra" id="precioCompra" required></div>
-      <div class="col-md-1"><input type="number" class="form-control" placeholder="Venta" id="venta" required></div>
-      <div class="col-md-2"><input type="number" class="form-control" placeholder="Precio Venta" id="precioVenta" required></div>
-      <div class="col-md-1">
-        <div>
-          <span>Saldo</span>
-          <span class="revisar" onclick="location.href='controlmercaderia.html'">R</span>
-        </div>
-        <input type="number" class="form-control mt-1" placeholder="Saldo" id="saldo" required>
+      <div class="col-md-2">
+        <input type="text" class="form-control" placeholder="Producto" id="producto" required>
       </div>
-      <div class="col-md-3"><button type="submit" class="btn btn-success w-100">+ Agregar Producto</button></div>
+      <div class="col-md-1">
+        <input type="number" class="form-control" placeholder="Ingreso" id="ingreso" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" class="form-control" placeholder="Precio Compra" id="precioCompra" required>
+      </div>
+      <div class="col-md-1">
+        <input type="number" class="form-control" placeholder="Venta" id="venta" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" class="form-control" placeholder="Precio Venta" id="precioVenta" required>
+      </div>
+      <div class="col-md-1">
+        <input type="number" class="form-control" placeholder="Saldo" id="saldo" required>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success w-100">+ Agregar Producto</button>
+      </div>
     </form>
 
     <hr>
@@ -132,7 +138,7 @@
 
     function unlockEditing() {
       const pwd = document.getElementById('masterPassword').value;
-      const ok = pwd === MASTER_PWD;
+      const ok  = pwd === MASTER_PWD;
       document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
         btn.style.visibility = ok ? 'visible' : 'hidden';
       });
@@ -141,6 +147,7 @@
 
     // cargar de localStorage
     let productos = JSON.parse(localStorage.getItem('productos')) || [];
+
     function renderTabla() {
       const tbody = document.getElementById('tablaBody');
       tbody.innerHTML = '';
@@ -173,18 +180,20 @@
     document.getElementById('formulario').addEventListener('submit', function(e) {
       e.preventDefault();
       const prod = {
-        producto: document.getElementById('producto').value,
-        ingreso: parseInt(document.getElementById('ingreso').value),
-        precioCompra: parseFloat(document.getElementById('precioCompra').value),
-        venta: parseInt(document.getElementById('venta').value),
-        precioVenta: parseFloat(document.getElementById('precioVenta').value),
-        saldo: parseInt(document.getElementById('saldo').value)
+        producto:      document.getElementById('producto').value,
+        ingreso:       parseInt(document.getElementById('ingreso').value),
+        precioCompra:  parseFloat(document.getElementById('precioCompra').value),
+        venta:         parseInt(document.getElementById('venta').value),
+        precioVenta:   parseFloat(document.getElementById('precioVenta').value),
+        saldo:         parseInt(document.getElementById('saldo').value)
       };
+
       if (prod.saldo <= 5) {
         document.getElementById('nombreProductoAlerta').textContent = prod.producto;
         new bootstrap.Modal(document.getElementById('alertaModal')).show();
         prod.precioVenta += 5;
       }
+
       productos.push(prod);
       guardarLS();
       renderTabla();
@@ -192,21 +201,26 @@
     });
 
     function eliminar(idx) {
-      productos.splice(idx,1);
+      productos.splice(idx, 1);
       guardarLS();
       renderTabla();
     }
 
     function editar(idx) {
       const p = productos[idx];
-      document.getElementById('producto').value = p.producto;
-      document.getElementById('ingreso').value = p.ingreso;
+      document.getElementById('producto').value     = p.producto;
+      document.getElementById('ingreso').value      = p.ingreso;
       document.getElementById('precioCompra').value = p.precioCompra;
-      document.getElementById('venta').value = p.venta;
-      document.getElementById('precioVenta').value = p.precioVenta;
-      document.getElementById('saldo').value = p.saldo;
+      document.getElementById('venta').value        = p.venta;
+      document.getElementById('precioVenta').value  = p.precioVenta;
+      document.getElementById('saldo').value        = p.saldo;
       eliminar(idx);
     }
+
+    // mensaje emergente al enfocar saldo
+    document.getElementById('saldo').addEventListener('focus', () => {
+      alert('Para revisar más detalles, visita Control Mercadería:\ncontrolmercaderia.html');
+    });
 
     // inicializar
     renderTabla();
