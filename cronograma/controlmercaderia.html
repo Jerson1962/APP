@@ -1,12 +1,10 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Control de Ingresos y Egresos</title>
-  <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
   <style>
     :root {
       --verde-principal: #111b14;
@@ -17,10 +15,8 @@
     body {
       background-color: var(--gris-claro);
       font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden; /* evita scroll horizontal al mostrar sidebar */
+      overflow-x: hidden;
     }
-
-    /* Menú lateral */
     #sidebar {
       position: fixed;
       top: 0; left: 0;
@@ -44,8 +40,6 @@
     #sidebar a:hover {
       background: var(--verde-hover);
     }
-
-    /* Botón de toggle */
     .btn-toggle {
       position: fixed;
       top: 15px; left: 15px;
@@ -57,27 +51,30 @@
       border-radius: 4px;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      transition: background .2s;
     }
-    .btn-toggle:hover {
-      background: var(--verde-hover);
-    }
-
     .navbar {
       background-color: var(--verde-principal);
       border-bottom: 3px solid #da1b2b;
-      margin-left: 0; /* compensa el toggle */
+      margin-left: 0;
     }
-    .card { border: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform .3s, box-shadow .3s; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
-    .form-control:focus { border-color: var(--azul-info); box-shadow: 0 0 0 3px rgba(30,144,255,0.2); }
-    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-    .table { background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .table th { background-color: var(--verde-principal); color: #fff; border: none; }
-    .mercaderia-row { animation: fadeInUp .4s ease both; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
-
-    /* Botones fila ocultos al inicio */
+    .card {
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .form-control:focus {
+      border-color: var(--azul-info);
+      box-shadow: 0 0 0 3px rgba(30,144,255,0.2);
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .table th {
+      background-color: var(--verde-principal);
+      color: #fff;
+    }
     .row-edit-btn, .row-delete-btn {
       visibility: hidden;
     }
@@ -85,175 +82,188 @@
 </head>
 <body>
 
-  <!-- Toggle sidebar -->
-  <button class="btn-toggle" id="toggleSidebar" aria-label="Menú">
-    ☰
-  </button>
+<button class="btn-toggle" id="toggleSidebar" aria-label="Menú">☰</button>
 
-  <!-- Sidebar -->
-  <nav id="sidebar">
-    <a href="index.html"> 𝐈𝐧𝐢𝐜𝐢𝐨 </a>
-    <a href="gestion.html">gestion mercaderia</a>
-    <a href="#">---</a>
-  </nav>
+<nav id="sidebar">
+  <a href="index.html">𝐈𝐧𝐢𝐜𝐢𝐨</a>
+  <a href="gestion.html">Gestión Mercadería</a>
+  <a href="#">---</a>
+</nav>
 
-   
-
-  <!-- Contenido -->
-  <div class="container py-5" style="margin-left:20px;">
-    <div class="row">
-      <!-- Formulario -->
-      <div class="col-md-4 mb-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title"> 𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐫 𝐌𝐞𝐫𝐜𝐚𝐝𝐞𝐫í𝐚</h5>
-            <form id="mercaderiaForm">
-              <div class="form-group">
-                <label for="codigoMercaderia">Código Mercaderia :</label>
-                <input type="text" class="form-control" id="codigoMercaderia" required>
-              </div>
-              <div class="form-group">
-                <label for="nombreMercaderia">Nombre Mercaderia :</label>
-                <input type="text" class="form-control" id="nombreMercaderia" required>
-              </div>
-              <div class="form-group">
-                <label for="precioMercaderia">Precio Mercaderia :</label>
-                <input type="number" class="form-control" id="precioMercaderia" required>
-              </div>
-              <button type="submit" class="btn btn-primary btn-block">Agregar</button>
-            </form>
+<div class="container py-5" style="margin-left:20px;">
+  <div class="row">
+    <div class="col-md-5 mb-4">
+      <div class="card">
+        <h5 class="card-title">𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐫 𝐌𝐞𝐫𝐜𝐚𝐝𝐞𝐫í𝐚</h5>
+        <form id="mercaderiaForm">
+          <div class="form-group">
+            <label for="codigoMercaderia">Código:</label>
+            <input type="text" class="form-control" id="codigoMercaderia" required>
           </div>
-        </div>
+          <div class="form-group">
+            <label for="nombreMercaderia">Nombre:</label>
+            <input type="text" class="form-control" id="nombreMercaderia" required>
+          </div>
+          <div class="form-group">
+            <label for="precioCosto">Precio Costo:</label>
+            <input type="number" class="form-control" id="precioCosto" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="precioVenta">Precio Venta:</label>
+            <input type="number" class="form-control" id="precioVenta" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label for="unidadMercaderia">Unidad:</label>
+            <input type="text" class="form-control" id="unidadMercaderia" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Agregar</button>
+        </form>
       </div>
+    </div>
 
-      <!-- Tabla -->
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title"> 𝐃𝐚𝐭𝐨𝐬 𝐌𝐞𝐫𝐜𝐚𝐝𝐞𝐫í𝐚</h5>
-            <div class="form-group mb-3">
-              <input type="text" id="searchMercaderia" class="form-control" placeholder="Buscar..." onkeyup="searchMercaderia()">
-            </div>
-            <table class="table table-striped table-hover">
-              <thead>
-                <tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Acciones</th></tr>
-              </thead>
-              <tbody id="mercaderiaList"></tbody>
-            </table>
-            <div class="form-group mt-4">
-              <label for="passwordInput">Contraseña</label>
-              <input type="password" class="form-control" id="passwordInput" placeholder="Ingresa la contraseña">
-              <button class="btn btn-success mt-2" onclick="checkPassword()">Verificar</button>
-            </div>
-            <div id="errorMessage" class="alert alert-danger mt-3" style="display:none;">
-              Contraseña incorrecta.
-            </div>
-          </div>
+    <div class="col-md-7">
+      <div class="card">
+        <h5 class="card-title">𝐃𝐚𝐭𝐨𝐬 𝐌𝐞𝐫𝐜𝐚𝐝𝐞𝐫í𝐚</h5>
+        <div class="form-group mb-3">
+          <input type="text" id="searchMercaderia" class="form-control" placeholder="Buscar..." onkeyup="searchMercaderia()">
+        </div>
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Costo</th>
+              <th>Venta</th>
+              <th>Unidad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="mercaderiaList"></tbody>
+        </table>
+        <div class="form-group mt-4">
+          <label for="passwordInput">Contraseña</label>
+          <input type="password" class="form-control" id="passwordInput" placeholder="Ingresa la contraseña">
+          <button class="btn btn-success mt-2" onclick="checkPassword()">Verificar</button>
+        </div>
+        <div id="errorMessage" class="alert alert-danger mt-3" style="display:none;">
+          Contraseña incorrecta.
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Bootstrap + jQuery -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  document.getElementById('toggleSidebar').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
 
-  <script>
-    // Sidebar toggle
-    document.getElementById('toggleSidebar').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('open');
+  let mercaderia = JSON.parse(localStorage.getItem("mercaderia")) || [];
+  let isEditing = false;
+
+  function renderMercaderia(lista = mercaderia) {
+    const container = document.getElementById("mercaderiaList");
+    container.innerHTML = "";
+    lista.forEach((item, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${item.codigo}</td>
+        <td>${item.nombre}</td>
+        <td>${item.costo}</td>
+        <td>${item.venta}</td>
+        <td>${item.unidad}</td>
+        <td>
+          <button class="btn btn-info btn-sm row-edit-btn" onclick="editMercaderia(${i}, this)">Editar</button>
+          <button class="btn btn-danger btn-sm row-delete-btn" onclick="deleteMercaderia(${i})">Eliminar</button>
+        </td>
+      `;
+      container.appendChild(row);
     });
+  }
 
-    // Datos y lógica
-    let mercaderia = JSON.parse(localStorage.getItem("mercaderia")) || [];
-    let isEditing = false;
-
-    function renderMercaderia(lista = mercaderia) {
-      const container = document.getElementById("mercaderiaList");
-      container.innerHTML = "";
-      lista.forEach((item, i) => {
-        const row = document.createElement("tr");
-        row.classList.add("mercaderia-row");
-        row.innerHTML = `
-          <td>${item.codigo}</td>
-          <td>${item.nombre}</td>
-          <td>${item.precio}</td>
-          <td>
-            <button id="editBtn-${i}" class="btn btn-info btn-sm row-edit-btn" onclick="editMercaderia(${i}, this)">Editar</button>
-            <button id="delBtn-${i}" class="btn btn-danger btn-sm row-delete-btn" onclick="deleteMercaderia(${i})">Eliminar</button>
-          </td>
-        `;
-        container.appendChild(row);
-      });
+  function addMercaderia(codigo, nombre, costo, venta, unidad) {
+    if (parseFloat(venta) <= parseFloat(costo)) {
+      alert("El precio de venta es menor o igual al costo. Se ajustará automáticamente.");
+      venta = (parseFloat(costo) + 1).toFixed(2);
     }
+    mercaderia.push({ codigo, nombre, costo, venta, unidad });
+    localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
+    renderMercaderia();
+  }
 
-    function addMercaderia(c, n, p) {
-      mercaderia.push({ codigo: c, nombre: n, precio: p });
-      localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
-      renderMercaderia();
-    }
+  function searchMercaderia() {
+    const txt = document.getElementById("searchMercaderia").value.toLowerCase();
+    const filtrado = mercaderia.filter(item =>
+      item.codigo.toLowerCase().includes(txt) ||
+      item.nombre.toLowerCase().includes(txt)
+    );
+    renderMercaderia(filtrado);
+  }
 
-    function searchMercaderia() {
-      const txt = document.getElementById("searchMercaderia").value.toLowerCase();
-      const filtrado = mercaderia.filter(item =>
-        item.codigo.toLowerCase().includes(txt) ||
-        item.nombre.toLowerCase().includes(txt)
-      );
-      renderMercaderia(filtrado);
-    }
+  function checkPassword() {
+    const valid = document.getElementById("passwordInput").value === "fernandez";
+    document.getElementById("errorMessage").style.display = valid ? "none" : "block";
+    document.querySelectorAll(".row-edit-btn, .row-delete-btn").forEach(btn => {
+      btn.style.visibility = valid ? "visible" : "hidden";
+      btn.disabled = !valid;
+    });
+  }
 
-    function checkPassword() {
-      const valid = document.getElementById("passwordInput").value === "fernandez";
-      document.getElementById("errorMessage").style.display = valid ? "none" : "block";
-      document.querySelectorAll(".row-edit-btn, .row-delete-btn").forEach(btn => {
-        btn.style.visibility = valid ? "visible" : "hidden";
-        btn.disabled = !valid;
-      });
-    }
-
-    function editMercaderia(i, btn) {
-      const row = document.getElementById("mercaderiaList").children[i];
-      const cells = row.querySelectorAll("td");
-      if (!isEditing) {
-        isEditing = true;
-        for (let j = 0; j < 3; j++) {
-          const val = cells[j].innerText;
-          cells[j].innerHTML = `<input class="form-control form-control-sm" value="${val}">`;
-        }
-        btn.textContent = "Guardar";
-        btn.classList.replace("btn-info", "btn-success");
-      } else {
-        const newC = cells[0].querySelector("input").value;
-        const newN = cells[1].querySelector("input").value;
-        const newP = cells[2].querySelector("input").value;
-        mercaderia[i] = { codigo: newC, nombre: newN, precio: newP };
-        localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
-        isEditing = false;
-        btn.textContent = "Editar";
-        btn.classList.replace("btn-success", "btn-info");
-        renderMercaderia();
+  function editMercaderia(i, btn) {
+    const row = document.getElementById("mercaderiaList").children[i];
+    const cells = row.querySelectorAll("td");
+    if (!isEditing) {
+      isEditing = true;
+      for (let j = 1; j <= 5; j++) {
+        const val = cells[j].innerText;
+        cells[j].innerHTML = `<input class="form-control form-control-sm" value="${val}">`;
       }
-    }
+      btn.textContent = "Guardar";
+      btn.classList.replace("btn-info", "btn-success");
+    } else {
+      const newC = cells[1].querySelector("input").value;
+      const newN = cells[2].querySelector("input").value;
+      const newCosto = parseFloat(cells[3].querySelector("input").value);
+      let newVenta = parseFloat(cells[4].querySelector("input").value);
+      const newUnidad = cells[5].querySelector("input").value;
 
-    function deleteMercaderia(i) {
-      mercaderia.splice(i, 1);
+      if (newVenta <= newCosto) {
+        alert("El precio de venta es menor o igual al costo. Se ajustará automáticamente.");
+        newVenta = (newCosto + 1).toFixed(2);
+      }
+
+      mercaderia[i] = { codigo: newC, nombre: newN, costo: newCosto, venta: newVenta, unidad: newUnidad };
       localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
+      isEditing = false;
+      btn.textContent = "Editar";
+      btn.classList.replace("btn-success", "btn-info");
       renderMercaderia();
     }
+  }
 
-    document.getElementById("mercaderiaForm").addEventListener("submit", e => {
-      e.preventDefault();
-      addMercaderia(
-        document.getElementById("codigoMercaderia").value,
-        document.getElementById("nombreMercaderia").value,
-        document.getElementById("precioMercaderia").value
-      );
-      e.target.reset();
-    });
+  function deleteMercaderia(i) {
+    mercaderia.splice(i, 1);
+    localStorage.setItem("mercaderia", JSON.stringify(mercaderia));
+    renderMercaderia();
+  }
 
-    window.onload = () => renderMercaderia();
-  </script>
+  document.getElementById("mercaderiaForm").addEventListener("submit", e => {
+    e.preventDefault();
+    addMercaderia(
+      document.getElementById("codigoMercaderia").value,
+      document.getElementById("nombreMercaderia").value,
+      document.getElementById("precioCosto").value,
+      document.getElementById("precioVenta").value,
+      document.getElementById("unidadMercaderia").value
+    );
+    e.target.reset();
+  });
+
+  window.onload = () => renderMercaderia();
+</script>
 </body>
 </html>
+
 
