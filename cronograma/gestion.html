@@ -23,101 +23,126 @@
   </style>
 </head>
 <body>
-<div class="container mt-5">
- <h2 class="mb-4 text-dark">📦 Gestión de Mercadería</h2>
 
+  <!-- Navbar con menú desplegable -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">📦 Gestión</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarDropdown" 
+              aria-controls="navbarDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarDropdown">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="menuDesplegable" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Menú
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="menuDesplegable">
+              <li><a class="dropdown-item" href="index.html">Inicio</a></li>
+              <!-- Aquí puedes agregar más ítems si lo deseas -->
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-  <form id="formulario" class="row g-3">
-    <div class="col-md-2"><input type="text" class="form-control" placeholder="Producto" id="producto" required></div>
-    <div class="col-md-1"><input type="number" class="form-control" placeholder="Ingreso" id="ingreso" required></div>
-    <div class="col-md-2"><input type="number" class="form-control" placeholder="Precio Compra" id="precioCompra" required></div>
-    <div class="col-md-1"><input type="number" class="form-control" placeholder="Venta" id="venta" required></div>
-    <div class="col-md-2"><input type="number" class="form-control" placeholder="Precio Venta" id="precioVenta" required></div>
-    <div class="col-md-1"><input type="number" class="form-control" placeholder="Saldo" id="saldo" required></div>
-    <div class="col-md-3"><button type="submit" class="btn btn-success w-100"> + Agregar Producto</button></div>
-  </form>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-dark">📦 Gestión de Mercadería</h2>
 
-  <hr>
+    <form id="formulario" class="row g-3">
+      <div class="col-md-2"><input type="text" class="form-control" placeholder="Producto" id="producto" required></div>
+      <div class="col-md-1"><input type="number" class="form-control" placeholder="Ingreso" id="ingreso" required></div>
+      <div class="col-md-2"><input type="number" class="form-control" placeholder="Precio Compra" id="precioCompra" required></div>
+      <div class="col-md-1"><input type="number" class="form-control" placeholder="Venta" id="venta" required></div>
+      <div class="col-md-2"><input type="number" class="form-control" placeholder="Precio Venta" id="precioVenta" required></div>
+      <div class="col-md-1"><input type="number" class="form-control" placeholder="Saldo" id="saldo" required></div>
+      <div class="col-md-3"><button type="submit" class="btn btn-success w-100"> + Agregar Producto</button></div>
+    </form>
 
-  <div class="table-responsive">
-    <table class="table table-striped table-bordered mt-3">
-      <thead class="table-dark text-center">
-        <tr>
-          <th>Producto</th>
-          <th>Ingreso</th>
-          <th>Precio Compra</th>
-          <th>Venta</th>
-          <th>Precio Venta</th>
-          <th>Saldo</th>
-          <th>Validación 1<br><small>Ingreso * Venta</small></th>
-          <th>Validación 2<br><small>Precio Venta * Saldo</small></th>
-        </tr>
-      </thead>
-      <tbody id="tablaBody" class="text-center"></tbody>
-    </table>
+    <hr>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered mt-3">
+        <thead class="table-dark text-center">
+          <tr>
+            <th>Producto</th>
+            <th>Ingreso</th>
+            <th>Precio Compra</th>
+            <th>Venta</th>
+            <th>Precio Venta</th>
+            <th>Saldo</th>
+            <th>Validación 1<br><small>Ingreso * Venta</small></th>
+            <th>Validación 2<br><small>Precio Venta * Saldo</small></th>
+          </tr>
+        </thead>
+        <tbody id="tablaBody" class="text-center"></tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<!-- Modal de alerta -->
-<div class="modal fade" id="alertaModal" tabindex="-1" aria-labelledby="alertaLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-warning">
-      <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title" id="alertaLabel">⚠️ Stock Bajo</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        El producto <strong id="nombreProductoAlerta"></strong> tiene un <strong>saldo bajo</strong> (≤ 5 unidades).<br>
-        💡 Se recomienda <strong>comprar más</strong> y <strong>subirle S/ 5</strong> al precio de venta.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal">Entendido</button>
+  <!-- Modal de alerta -->
+  <div class="modal fade" id="alertaModal" tabindex="-1" aria-labelledby="alertaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-warning">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="alertaLabel">⚠️ Stock Bajo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          El producto <strong id="nombreProductoAlerta"></strong> tiene un <strong>saldo bajo</strong> (≤ 5 unidades).<br>
+          💡 Se recomienda <strong>comprar más</strong> y <strong>subirle S/ 5</strong> al precio de venta.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal">Entendido</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-document.getElementById('formulario').addEventListener('submit', function(e) {
-  e.preventDefault();
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('formulario').addEventListener('submit', function(e) {
+      e.preventDefault();
 
-  const producto = document.getElementById('producto').value;
-  const ingreso = parseInt(document.getElementById('ingreso').value);
-  const precioCompra = parseFloat(document.getElementById('precioCompra').value);
-  const venta = parseInt(document.getElementById('venta').value);
-  let precioVenta = parseFloat(document.getElementById('precioVenta').value);
-  const saldo = parseInt(document.getElementById('saldo').value);
+      const producto = document.getElementById('producto').value;
+      const ingreso = parseInt(document.getElementById('ingreso').value);
+      const precioCompra = parseFloat(document.getElementById('precioCompra').value);
+      const venta = parseInt(document.getElementById('venta').value);
+      let precioVenta = parseFloat(document.getElementById('precioVenta').value);
+      const saldo = parseInt(document.getElementById('saldo').value);
 
-  const validacion1 = ingreso * venta;
-  const validacion2 = precioVenta * saldo;
+      const validacion1 = ingreso * venta;
+      const validacion2 = precioVenta * saldo;
 
-  if (saldo <= 5) {
-    // Mostrar modal de alerta
-    document.getElementById('nombreProductoAlerta').textContent = producto;
-    const modal = new bootstrap.Modal(document.getElementById('alertaModal'));
-    modal.show();
+      if (saldo <= 5) {
+        // Mostrar modal de alerta
+        document.getElementById('nombreProductoAlerta').textContent = producto;
+        const modal = new bootstrap.Modal(document.getElementById('alertaModal'));
+        modal.show();
 
-    // Sugerencia automática: sumar 5 al precio de venta
-    precioVenta += 5;
-  }
+        // Sugerencia automática: sumar 5 al precio de venta
+        precioVenta += 5;
+      }
 
-  const fila = `
-    <tr>
-      <td>${producto}</td>
-      <td>${ingreso}</td>
-      <td>S/ ${precioCompra.toFixed(2)}</td>
-      <td>${venta}</td>
-      <td>S/ ${precioVenta.toFixed(2)}</td>
-      <td>${saldo}</td>
-      <td>${validacion1}</td>
-      <td>S/ ${validacion2.toFixed(2)}</td>
-    </tr>
-  `;
+      const fila = `
+        <tr>
+          <td>${producto}</td>
+          <td>${ingreso}</td>
+          <td>S/ ${precioCompra.toFixed(2)}</td>
+          <td>${venta}</td>
+          <td>S/ ${precioVenta.toFixed(2)}</td>
+          <td>${saldo}</td>
+          <td>${validacion1}</td>
+          <td>S/ ${validacion2.toFixed(2)}</td>
+        </tr>
+      `;
 
-  document.getElementById('tablaBody').insertAdjacentHTML('beforeend', fila);
-  document.getElementById('formulario').reset();
-});
-</script>
+      document.getElementById('tablaBody').insertAdjacentHTML('beforeend', fila);
+      document.getElementById('formulario').reset();
+    });
+  </script>
 </body>
 </html>
