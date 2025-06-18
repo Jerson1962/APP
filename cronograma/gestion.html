@@ -219,7 +219,13 @@
 
     // mensaje emergente al enfocar saldo
     document.getElementById('saldo').addEventListener('focus', () => {
-      alert('Para revisar más detalles, visita Control Mercadería:\ncontrolmercaderia.html');
+      const ir = confirm(
+        'Si necesitas revisar el control de mercadería, pulsa Aceptar.\n\n' +
+        '¿Deseas ir a Control Mercadería ahora?'
+      );
+      if (ir) {
+        window.location.href = 'controlmercaderia.html';
+      }
     });
 
     // inicializar
