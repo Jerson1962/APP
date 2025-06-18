@@ -8,23 +8,18 @@
     body {
       background-color: #728abb;
     }
-
     .container {
       background: white;
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(114, 100, 100, 0.473);
     }
-
     h2 {
       font-weight: bold;
     }
-
     .form-control::placeholder {
       font-size: 0.9rem;
     }
-
-    /* ocultar botones de editar/eliminar hasta validar contraseña */
     .edit-btn,
     .delete-btn {
       visibility: hidden;
@@ -43,12 +38,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarMenu">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Inicio</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="controlmercaderia.html">Control Mercadería</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="controlmercaderia.html">Control Mercadería</a></li>
         </ul>
       </div>
     </div>
@@ -83,7 +74,9 @@
         <input type="number" class="form-control" placeholder="Precio Venta" id="precioVenta" required>
       </div>
       <div class="col-md-1">
-        <div><a href="controlmercaderia.html" style="text-decoration: underline; font-size:0.9rem;">revisar</a></div>
+        <div>
+          <a href="controlmercaderia.html" style="text-decoration: underline; font-size:0.9rem;">revisar</a>
+        </div>
         <input type="number" class="form-control" placeholder="Saldo" id="saldo" required>
       </div>
       <div class="col-md-3">
@@ -189,10 +182,14 @@
         saldo:         parseInt(document.getElementById('saldo').value)
       };
 
+      // si saldo bajo, mostrar alerta y aumentar S/5 solo si precioCompra == precioVenta
       if (prod.saldo <= 5) {
         document.getElementById('nombreProductoAlerta').textContent = prod.producto;
         new bootstrap.Modal(document.getElementById('alertaModal')).show();
-        prod.precioVenta += 5;
+
+        if (prod.precioVenta === prod.precioCompra) {
+          prod.precioVenta += 5;
+        }
       }
 
       productos.push(prod);
