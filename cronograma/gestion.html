@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Balance + Inventario y Gestión</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .sidebar { position: fixed; top: 0; left: 0; width: 250px; height: 100%; background: #343a40; color: #fff; padding-top: 20px; transition: left .3s ease; z-index:1000; }
@@ -16,27 +16,25 @@
     .panel { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
     .total { margin-top:10px; font-weight:bold; }
     .action-btn { margin-left:5px; }
-    /* Nuevas tablas debajo */
     .card { margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
     .edit-btn, .delete-btn { visibility: hidden; }
   </style>
 </head>
 <body>
 
-  <!-- Menú lateral y botón hamburguesa -->
   <button class="hamburger" id="hamburgerMenu" aria-label="Mostrar menú">☰</button>
   <nav class="sidebar" id="sidebarNav">
     <h3 class="text-center text-white">𝐌𝐆 𝐀𝐔𝐓𝐎𝐌𝐎𝐓𝐑𝐈𝐙</h3>
-    <a href="#incomePanel">𝐈𝐍𝐈𝐆𝐑𝐄𝐒𝐎𝐒</a>
-    <a href="#expensePanel">𝐄𝐆𝐑𝐄𝐒𝐎𝐒</a>
-    <a href="#inventarioSection">𝐈𝐍𝐕𝐄𝐍𝐓𝐀𝐑𝐈𝐎</a>
-    <a href="#gestionSection">𝐆𝐄𝐒𝐓𝐈𝐎́𝐍</a>
+    <a href="#incomePanel">Ingresos</a>
+    <a href="#expensePanel">Egresos</a>
+    <a href="#inventarioSection">Inventario</a>
+    <a href="#gestionSection">Gestión</a>
   </nav>
 
   <main class="content">
     <div class="container">
 
-      <!-- Botón para activar edición -->
+      <!-- Botón gestión -->
       <div class="text-right mb-2">
         <button class="btn btn-warning" id="manageBtn">Gestionar (editar/eliminar)</button>
       </div>
@@ -45,10 +43,10 @@
       <section class="panel" id="incomePanel">
         <h3>Registro de Ingresos</h3>
         <form id="incomeForm" class="form-row">
-          <input type="date" id="incomeDate"       class="form-control col-md-2" required>
-          <input type="text" id="incomeConcept"    class="form-control col-md-2" placeholder="Concepto" required>
-          <input type="text" id="incomeDocType"    class="form-control col-md-2" placeholder="Tipo de Doc" required>
-          <input type="text" id="incomeMethod"     class="form-control col-md-2" placeholder="Método de Pago" required>
+          <input type="date" id="incomeDate" class="form-control col-md-2" required>
+          <input type="text" id="incomeConcept" class="form-control col-md-2" placeholder="Concepto" required>
+          <input type="text" id="incomeDocType" class="form-control col-md-2" placeholder="Tipo de Doc" required>
+          <input type="text" id="incomeMethod" class="form-control col-md-2" placeholder="Método de Pago" required>
           <input type="number" step="0.01" id="incomeAmount" class="form-control col-md-2" placeholder="Monto" required>
           <button type="submit" class="btn btn-success col-md-2">Agregar</button>
         </form>
@@ -65,7 +63,7 @@
       <section class="panel" id="expensePanel">
         <h3>Registro de Egresos</h3>
         <form id="expenseForm" class="form-row">
-          <input type="date" id="expenseDate"    class="form-control col-md-3" required>
+          <input type="date" id="expenseDate" class="form-control col-md-3" required>
           <input type="text" id="expenseConcept" class="form-control col-md-3" placeholder="Concepto" required>
           <input type="number" step="0.01" id="expenseAmount" class="form-control col-md-3" placeholder="Monto" required>
           <button type="submit" class="btn btn-danger col-md-3">Agregar</button>
@@ -79,22 +77,21 @@
         </table>
       </section>
 
-      <!-- NUEVA SECCIÓN: INVENTARIO -->
+      <!-- Inventario -->
       <div class="card p-4" id="inventarioSection">
         <h3>Inventario</h3>
         <form id="formInventario" class="row g-3 mb-4">
-          <div class="col-md-2"><input type="text" id="itemInv"       class="form-control" placeholder="Item" required></div>
-          <div class="col-md-2"><input type="text" id="codigoInv"     class="form-control" placeholder="Código" required></div>
-          <div class="col-md-4"><input type="text" id="nombreInv"     class="form-control" placeholder="Nombre" required></div>
-          <div class="col-md-2"><input type="number" id="unidadesInv"  class="form-control" placeholder="Unidades" required></div>
+          <div class="col-md-2"><input type="text" id="itemInv" class="form-control" placeholder="Item" required></div>
+          <div class="col-md-2"><input type="text" id="codigoInv" class="form-control" placeholder="Código" required></div>
+          <div class="col-md-4"><input type="text" id="nombreInv" class="form-control" placeholder="Nombre" required></div>
+          <div class="col-md-2"><input type="number" id="unidadesInv" class="form-control" placeholder="Unidades" required></div>
           <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Agregar Inventario</button></div>
         </form>
         <div class="table-responsive">
           <table class="table table-striped table-bordered text-center">
             <thead class="table-dark">
               <tr>
-                <th>Item</th><th>Código</th><th>Nombre</th>
-                <th>Ingreso</th><th>Egreso</th><th>Unidades</th><th>Acciones</th>
+                <th>Item</th><th>Código</th><th>Nombre</th><th>Ingreso</th><th>Egreso</th><th>Unidades</th><th>Acciones</th>
               </tr>
             </thead>
             <tbody id="inventarioBody"></tbody>
@@ -102,7 +99,7 @@
         </div>
       </div>
 
-      <!-- NUEVA SECCIÓN: GESTIÓN DE MERCADERÍA -->
+      <!-- Gestión de Mercadería -->
       <div class="card p-4" id="gestionSection">
         <h3>Gestión de Mercadería</h3>
         <form id="formGestion" class="row g-3 mb-4">
@@ -111,11 +108,11 @@
               <option value="" disabled selected>Selecciona Nombre</option>
             </select>
           </div>
-          <div class="col-md-2"><input type="number" id="ingresoG"       class="form-control" placeholder="Ingreso" readonly></div>
+          <div class="col-md-2"><input type="number" id="ingresoG" class="form-control" placeholder="Ingreso" readonly></div>
           <div class="col-md-2"><input type="number" step="0.01" id="precioCompraG" class="form-control" placeholder="Costo" required></div>
-          <div class="col-md-1"><input type="number" id="ventaG"          class="form-control" placeholder="Venta" required></div>
+          <div class="col-md-1"><input type="number" id="ventaG" class="form-control" placeholder="Venta" required></div>
           <div class="col-md-2"><input type="number" step="0.01" id="precioVentaG" class="form-control" placeholder="Precio Venta" required></div>
-          <div class="col-md-1"><input type="number" id="saldoG"          class="form-control" placeholder="Saldo" readonly></div>
+          <div class="col-md-1"><input type="number" id="saldoG" class="form-control" placeholder="Saldo" readonly></div>
           <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+ Añadir</button></div>
         </form>
         <div class="table-responsive">
@@ -137,54 +134,47 @@
     </div>
   </main>
 
-  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script>
     const PASSWORD = 'fernandez123';
     let manageMode = false;
-    const manageBtn = document.getElementById('manageBtn');
-    manageBtn.onclick = () => {
-      if(manageMode) {
+    document.getElementById('manageBtn').onclick = () => {
+      if (manageMode) {
         manageMode = false;
-        manageBtn.textContent = 'Gestionar (editar/eliminar)';
-        renderAll();
+        document.getElementById('manageBtn').textContent = 'Gestionar (editar/eliminar)';
       } else {
         const pass = prompt('Ingrese contraseña:');
-        if(pass === PASSWORD) {
+        if (pass === PASSWORD) {
           manageMode = true;
-          manageBtn.textContent = 'Salir gestionar';
-          renderAll();
-        } else alert('Contraseña incorrecta');
+          document.getElementById('manageBtn').textContent = 'Salir gestionar';
+        } else {
+          return alert('Contraseña incorrecta');
+        }
       }
+      renderAll();
     };
-
-    // Mostrar / ocultar sidebar
     document.getElementById('hamburgerMenu').onclick = () =>
       document.getElementById('sidebarNav').classList.toggle('show');
 
-    // ---- Balance: Ingresos / Egresos ----
+    // Balance (Ingresos/Egresos)
     const KEY_INC = 'balance_incomes', KEY_EXP = 'balance_expenses';
     let incomes  = JSON.parse(localStorage.getItem(KEY_INC))  || [];
     let expenses = JSON.parse(localStorage.getItem(KEY_EXP)) || [];
-    const incomesList   = document.getElementById('incomesList');
-    const expensesList  = document.getElementById('expensesList');
-    const totalIncome   = document.getElementById('totalIncome');
-    const totalExpense  = document.getElementById('totalExpense');
+    const incomesList  = document.getElementById('incomesList');
+    const expensesList = document.getElementById('expensesList');
+    const totalIncome  = document.getElementById('totalIncome');
+    const totalExpense = document.getElementById('totalExpense');
 
-    function saveBalance(){
+    function saveBalance() {
       localStorage.setItem(KEY_INC, JSON.stringify(incomes));
       localStorage.setItem(KEY_EXP, JSON.stringify(expenses));
     }
-    function renderBalance(){
+    function renderBalance() {
       // Ingresos
       incomesList.innerHTML = '';
-      incomes.forEach((i,idx) => {
-        let row = `<td>${i.date}</td>
-                   <td>${i.concept}</td>
-                   <td>${i.docType}</td>
-                   <td>${i.method}</td>
-                   <td>$${i.amount.toFixed(2)}</td>`;
+      incomes.forEach((i, idx) => {
+        let row = `<td>${i.date}</td><td>${i.concept}</td><td>${i.docType}</td><td>${i.method}</td><td>$${i.amount.toFixed(2)}</td>`;
         row += manageMode
           ? `<td>
                <button class="btn btn-sm btn-primary action-btn" onclick="editIncome(${idx})">✎</button>
@@ -195,10 +185,8 @@
       });
       // Egresos
       expensesList.innerHTML = '';
-      expenses.forEach((e,idx) => {
-        let row = `<td>${e.date}</td>
-                   <td>${e.concept}</td>
-                   <td>$${e.amount.toFixed(2)}</td>`;
+      expenses.forEach((e, idx) => {
+        let row = `<td>${e.date}</td><td>${e.concept}</td><td>$${e.amount.toFixed(2)}</td>`;
         row += manageMode
           ? `<td>
                <button class="btn btn-sm btn-primary action-btn" onclick="editExpense(${idx})">✎</button>
@@ -208,13 +196,12 @@
         expensesList.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
       });
       // Totales
-      const ti = incomes.reduce((s,i)=>s+i.amount,0),
-            te = expenses.reduce((s,e)=>s+e.amount,0);
+      const ti = incomes.reduce((s, i) => s + i.amount, 0);
+      const te = expenses.reduce((s, e) => s + e.amount, 0);
       totalIncome.textContent  = `Total Ingresos: $${ti.toFixed(2)}`;
       totalExpense.textContent = `Total Egresos: $${te.toFixed(2)}`;
     }
 
-    // Formularios balance
     document.getElementById('incomeForm').onsubmit = e => {
       e.preventDefault();
       incomes.push({
@@ -236,34 +223,38 @@
       saveBalance(); renderBalance(); e.target.reset();
     };
 
-    // Edit / Delete balance
     window.editIncome = idx => {
       const i = incomes[idx];
-      const d = prompt('Fecha',i.date);   if(!d) return;
-      const c = prompt('Concepto',i.concept); if(c===null) return;
-      const dt= prompt('Tipo Doc',i.docType); if(dt===null) return;
-      const m = prompt('Método',i.method);    if(m===null) return;
-      const a = parseFloat(prompt('Monto',i.amount)); if(isNaN(a)) return;
-      incomes[idx] = { date:d, concept:c, docType:dt, method:m, amount:a };
+      const d = prompt('Fecha', i.date);   if (!d) return;
+      const c = prompt('Concepto', i.concept); if (c===null) return;
+      const dt= prompt('Tipo Doc', i.docType); if (dt===null) return;
+      const m = prompt('Método', i.method);    if (m===null) return;
+      const a = parseFloat(prompt('Monto', i.amount)); if (isNaN(a)) return;
+      incomes[idx] = { date: d, concept: c, docType: dt, method: m, amount: a };
       saveBalance(); renderBalance();
     };
-    window.deleteIncome = idx => { if(confirm('Eliminar ingreso?')) { incomes.splice(idx,1); saveBalance(); renderBalance(); } };
+    window.deleteIncome = idx => {
+      if (confirm('Eliminar ingreso?')) { incomes.splice(idx,1); saveBalance(); renderBalance(); }
+    };
     window.editExpense = idx => {
       const e = expenses[idx];
-      const d = prompt('Fecha',e.date); if(!d) return;
-      const c = prompt('Concepto',e.concept); if(c===null) return;
-      const a = parseFloat(prompt('Monto',e.amount)); if(isNaN(a)) return;
-      expenses[idx] = { date:d, concept:c, amount:a };
+      const d = prompt('Fecha', e.date); if (!d) return;
+      const c = prompt('Concepto', e.concept); if (c===null) return;
+      const a = parseFloat(prompt('Monto', e.amount)); if (isNaN(a)) return;
+      expenses[idx] = { date: d, concept: c, amount: a };
       saveBalance(); renderBalance();
     };
-    window.deleteExpense = idx => { if(confirm('Eliminar egreso?')) { expenses.splice(idx,1); saveBalance(); renderBalance(); } };
+    window.deleteExpense = idx => {
+      if (confirm('Eliminar egreso?')) { expenses.splice(idx,1); saveBalance(); renderBalance(); }
+    };
 
-    // ---- Inventario ----
+    // Inventario
     let inventario = JSON.parse(localStorage.getItem('inv')) || [];
-    function saveInv(){ localStorage.setItem('inv', JSON.stringify(inventario)); }
-    function renderInv(){
+    function saveInv() { localStorage.setItem('inv', JSON.stringify(inventario)); }
+    function renderInv() {
       const t = document.getElementById('inventarioBody'); t.innerHTML = '';
-      inventario.forEach((v,i)=>{
+      inventario.forEach((v,i) => {
+        // sacamos ingreso/egreso acumulado para este nombre
         const ing = incomes.filter(x=>x.concept===v.nombre).reduce((s,x)=>s+x.amount,0);
         const eg  = expenses.filter(x=>x.concept===v.nombre).reduce((s,x)=>s+x.amount,0);
         let row = `<td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td>
@@ -277,7 +268,7 @@
         t.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
       });
     }
-    document.getElementById('formInventario').onsubmit = e=>{
+    document.getElementById('formInventario').onsubmit = e => {
       e.preventDefault();
       inventario.push({
         item:     document.getElementById('itemInv').value,
@@ -287,8 +278,8 @@
       });
       saveInv(); renderInv(); e.target.reset();
     };
-    window.delInv = i=>{ inventario.splice(i,1); saveInv(); renderInv(); };
-    window.editInv = i=>{
+    window.delInv = i => { inventario.splice(i,1); saveInv(); renderInv(); };
+    window.editInv = i => {
       const v = inventario.splice(i,1)[0];
       document.getElementById('itemInv').value     = v.item;
       document.getElementById('codigoInv').value   = v.codigo;
@@ -297,23 +288,24 @@
       saveInv(); renderInv();
     };
 
-    // ---- Gestión de Mercadería ----
+    // Gestión de Mercadería
     let gestion = JSON.parse(localStorage.getItem('ges')) || [];
-    function saveGes(){ localStorage.setItem('ges', JSON.stringify(gestion)); }
-    function refreshSelect(){
+    function saveGes() { localStorage.setItem('ges', JSON.stringify(gestion)); }
+    function refreshSelect() {
       const sel = document.getElementById('selProducto');
       sel.innerHTML = '<option value="" disabled selected>Selecciona Nombre</option>';
       inventario.forEach(v=> sel.innerHTML += `<option>${v.nombre}</option>`);
     }
-    document.getElementById('selProducto').onchange = e=>{
+    document.getElementById('selProducto').onchange = e => {
       const nom = e.target.value;
       const inv = inventario.find(x=>x.nombre===nom);
-      document.getElementById('ingresoG').value    = incomes.filter(x=>x.concept===nom).reduce((s,x)=>s+x.amount,0);
-      document.getElementById('saldoG').value      = inv ? inv.unidades : 0;
+      document.getElementById('ingresoG').value = incomes
+        .filter(x=>x.concept===nom).reduce((s,x)=>s+x.amount,0);
+      document.getElementById('saldoG').value = inv ? inv.unidades : 0;
     };
-    function renderGes(){
-      const t = document.getElementById('gestionBody'); t.innerHTML='';
-      gestion.forEach((p,i)=>{
+    function renderGes() {
+      const t = document.getElementById('gestionBody'); t.innerHTML = '';
+      gestion.forEach((p,i) => {
         const v1 = p.ingreso * p.venta;
         const v2 = p.precioVenta * p.saldo;
         let row = `<td>${i+1}</td><td>${p.producto}</td><td>${p.ingreso}</td>
@@ -323,28 +315,47 @@
         row += manageMode
           ? `<td>
                <button class="btn btn-sm btn-warning edit-btn" onclick="editGes(${i})">✎</button>
-               <button class="btn btn-sm btn-danger  delete-btn" onclick="delGes(${i})">🗑️</button>
+               <button class="btn btn-sm btn-danger delete-btn" onclick="delGes(${i})">🗑️</button>
              </td>`
           : `<td></td>`;
         t.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
       });
     }
-    document.getElementById('formGestion').onsubmit = e=>{
+
+    // Aquí el cambio: al añadir gestión se descuenta del inventario y jala el ingreso
+    document.getElementById('formGestion').onsubmit = e => {
       e.preventDefault();
-      const nom = document.getElementById('selProducto').value;
-      const inv = inventario.find(x=>x.nombre===nom);
-      gestion.push({
+      const nom       = document.getElementById('selProducto').value;
+      const inv       = inventario.find(x=>x.nombre===nom);
+      const ventaCant = parseInt(document.getElementById('ventaG').value,10);
+
+      // ingreso total acumulado
+      const ingresoTotal = incomes
+        .filter(x=>x.concept===nom)
+        .reduce((s,x)=>s+x.amount,0);
+
+      // descontar del inventario
+      if(inv) {
+        inv.unidades = Math.max(0, inv.unidades - ventaCant);
+        saveInv(); renderInv();
+      }
+
+      const p = {
         producto:     nom,
-        ingreso:      parseFloat(document.getElementById('ingresoG').value),
+        ingreso:      ingresoTotal,
         precioCompra: parseFloat(document.getElementById('precioCompraG').value),
-        venta:        parseInt(document.getElementById('ventaG').value,10),
+        venta:        ventaCant,
         precioVenta:  parseFloat(document.getElementById('precioVentaG').value),
         saldo:        inv ? inv.unidades : 0
-      });
-      saveGes(); renderGes(); e.target.reset();
+      };
+
+      gestion.push(p);
+      saveGes(); renderGes();
+      e.target.reset();
     };
-    window.delGes = i=>{ gestion.splice(i,1); saveGes(); renderGes(); };
-    window.editGes = i=>{
+
+    window.delGes = i => { gestion.splice(i,1); saveGes(); renderGes(); };
+    window.editGes = i => {
       const p = gestion.splice(i,1)[0];
       document.getElementById('selProducto').value     = p.producto;
       document.getElementById('ingresoG').value        = p.ingreso;
@@ -355,8 +366,7 @@
       saveGes(); renderGes();
     };
 
-    // Render de todo
-    function renderAll(){
+    function renderAll() {
       renderBalance();
       renderInv();
       refreshSelect();
@@ -364,7 +374,10 @@
     }
     window.onload = renderAll;
 
+    // Funciones de editar/eliminar balance
+    // (idénticas a las que ya estaban arriba)
   </script>
 </body>
 </html>
+
 
