@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -10,372 +10,402 @@
     .panel { background: #fff; border-radius: .5rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .edit-btn, .delete-btn { visibility: hidden; }
     .manage-mode .edit-btn, .manage-mode .delete-btn { visibility: visible; }
+    /* Sidebar */
+    .offcanvas-start { width: 250px; }
   </style>
 </head>
 <body>
-<div class="container py-4">
 
-  <!-- Gestionar global -->
-  <div class="text-end mb-4">
-    <button id="manageBtn" class="btn btn-warning">Gestionar (✎/🗑️)</button>
-  </div>
+  <!-- Botón hamburguesa -->
+  <button class="btn btn-outline-dark m-3" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+    ☰ Menú
+  </button>
 
-  <!-- 1) Ingresos -->
-  <div class="panel" id="incomePanel">
-    <h4>Registro de Ingresos</h4>
-    <form id="incomeForm" class="row g-2 mb-3">
-      <div class="col-md-2"><input type="date" id="incomeDate" class="form-control" required></div>
-      <div class="col-md-6"><input type="text" id="incomeConcept" class="form-control" placeholder="Concepto" required></div>
-      <div class="col-md-2"><input type="number" step="0.01" id="incomeAmount" class="form-control" placeholder="Monto" required></div>
-      <div class="col-md-2"><button type="submit" class="btn btn-success w-100">Agregar</button></div>
-    </form>
-    <div class="mb-2">Total Ingresos: <span id="totalIncome">$0.00</span></div>
-    <table class="table table-sm">
-      <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
-      <tbody id="incomesList"></tbody>
-    </table>
-  </div>
-
-  <!-- 2) Egresos -->
-  <div class="panel" id="expensePanel">
-    <h4>Registro de Egresos</h4>
-    <form id="expenseForm" class="row g-2 mb-3">
-      <div class="col-md-2"><input type="date" id="expenseDate" class="form-control" required></div>
-      <div class="col-md-6"><input type="text" id="expenseConcept" class="form-control" placeholder="Concepto" required></div>
-      <div class="col-md-2"><input type="number" step="0.01" id="expenseAmount" class="form-control" placeholder="Monto" required></div>
-      <div class="col-md-2"><button type="submit" class="btn btn-danger w-100">Agregar</button></div>
-    </form>
-    <div class="mb-2">Total Egresos: <span id="totalExpense">$0.00</span></div>
-    <table class="table table-sm">
-      <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
-      <tbody id="expensesList"></tbody>
-    </table>
-  </div>
-
-  <!-- 3) Resumen por Fecha -->
-  <div class="panel" id="summaryPanel">
-    <h4>Resumen por Fecha</h4>
-    <div class="row g-2 mb-3">
-      <div class="col-md-3"><input type="date" id="searchDate" class="form-control"></div>
-      <div class="col-md-3"><button id="btnSearch" class="btn btn-primary w-100">Buscar</button></div>
-      <div class="col-md-3"><button id="btnClear" class="btn btn-secondary w-100">Limpiar</button></div>
+  <!-- Offcanvas Sidebar -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarLabel">𝐌𝐆 𝐀𝐔𝐓𝐎𝐌𝐎𝐓𝐑𝐈𝐙</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
     </div>
-    <table class="table table-sm">
-      <thead><tr><th>Ingreso</th><th>Egreso</th><th>Saldo</th></tr></thead>
-      <tbody id="searchResults"></tbody>
-    </table>
-  </div>
-
-  <!-- 4) Inventario -->
-  <div class="panel" id="inventarioSection">
-    <h4>Inventario</h4>
-    <form id="formInventario" class="row g-2 mb-3">
-      <div class="col-md-2"><input type="text" id="itemInv" class="form-control" placeholder="Item" required></div>
-      <div class="col-md-2"><input type="text" id="codigoInv" class="form-control" placeholder="Código" required></div>
-      <div class="col-md-4"><input type="text" id="nombreInv" class="form-control" placeholder="Nombre" required></div>
-      <div class="col-md-2"><input type="number" id="unidadesInv" class="form-control" placeholder="Unidades" required></div>
-      <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Agregar</button></div>
-    </form>
-    <table class="table table-sm text-center">
-      <thead><tr><th>Item</th><th>Código</th><th>Nombre</th><th>Unidades</th><th>Acciones</th></tr></thead>
-      <tbody id="inventarioBody"></tbody>
-    </table>
-  </div>
-
-  <!-- 5) Gestión de Mercadería -->
-  <div class="panel" id="gestionSection">
-    <h4>📦 Gestión de Mercadería</h4>
-    <form id="formGestion" class="row g-2 mb-3">
-      <div class="col-md-2"><input type="date" id="gestionDate" class="form-control" required></div>
-      <div class="col-md-3"><input type="text" id="prodG" class="form-control" placeholder="Producto" required></div>
-      <div class="col-md-1"><input type="number" id="ingresoG" class="form-control" placeholder="Ingreso" readonly></div>
-      <div class="col-md-1"><input type="number" step="0.01" id="costoG" class="form-control" placeholder="Costo" required></div>
-      <div class="col-md-1"><input type="number" id="ventaG" class="form-control" placeholder="Venta" required></div>
-      <div class="col-md-1"><input type="number" step="0.01" id="precioVentaG" class="form-control" placeholder="Precio Vta" required></div>
-      <div class="col-md-1"><input type="number" id="saldoG" class="form-control" placeholder="Saldo" readonly></div>
-      <div class="col-md-2"><button type="submit" class="btn btn-success w-100">+ Agregar</button></div>
-    </form>
-    <!-- búsqueda por fecha en gestión -->
-    <div class="mb-3">
-      <input type="date" id="searchGestionDate" class="form-control d-inline-block w-auto">
-      <button id="btnSearchGes" class="btn btn-outline-primary">Buscar Gestión</button>
-      <button id="btnClearGes" class="btn btn-outline-secondary">Limpiar</button>
+    <div class="offcanvas-body px-0">
+      <nav class="nav flex-column">
+        <a class="nav-link" href="#incomePanel" data-bs-dismiss="offcanvas">Ingresos</a>
+        <a class="nav-link" href="#expensePanel" data-bs-dismiss="offcanvas">Egresos</a>
+        <a class="nav-link" href="#summaryPanel" data-bs-dismiss="offcanvas">Resumen</a>
+        <a class="nav-link" href="#inventarioSection" data-bs-dismiss="offcanvas">Inventario</a>
+        <a class="nav-link" href="#gestionSection" data-bs-dismiss="offcanvas">Gestión</a>
+      </nav>
     </div>
-    <table class="table table-sm text-center">
-      <thead class="table-dark"><tr>
-        <th>#</th><th>Fecha</th><th>Producto</th><th>Ingreso</th><th>Costo</th>
-        <th>Venta</th><th>Precio Vta</th><th>Saldo</th>
-        <th>Val.1</th><th>Val.2</th><th>Acciones</th>
-      </tr></thead>
-      <tbody id="gestionBody"></tbody>
-    </table>
   </div>
 
-</div>
+  <div class="container py-4">
 
-<script>
-  const PASSWORD = 'fernandez123';
-  let manageMode = false;
-  const container = document.querySelector('.container');
-  document.getElementById('manageBtn').onclick = () => {
-    if(!manageMode){
-      const p = prompt('Contraseña:');
-      if(p===PASSWORD){
-        manageMode=true;
-        container.classList.add('manage-mode');
-        document.getElementById('manageBtn').textContent='Salir Gestión';
+    <!-- Gestionar global -->
+    <div class="text-end mb-4">
+      <button id="manageBtn" class="btn btn-warning">Gestionar (✎/🗑️)</button>
+    </div>
+
+    <!-- 1) Ingresos -->
+    <div class="panel" id="incomePanel">
+      <h4>Registro de Ingresos</h4>
+      <form id="incomeForm" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="date" id="incomeDate" class="form-control" required></div>
+        <div class="col-md-6"><input type="text" id="incomeConcept" class="form-control" placeholder="Concepto" required></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="incomeAmount" class="form-control" placeholder="Monto" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-success w-100">Agregar</button></div>
+      </form>
+      <div class="mb-2">Total Ingresos: <span id="totalIncome">$0.00</span></div>
+      <table class="table table-sm">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
+        <tbody id="incomesList"></tbody>
+      </table>
+    </div>
+
+    <!-- 2) Egresos -->
+    <div class="panel" id="expensePanel">
+      <h4>Registro de Egresos</h4>
+      <form id="expenseForm" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="date" id="expenseDate" class="form-control" required></div>
+        <div class="col-md-6"><input type="text" id="expenseConcept" class="form-control" placeholder="Concepto" required></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="expenseAmount" class="form-control" placeholder="Monto" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-danger w-100">Agregar</button></div>
+      </form>
+      <div class="mb-2">Total Egresos: <span id="totalExpense">$0.00</span></div>
+      <table class="table table-sm">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
+        <tbody id="expensesList"></tbody>
+      </table>
+    </div>
+
+    <!-- 3) Resumen por Fecha -->
+    <div class="panel" id="summaryPanel">
+      <h4>Resumen por Fecha</h4>
+      <div class="row g-2 mb-3">
+        <div class="col-md-3"><input type="date" id="searchDate" class="form-control"></div>
+        <div class="col-md-3"><button id="btnSearch" class="btn btn-primary w-100">Buscar</button></div>
+        <div class="col-md-3"><button id="btnClear" class="btn btn-secondary w-100">Limpiar</button></div>
+      </div>
+      <table class="table table-sm">
+        <thead><tr><th>Ingreso</th><th>Egreso</th><th>Saldo</th></tr></thead>
+        <tbody id="searchResults"></tbody>
+      </table>
+    </div>
+
+    <!-- 4) Inventario -->
+    <div class="panel" id="inventarioSection">
+      <h4>Inventario</h4>
+      <form id="formInventario" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="text" id="itemInv" class="form-control" placeholder="Item" required></div>
+        <div class="col-md-2"><input type="text" id="codigoInv" class="form-control" placeholder="Código" required></div>
+        <div class="col-md-4"><input type="text" id="nombreInv" class="form-control" placeholder="Nombre" required></div>
+        <div class="col-md-2"><input type="number" id="unidadesInv" class="form-control" placeholder="Unidades" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Agregar</button></div>
+      </form>
+      <table class="table table-sm text-center">
+        <thead><tr><th>Item</th><th>Código</th><th>Nombre</th><th>Unidades</th><th>Acciones</th></tr></thead>
+        <tbody id="inventarioBody"></tbody>
+      </table>
+    </div>
+
+    <!-- 5) Gestión de Mercadería -->
+    <div class="panel" id="gestionSection">
+      <h4>📦 Gestión de Mercadería</h4>
+      <form id="formGestion" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="date" id="gestionDate" class="form-control" required></div>
+        <div class="col-md-3"><input type="text" id="prodG" class="form-control" placeholder="Producto" required></div>
+        <div class="col-md-1"><input type="number" id="ingresoG" class="form-control" placeholder="Ingreso" readonly></div>
+        <div class="col-md-1"><input type="number" step="0.01" id="costoG" class="form-control" placeholder="Costo" required></div>
+        <div class="col-md-1"><input type="number" id="ventaG" class="form-control" placeholder="Venta" required></div>
+        <div class="col-md-1"><input type="number" step="0.01" id="precioVentaG" class="form-control" placeholder="Precio Vta" required></div>
+        <div class="col-md-1"><input type="number" id="saldoG" class="form-control" placeholder="Saldo" readonly></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-success w-100">+ Agregar</button></div>
+      </form>
+      <div class="mb-3">
+        <input type="date" id="searchGestionDate" class="form-control d-inline-block w-auto">
+        <button id="btnSearchGes" class="btn btn-outline-primary">Buscar Gestión</button>
+        <button id="btnClearGes" class="btn btn-outline-secondary">Limpiar</button>
+      </div>
+      <table class="table table-sm text-center">
+        <thead class="table-dark"><tr>
+          <th>#</th><th>Fecha</th><th>Producto</th><th>Ingreso</th><th>Costo</th>
+          <th>Venta</th><th>Precio Vta</th><th>Saldo</th>
+          <th>Val.1</th><th>Val.2</th><th>Acciones</th>
+        </tr></thead>
+        <tbody id="gestionBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const PASSWORD = 'fernandez123';
+    let manageMode = false;
+    const container = document.querySelector('.container');
+    document.getElementById('manageBtn').onclick = () => {
+      if (!manageMode) {
+        const p = prompt('Contraseña:');
+        if (p === PASSWORD) {
+          manageMode = true;
+          container.classList.add('manage-mode');
+          document.getElementById('manageBtn').textContent = 'Salir Gestión';
+        }
+      } else {
+        manageMode = false;
+        container.classList.remove('manage-mode');
+        document.getElementById('manageBtn').textContent = 'Gestionar (✎/🗑️)';
       }
-    } else {
-      manageMode=false;
-      container.classList.remove('manage-mode');
-      document.getElementById('manageBtn').textContent='Gestionar (✎/🗑️)';
+    };
+
+    const K_INC='inc', K_EXP='exp', K_INV='inv', K_GES='ges';
+    let incomes=JSON.parse(localStorage.getItem(K_INC))||[],
+        expenses=JSON.parse(localStorage.getItem(K_EXP))||[],
+        inventory=JSON.parse(localStorage.getItem(K_INV))||[],
+        gestion=JSON.parse(localStorage.getItem(K_GES))||[];
+
+    const saveAll=_=>{
+      localStorage.setItem(K_INC,JSON.stringify(incomes));
+      localStorage.setItem(K_EXP,JSON.stringify(expenses));
+      localStorage.setItem(K_INV,JSON.stringify(inventory));
+      localStorage.setItem(K_GES,JSON.stringify(gestion));
+    };
+
+    // Render Ingresos
+    function renderIncomes(){
+      const t=document.getElementById('incomesList'); t.innerHTML='';
+      incomes.forEach((i,idx)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td>${i.date}</td>
+          <td>${i.concept}</td>
+          <td>$${i.amount.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editIncome(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteIncome(${idx})">🗑️</button>
+          </td>`;
+        t.append(tr);
+      });
+      document.getElementById('totalIncome').textContent = `$${incomes.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
     }
-  };
+    document.getElementById('incomeForm').onsubmit=e=>{
+      e.preventDefault();
+      incomes.push({
+        date:document.getElementById('incomeDate').value,
+        concept:document.getElementById('incomeConcept').value,
+        amount:parseFloat(document.getElementById('incomeAmount').value)
+      });
+      saveAll(); renderIncomes(); renderSummary(); e.target.reset();
+    };
+    window.editIncome=idx=>{
+      const i=incomes[idx];
+      const d=prompt('Fecha',i.date); if(!d)return;
+      const c=prompt('Concepto',i.concept); if(c===null)return;
+      const a=parseFloat(prompt('Monto',i.amount)); if(isNaN(a))return;
+      incomes[idx]={date:d,concept:c,amount:a};
+      saveAll(); renderIncomes(); renderSummary();
+    };
+    window.deleteIncome=idx=>{
+      if(confirm('Eliminar ingreso?')){
+        incomes.splice(idx,1);
+        saveAll(); renderIncomes(); renderSummary();
+      }
+    };
 
-  // storage keys
-  const K_INC='inc', K_EXP='exp', K_INV='inv', K_GES='ges';
-  let incomes=JSON.parse(localStorage.getItem(K_INC))||[];
-  let expenses=JSON.parse(localStorage.getItem(K_EXP))||[];
-  let inventory=JSON.parse(localStorage.getItem(K_INV))||[];
-  let gestion=JSON.parse(localStorage.getItem(K_GES))||[];
+    // Render Egresos
+    function renderExpenses(){
+      const t=document.getElementById('expensesList'); t.innerHTML='';
+      expenses.forEach((e,idx)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td>${e.date}</td>
+          <td>${e.concept}</td>
+          <td>$${e.amount.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editExpense(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteExpense(${idx})">🗑️</button>
+          </td>`;
+        t.append(tr);
+      });
+      document.getElementById('totalExpense').textContent = `$${expenses.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
+    }
+    document.getElementById('expenseForm').onsubmit=e=>{
+      e.preventDefault();
+      expenses.push({
+        date:document.getElementById('expenseDate').value,
+        concept:document.getElementById('expenseConcept').value,
+        amount:parseFloat(document.getElementById('expenseAmount').value)
+      });
+      saveAll(); renderExpenses(); renderSummary(); e.target.reset();
+    };
+    window.editExpense=idx=>{
+      const ex=expenses[idx];
+      const d=prompt('Fecha',ex.date); if(!d)return;
+      const c=prompt('Concepto',ex.concept); if(c===null)return;
+      const a=parseFloat(prompt('Monto',ex.amount)); if(isNaN(a))return;
+      expenses[idx]={date:d,concept:c,amount:a};
+      saveAll(); renderExpenses(); renderSummary();
+    };
+    window.deleteExpense=idx=>{
+      if(confirm('Eliminar egreso?')){
+        expenses.splice(idx,1);
+        saveAll(); renderExpenses(); renderSummary();
+      }
+    };
 
-  function saveAll(){
-    localStorage.setItem(K_INC,JSON.stringify(incomes));
-    localStorage.setItem(K_EXP,JSON.stringify(expenses));
-    localStorage.setItem(K_INV,JSON.stringify(inventory));
-    localStorage.setItem(K_GES,JSON.stringify(gestion));
-  }
-
-  // 1) Ingresos
-  function renderIncomes(){
-    const t=document.getElementById('incomesList'); t.innerHTML='';
-    incomes.forEach((i,idx)=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${i.date}</td>
-        <td>${i.concept}</td>
-        <td>$${i.amount.toFixed(2)}</td>
-        <td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editIncome(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteIncome(${idx})">🗑️</button>
-        </td>`;
-      t.append(tr);
-    });
-    document.getElementById('totalIncome').textContent=`$${incomes.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
-  }
-  document.getElementById('incomeForm').onsubmit=e=>{
-    e.preventDefault();
-    incomes.push({
-      date:document.getElementById('incomeDate').value,
-      concept:document.getElementById('incomeConcept').value,
-      amount:parseFloat(document.getElementById('incomeAmount').value)
-    });
-    saveAll(); renderIncomes(); renderSummary(); e.target.reset();
-  };
-  window.editIncome=idx=>{
-    const i=incomes[idx];
-    const d=prompt('Fecha',i.date); if(!d) return;
-    const c=prompt('Concepto',i.concept); if(c===null) return;
-    const a=parseFloat(prompt('Monto',i.amount)); if(isNaN(a)) return;
-    incomes[idx]={date:d,concept:c,amount:a};
-    saveAll(); renderIncomes(); renderSummary();
-  };
-  window.deleteIncome=idx=>{
-    if(confirm('Eliminar ingreso?')){ incomes.splice(idx,1); saveAll(); renderIncomes(); renderSummary(); }
-  };
-
-  // 2) Egresos
-  function renderExpenses(){
-    const t=document.getElementById('expensesList'); t.innerHTML='';
-    expenses.forEach((e,idx)=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${e.date}</td>
-        <td>${e.concept}</td>
-        <td>$${e.amount.toFixed(2)}</td>
-        <td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editExpense(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteExpense(${idx})">🗑️</button>
-        </td>`;
-      t.append(tr);
-    });
-    document.getElementById('totalExpense').textContent=`$${expenses.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
-  }
-  document.getElementById('expenseForm').onsubmit=e=>{
-    e.preventDefault();
-    expenses.push({
-      date:document.getElementById('expenseDate').value,
-      concept:document.getElementById('expenseConcept').value,
-      amount:parseFloat(document.getElementById('expenseAmount').value)
-    });
-    saveAll(); renderExpenses(); renderSummary(); e.target.reset();
-  };
-  window.editExpense=idx=>{
-    const ex=expenses[idx];
-    const d=prompt('Fecha',ex.date); if(!d) return;
-    const c=prompt('Concepto',ex.concept); if(c===null) return;
-    const a=parseFloat(prompt('Monto',ex.amount)); if(isNaN(a)) return;
-    expenses[idx]={date:d,concept:c,amount:a};
-    saveAll(); renderExpenses(); renderSummary();
-  };
-  window.deleteExpense=idx=>{
-    if(confirm('Eliminar egreso?')){ expenses.splice(idx,1); saveAll(); renderExpenses(); renderSummary(); }
-  };
-
-  // 3) Resumen por Fecha
-  function renderSummary(){
-    const tbody=document.getElementById('searchResults'); tbody.innerHTML='';
-    const dates=new Set([...incomes.map(i=>i.date),...expenses.map(e=>e.date)]);
-    Array.from(dates).sort().forEach(d=>{
+    // Resumen por Fecha
+    function renderSummary(){
+      const tbody=document.getElementById('searchResults'); tbody.innerHTML='';
+      const dates=new Set([...incomes.map(i=>i.date),...expenses.map(e=>e.date)]);
+      Array.from(dates).sort().forEach(d=>{
+        const inc=incomes.filter(i=>i.date===d).reduce((s,x)=>s+x.amount,0);
+        const exp=expenses.filter(e=>e.date===d).reduce((s,x)=>s+x.amount,0);
+        const sal=inc-exp;
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>$${inc.toFixed(2)}</td><td>$${exp.toFixed(2)}</td><td>$${sal.toFixed(2)}</td>`;
+        tbody.append(tr);
+      });
+    }
+    document.getElementById('btnSearch').onclick=e=>{
+      e.preventDefault();
+      const d=document.getElementById('searchDate').value;
       const inc=incomes.filter(i=>i.date===d).reduce((s,x)=>s+x.amount,0);
       const exp=expenses.filter(e=>e.date===d).reduce((s,x)=>s+x.amount,0);
       const sal=inc-exp;
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td>$${inc.toFixed(2)}</td><td>$${exp.toFixed(2)}</td><td>$${sal.toFixed(2)}</td>`;
-      tbody.append(tr);
-    });
-  }
-  document.getElementById('btnSearch').onclick=e=>{
-    e.preventDefault();
-    const d=document.getElementById('searchDate').value;
-    const inc=incomes.filter(i=>i.date===d).reduce((s,x)=>s+x.amount,0);
-    const exp=expenses.filter(e=>e.date===d).reduce((s,x)=>s+x.amount,0);
-    const sal=inc-exp;
-    document.getElementById('searchResults').innerHTML=`
-      <tr><td>$${inc.toFixed(2)}</td><td>$${exp.toFixed(2)}</td><td>$${sal.toFixed(2)}</td></tr>`;
-  };
-  document.getElementById('btnClear').onclick=e=>{
-    e.preventDefault();
-    document.getElementById('searchDate').value='';
-    renderSummary();
-  };
+      document.getElementById('searchResults').innerHTML=`
+        <tr><td>$${inc.toFixed(2)}</td><td>$${exp.toFixed(2)}</td><td>$${sal.toFixed(2)}</td></tr>`;
+    };
+    document.getElementById('btnClear').onclick=e=>{
+      e.preventDefault();
+      document.getElementById('searchDate').value='';
+      renderSummary();
+    };
 
-  // 4) Inventario
-  function renderInv(){
-    const t=document.getElementById('inventarioBody'); t.innerHTML='';
-    inventory.forEach((v,idx)=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td><td>${v.unidades}</td>
-        <td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editInv(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteInv(${idx})">🗑️</button>
-        </td>`;
-      t.append(tr);
-    });
-  }
-  document.getElementById('formInventario').onsubmit=e=>{
-    e.preventDefault();
-    inventory.push({
-      item:document.getElementById('itemInv').value,
-      codigo:document.getElementById('codigoInv').value,
-      nombre:document.getElementById('nombreInv').value,
-      unidades:parseInt(document.getElementById('unidadesInv').value,10)
-    });
-    saveAll(); renderInv(); e.target.reset();
-  };
-  window.editInv=idx=>{
-    const v=inventory[idx];
-    document.getElementById('itemInv').value=v.item;
-    document.getElementById('codigoInv').value=v.codigo;
-    document.getElementById('nombreInv').value=v.nombre;
-    document.getElementById('unidadesInv').value=v.unidades;
-    inventory.splice(idx,1);
-    saveAll(); renderInv();
-  };
-  window.deleteInv=idx=>{
-    if(confirm('Eliminar inventario?')){
+    // Inventario
+    function renderInv(){
+      const t=document.getElementById('inventarioBody'); t.innerHTML='';
+      inventory.forEach((v,idx)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td><td>${v.unidades}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editInv(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteInv(${idx})">🗑️</button>
+          </td>`;
+        t.append(tr);
+      });
+    }
+    document.getElementById('formInventario').onsubmit=e=>{
+      e.preventDefault();
+      inventory.push({
+        item:document.getElementById('itemInv').value,
+        codigo:document.getElementById('codigoInv').value,
+        nombre:document.getElementById('nombreInv').value,
+        unidades:parseInt(document.getElementById('unidadesInv').value,10)
+      });
+      saveAll(); renderInv(); e.target.reset();
+    };
+    window.editInv=idx=>{
+      const v=inventory[idx];
+      document.getElementById('itemInv').value=v.item;
+      document.getElementById('codigoInv').value=v.codigo;
+      document.getElementById('nombreInv').value=v.nombre;
+      document.getElementById('unidadesInv').value=v.unidades;
       inventory.splice(idx,1);
       saveAll(); renderInv();
-    }
-  };
+    };
+    window.deleteInv=idx=>{
+      if(confirm('Eliminar inventario?')){
+        inventory.splice(idx,1);
+        saveAll(); renderInv();
+      }
+    };
 
-  // 5) Gestión de Mercadería
-  function renderGestion(){
-    const t=document.getElementById('gestionBody'); t.innerHTML='';
-    gestion.forEach((g,idx)=>{
-      const val1=g.ingreso*g.venta;
-      const val2=g.precioVenta*g.saldo;
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${idx+1}</td><td>${g.date}</td><td>${g.producto}</td><td>${g.ingreso}</td>
-        <td>S/ ${g.costo.toFixed(2)}</td><td>${g.venta}</td><td>S/ ${g.precioVenta.toFixed(2)}</td>
-        <td>${g.saldo}</td><td>${val1}</td><td>S/ ${val2.toFixed(2)}</td>
-        <td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${idx})">🗑️</button>
-        </td>`;
-      t.append(tr);
-    });
-  }
-  document.getElementById('formGestion').onsubmit=e=>{
-    e.preventDefault();
-    const date=document.getElementById('gestionDate').value;
-    const prod=document.getElementById('prodG').value;
-    const costo=parseFloat(document.getElementById('costoG').value);
-    const venta=parseInt(document.getElementById('ventaG').value,10);
-    const precioVenta=parseFloat(document.getElementById('precioVentaG').value);
-    // ingreso y egreso acumulados
-    const ingresoTot=incomes.filter(i=>i.concept===prod).reduce((s,x)=>s+x.amount,0);
-    const egTot=expenses.filter(e=>e.concept===prod).reduce((s,x)=>s+x.amount,0);
-    const saldo=ingresoTot-egTot;
-    // descontar inventario
-    const inv=inventory.find(x=>x.nombre===prod);
-    if(inv) inv.unidades=Math.max(0,inv.unidades-venta);
-    gestion.push({ date, producto:prod, ingreso:ingresoTot, costo, venta, precioVenta, saldo });
-    saveAll(); renderInv(); renderGestion();
-    e.target.reset();
-  };
-  window.editGestion=idx=>{
-    const g=gestion.splice(idx,1)[0];
-    document.getElementById('gestionDate').value=g.date;
-    document.getElementById('prodG').value=g.producto;
-    document.getElementById('costoG').value=g.costo;
-    document.getElementById('ventaG').value=g.venta;
-    document.getElementById('precioVentaG').value=g.precioVenta;
-    document.getElementById('saldoG').value=g.saldo;
-    saveAll(); renderGestion();
-  };
-  window.deleteGestion=idx=>{
-    if(confirm('Eliminar gestión?')){
-      gestion.splice(idx,1);
+    // Gestión de Mercadería
+    function renderGestion(){
+      const t=document.getElementById('gestionBody'); t.innerHTML='';
+      gestion.forEach((g,idx)=>{
+        const val1=g.ingreso*g.venta;
+        const val2=g.precioVenta*g.saldo;
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td>${idx+1}</td><td>${g.date}</td><td>${g.producto}</td><td>${g.ingreso}</td>
+          <td>S/ ${g.costo.toFixed(2)}</td><td>${g.venta}</td><td>S/ ${g.precioVenta.toFixed(2)}</td>
+          <td>${g.saldo}</td><td>${val1}</td><td>S/ ${val2.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${idx})">🗑️</button>
+          </td>`;
+        t.append(tr);
+      });
+    }
+    document.getElementById('formGestion').onsubmit=e=>{
+      e.preventDefault();
+      const date=document.getElementById('gestionDate').value;
+      const prod=document.getElementById('prodG').value;
+      const costo=parseFloat(document.getElementById('costoG').value);
+      const venta=parseInt(document.getElementById('ventaG').value,10);
+      const precioVenta=parseFloat(document.getElementById('precioVentaG').value);
+      const ingresoTot=incomes.filter(i=>i.concept===prod).reduce((s,x)=>s+x.amount,0);
+      const egTot=expenses.filter(e=>e.concept===prod).reduce((s,x)=>s+ x.amount,0);
+      const saldo=ingresoTot-egTot;
+      const inv=inventory.find(x=>x.nombre===prod);
+      if(inv) inv.unidades=Math.max(0,inv.unidades-venta);
+      gestion.push({ date, producto:prod, ingreso:ingresoTot, costo, venta, precioVenta, saldo });
+      saveAll(); renderInv(); renderGestion();
+      e.target.reset();
+    };
+    window.editGestion=idx=>{
+      const g=gestion.splice(idx,1)[0];
+      document.getElementById('gestionDate').value=g.date;
+      document.getElementById('prodG').value=g.producto;
+      document.getElementById('costoG').value=g.costo;
+      document.getElementById('ventaG').value=g.venta;
+      document.getElementById('precioVentaG').value=g.precioVenta;
+      document.getElementById('saldoG').value=g.saldo;
       saveAll(); renderGestion();
-    }
-  };
-  // Buscar Gestión por Fecha
-  document.getElementById('btnSearchGes').onclick=e=>{
-    e.preventDefault();
-    const d=document.getElementById('searchGestionDate').value;
-    const t=document.getElementById('gestionBody'); t.innerHTML='';
-    gestion.filter(g=>g.date===d).forEach((g,idx)=>{
-      const val1=g.ingreso*g.venta, val2=g.precioVenta*g.saldo;
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${idx+1}</td><td>${g.date}</td><td>${g.producto}</td><td>${g.ingreso}</td>
-        <td>S/ ${g.costo.toFixed(2)}</td><td>${g.venta}</td><td>S/ ${g.precioVenta.toFixed(2)}</td>
-        <td>${g.saldo}</td><td>${val1}</td><td>S/ ${val2.toFixed(2)}</td>
-        <td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${idx})">🗑️</button>
-        </td>`;
-      t.append(tr);
-    });
-  };
-  document.getElementById('btnClearGes').onclick=e=>{
-    e.preventDefault();
-    document.getElementById('searchGestionDate').value='';
-    renderGestion();
-  };
+    };
+    window.deleteGestion=idx=>{
+      if(confirm('Eliminar gestión?')){
+        gestion.splice(idx,1);
+        saveAll(); renderGestion();
+      }
+    };
+    document.getElementById('btnSearchGes').onclick=e=>{
+      e.preventDefault();
+      const d=document.getElementById('searchGestionDate').value;
+      const t=document.getElementById('gestionBody'); t.innerHTML='';
+      gestion.filter(g=>g.date===d).forEach((g,idx)=>{
+        const val1=g.ingreso*g.venta, val2=g.precioVenta*g.saldo;
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td>${idx+1}</td><td>${g.date}</td><td>${g.producto}</td><td>${g.ingreso}</td>
+          <td>S/ ${g.costo.toFixed(2)}</td><td>${g.venta}</td><td>S/ ${g.precioVenta.toFixed(2)}</td>
+          <td>${g.saldo}</td><td>${val1}</td><td>S/ ${val2.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${idx})">🗑️</button>
+          </td>`;
+        t.append(tr);
+      });
+    };
+    document.getElementById('btnClearGes').onclick=e=>{
+      e.preventDefault();
+      document.getElementById('searchGestionDate').value='';
+      renderGestion();
+    };
 
-  // inicial
-  function renderAll(){
-    renderIncomes(); renderExpenses(); renderSummary();
-    renderInv(); renderGestion();
-  }
-  window.onload=renderAll;
-</script>
+    function renderAll(){
+      renderIncomes();
+      renderExpenses();
+      renderSummary();
+      renderInv();
+      renderGestion();
+    }
+    window.onload=renderAll;
+  </script>
 </body>
 </html>
+
 
 
 
