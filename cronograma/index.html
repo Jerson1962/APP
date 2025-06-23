@@ -10,12 +10,10 @@
       min-height: 100vh;
       margin: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, #0a3d0a, #000000);
       color: #333;
-      padding: 2rem;
     }
     .card {
       width: 100%;
@@ -24,7 +22,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       background: #fff;
       overflow: hidden;
-      margin-bottom: 2rem;
     }
     .logo {
       display: block;
@@ -62,7 +59,6 @@
 </head>
 <body>
 
-  <!-- Login / Registro Card -->
   <div class="card">
     <div class="logo"></div>
     <div class="tabs">
@@ -105,20 +101,11 @@
     </div>
   </div>
 
-  <!-- Panel de administración -->
-  <div id="adminPanel" class="card" style="display: none;">
-    <div class="p-3">
-      <h5 class="text-center mb-3">Usuarios que ingresaron</h5>
-      <ul id="userList" class="list-group mb-3"></ul>
-      <button class="btn btn-danger w-100" onclick="clearUserList()">Limpiar Lista</button>
-    </div>
-  </div>
-
   <script>
     // pestañas
-    const tabLogin = document.getElementById('tab-login');
+    const tabLogin    = document.getElementById('tab-login');
     const tabRegister = document.getElementById('tab-register');
-    const secLogin = document.getElementById('section-login');
+    const secLogin    = document.getElementById('section-login');
     const secRegister = document.getElementById('section-register');
 
     tabLogin.addEventListener('click', () => {
@@ -127,7 +114,6 @@
       secLogin.classList.add('active');
       secRegister.classList.remove('active');
     });
-
     tabRegister.addEventListener('click', () => {
       tabRegister.classList.add('active');
       tabLogin.classList.remove('active');
@@ -140,75 +126,29 @@
       return email.trim().toLowerCase().endsWith('@mg.pe');
     }
 
-    // Guardar correo en localStorage
-    function saveEmail(email) {
-      let list = JSON.parse(localStorage.getItem('mg_users') || '[]');
-      if (!list.includes(email)) {
-        list.push(email);
-        localStorage.setItem('mg_users', JSON.stringify(list));
-      }
-    }
-
-    // Mostrar correos si es admin
-    function showAdminPanel() {
-      const adminPanel = document.getElementById('adminPanel');
-      const userList = document.getElementById('userList');
-      let users = JSON.parse(localStorage.getItem('mg_users') || '[]');
-      userList.innerHTML = '';
-      users.forEach(email => {
-        const li = document.createElement('li');
-        li.textContent = email;
-        li.classList.add('list-group-item');
-        userList.appendChild(li);
-      });
-      adminPanel.style.display = 'block';
-    }
-
-    // Limpiar lista de usuarios
-    function clearUserList() {
-      if (confirm("¿Estás seguro de que deseas eliminar la lista?")) {
-        localStorage.removeItem('mg_users');
-        document.getElementById('userList').innerHTML = '';
-      }
-    }
-
-    // Login
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      const email = document.getElementById('loginEmail').value;
       if (!isValidMG(email)) {
-        alert('Sólo correos @mg.pe pueden ingresar.');
+        alert('Sólo correos  pueden ingresar.');
         return;
       }
-
-      saveEmail(email);
-
-      if (email === 'renzo@mg.pe') {
-        showAdminPanel();
-      } else {
-        window.location.href = 'cronograma.html';
-      }
+      // aquí podrías verificar contraseña contra base de datos
+      window.location.href = 'cronograma.html';
     });
 
-    // Registro
     document.getElementById('registerForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const email = document.getElementById('regEmail').value;
       if (!isValidMG(email)) {
-        alert('Debes usar un correo @mg.pe');
+        alert('Debes usar un correo ');
         return;
       }
-
-      saveEmail(email);
-
-      if (email === 'renzo@mg.pe') {
-        showAdminPanel();
-      } else {
-        window.location.href = 'cronograma.html';
-      }
+      // aquí podrías guardar los datos en localStorage o enviarlos a backend
+      window.location.href = 'cronograma.html';
     });
   </script>
 
 </body>
-</html>
+</html>  
 
