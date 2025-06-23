@@ -1,155 +1,138 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Gestión de Mercadería</title>
+  <title>Gestión y Registro de Mercadería</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #728abb;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(114, 100, 100, 0.473);
-    }
-    h2 {
-      font-weight: bold;
-    }
-    .form-control::placeholder {
-      font-size: 0.9rem;
-    }
-    .edit-btn,
-    .delete-btn {
-      visibility: hidden;
-    }
+    body { background-color: #728abb; padding: 2rem; }
+    .card { margin-bottom: 2rem; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+    .edit-btn, .delete-btn { visibility: hidden; }
   </style>
 </head>
 <body>
 
-  <!-- Menú desplegable -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">📦" 𝐌𝐆 𝐀𝐔𝐓𝐎𝐌𝐎𝐓𝐑𝐈𝐙 " 𝐆𝐄𝐒𝐓𝐈𝐎𝐍 </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
-              aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarMenu">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="cronograma.html">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="controlmercaderia.html">Control Mercadería</a></li>
-        </ul>
-      </div>
+  <!-- Contraseña Maestra -->
+  <div class="container">
+    <h2 class="text-white">🔐 Desbloquear Edición</h2>
+    <div class="input-group mb-4">
+      <input type="password" id="masterPassword" class="form-control" placeholder="Contraseña maestra">
+      <button class="btn btn-outline-light" onclick="unlockEditing()">Validar</button>
     </div>
-  </nav>
+  </div>
 
-  <div class="container mt-5">
-    <h2 class="mb-4 text-dark">📦 Gestión de Mercadería</h2>
-
-    <!-- contraseña universal -->
-    <div class="mb-3">
-      <input type="password" id="masterPassword" class="form-control"
-             placeholder="Ingrese contraseña para editar/eliminar">
-      <button class="btn btn-outline-primary mt-2" onclick="unlockEditing()">
-        Validar contraseña
-      </button>
-    </div>
-
-    <form id="formulario" class="row g-3">
-      <div class="col-md-2">
-        <input type="text" class="form-control" placeholder="Producto" id="producto" required>
-      </div>
-      <div class="col-md-1">
-        <input type="number" class="form-control" placeholder="Ingreso" id="ingreso" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" class="form-control" placeholder="Precio Compra" id="precioCompra" required>
-      </div>
-      <div class="col-md-1">
-        <input type="number" class="form-control" placeholder="Venta" id="venta" required>
-      </div>
-      <div class="col-md-2">
-        <input type="number" class="form-control" placeholder="Precio Venta" id="precioVenta" required>
-      </div>
-      <div class="col-md-1">
-        <div>
-          <a href="controlmercaderia.html" style="text-decoration: underline; font-size:0.9rem;">revisar</a>
-        </div>
-        <input type="number" class="form-control" placeholder="Saldo" id="saldo" required>
-      </div>
+  <!-- 1) GESTIÓN DE MERCADERÍA -->
+  <div class="container card bg-white p-4">
+    <h3>📦 Gestión de Mercadería</h3>
+    <form id="formGestion" class="row g-3 mb-4">
       <div class="col-md-3">
-        <button type="submit" class="btn btn-success w-100">+ Agregar Producto</button>
+        <input type="text" class="form-control" id="producto" placeholder="Producto" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" class="form-control" id="ingreso" placeholder="Ingreso" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" step="0.01" class="form-control" id="precioCompra" placeholder="Costo" required>
+      </div>
+      <div class="col-md-1">
+        <input type="number" class="form-control" id="venta" placeholder="Venta" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" step="0.01" class="form-control" id="precioVenta" placeholder="Precio Venta" required>
+      </div>
+      <div class="col-md-1">
+        <input type="number" class="form-control" id="saldo" placeholder="Saldo" required>
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-success w-100">+ Agregar</button>
       </div>
     </form>
 
-    <hr>
-
     <div class="table-responsive">
-      <table class="table table-striped table-bordered mt-3">
-        <thead class="table-dark text-center">
+      <table class="table table-striped table-bordered text-center">
+        <thead class="table-dark">
           <tr>
-            <th>Producto</th>
-            <th>Ingreso</th>
-            <th>Precio Compra</th>
-            <th>Venta</th>
-            <th>Precio Venta</th>
-            <th>Saldo</th>
-            <th>Validación 1<br><small>Ingreso * Venta</small></th>
-            <th>Validación 2<br><small>Precio Venta * Saldo</small></th>
+            <th>#</th><th>Producto</th><th>Ingreso</th><th>Costo</th>
+            <th>Venta</th><th>Precio Venta</th><th>Saldo</th>
+            <th>Val.1<br><small>Ingreso×Venta</small></th>
+            <th>Val.2<br><small>PrecioVenta×Saldo</small></th>
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tablaBody" class="text-center"></tbody>
+        <tbody id="gestionBody"></tbody>
       </table>
     </div>
   </div>
 
-  <!-- Modal de alerta -->
-  <div class="modal fade" id="alertaModal" tabindex="-1" aria-labelledby="alertaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-warning">
-        <div class="modal-header bg-warning text-dark">
-          <h5 class="modal-title" id="alertaLabel">⚠️ Stock Bajo</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          El producto <strong id="nombreProductoAlerta"></strong> tiene un <strong>saldo bajo</strong> (≤ 5 unidades).<br>
-          💡 Se recomienda <strong>comprar más</strong> y <strong>subirle S/ 5</strong> al precio de venta.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-warning" data-bs-dismiss="modal">Entendido</button>
-        </div>
+  <!-- 2) REGISTRO DE VENTAS -->
+  <div class="container card bg-white p-4">
+    <h3>📝 Registro de Ventas</h3>
+    <form id="formRegistro" class="row g-3 mb-4">
+      <div class="col-md-2">
+        <select id="selProducto" class="form-select" required>
+          <option value="" disabled selected>Seleccione producto</option>
+        </select>
       </div>
+      <div class="col-md-2">
+        <input type="number" step="0.01" id="costoVenta" class="form-control" placeholder="Costo" readonly>
+      </div>
+      <div class="col-md-2">
+        <input type="number" step="0.01" id="precioVentaReg" class="form-control" placeholder="Precio Venta" readonly>
+      </div>
+      <div class="col-md-2">
+        <input type="number" id="unidadesVendidas" class="form-control" placeholder="Unidades" required>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Registrar Venta</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>Item</th><th>Código</th><th>Nombre</th>
+            <th>Costo</th><th>Venta</th><th>Unidad</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="registroBody"></tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
     const MASTER_PWD = 'fernandez';
+    let productos = JSON.parse(localStorage.getItem('productos')) || [];
+    let ventas    = JSON.parse(localStorage.getItem('ventas'))    || [];
 
+    // Desbloquear edición
     function unlockEditing() {
-      const pwd = document.getElementById('masterPassword').value;
-      const ok  = pwd === MASTER_PWD;
-      document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => {
-        btn.style.visibility = ok ? 'visible' : 'hidden';
-      });
+      const ok = document.getElementById('masterPassword').value === MASTER_PWD;
+      document.querySelectorAll('.edit-btn, .delete-btn').forEach(b => b.style.visibility = ok ? 'visible' : 'hidden');
       alert(ok ? 'Edición habilitada' : 'Contraseña incorrecta');
     }
 
-    // cargar de localStorage
-    let productos = JSON.parse(localStorage.getItem('productos')) || [];
+    // Guardar LS
+    function saveProductos() {
+      localStorage.setItem('productos', JSON.stringify(productos));
+    }
+    function saveVentas() {
+      localStorage.setItem('ventas', JSON.stringify(ventas));
+    }
 
-    function renderTabla() {
-      const tbody = document.getElementById('tablaBody');
+    // Render Gestión
+    function renderGestion() {
+      const tbody = document.getElementById('gestionBody');
       tbody.innerHTML = '';
-      productos.forEach((p, i) => {
+      productos.forEach((p,i) => {
         const v1 = p.ingreso * p.venta;
         const v2 = p.precioVenta * p.saldo;
         tbody.insertAdjacentHTML('beforeend', `
           <tr>
+            <td>${i+1}</td>
             <td>${p.producto}</td>
             <td>${p.ingreso}</td>
             <td>S/ ${p.precioCompra.toFixed(2)}</td>
@@ -159,64 +142,158 @@
             <td>${v1}</td>
             <td>S/ ${v2.toFixed(2)}</td>
             <td>
-              <button class="btn btn-sm btn-warning edit-btn" onclick="editar(${i})">✎</button>
-              <button class="btn btn-sm btn-danger delete-btn" onclick="eliminar(${i})">🗑</button>
+              <button class="btn btn-sm btn-warning edit-btn" onclick="editGestion(${i})">✎</button>
+              <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${i})">🗑</button>
+            </td>
+          </tr>
+        `);
+      });
+      refreshSelect();
+    }
+
+    // Render Registro
+    function renderRegistro() {
+      const tbody = document.getElementById('registroBody');
+      tbody.innerHTML = '';
+      ventas.forEach((v,i) => {
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${i+1}</td>
+            <td>${v.codigo}</td>
+            <td>${v.nombre}</td>
+            <td>S/ ${v.costo.toFixed(2)}</td>
+            <td>S/ ${v.venta.toFixed(2)}</td>
+            <td>${v.unidad}</td>
+            <td>
+              <button class="btn btn-sm btn-warning edit-btn" onclick="editVenta(${i})">✎</button>
+              <button class="btn btn-sm btn-danger delete-btn" onclick="deleteVenta(${i})">🗑</button>
             </td>
           </tr>
         `);
       });
     }
 
-    function guardarLS() {
-      localStorage.setItem('productos', JSON.stringify(productos));
+    // Refrescar dropdown de productos
+    function refreshSelect() {
+      const sel = document.getElementById('selProducto');
+      sel.innerHTML = '<option value="" disabled selected>Seleccione producto</option>';
+      productos.forEach((p,i) => {
+        sel.innerHTML += `<option value="${i}">${p.producto}</option>`;
+      });
     }
 
-    document.getElementById('formulario').addEventListener('submit', function(e) {
+    // Al seleccionar producto en registro, cargar costo/venta
+    document.getElementById('selProducto').addEventListener('change', e => {
+      const p = productos[e.target.value];
+      document.getElementById('costoVenta').value   = p.precioCompra.toFixed(2);
+      document.getElementById('precioVentaReg').value = p.precioVenta.toFixed(2);
+    });
+
+    // Añadir producto
+    document.getElementById('formGestion').addEventListener('submit', e => {
       e.preventDefault();
-      const prod = {
-        producto:      document.getElementById('producto').value,
+      const p = {
+        producto:      document.getElementById('producto').value.trim(),
         ingreso:       parseInt(document.getElementById('ingreso').value),
         precioCompra:  parseFloat(document.getElementById('precioCompra').value),
         venta:         parseInt(document.getElementById('venta').value),
         precioVenta:   parseFloat(document.getElementById('precioVenta').value),
         saldo:         parseInt(document.getElementById('saldo').value)
       };
-
-      // si saldo bajo, mostrar alerta y aumentar S/5 solo si precioCompra == precioVenta
-      if (prod.saldo <= 5) {
-        document.getElementById('nombreProductoAlerta').textContent = prod.producto;
-        new bootstrap.Modal(document.getElementById('alertaModal')).show();
-
-        if (prod.precioVenta === prod.precioCompra) {
-          prod.precioVenta += 5;
-        }
+      // alerta + aumento S/5
+      if (p.saldo <= 5) {
+        const modal = new bootstrap.Modal(document.getElementById('alertaModal'), {});
+        document.getElementById('nombreProductoAlerta').textContent = p.producto;
+        modal.show();
+        if (p.precioVenta === p.precioCompra) p.precioVenta += 5;
       }
-
-      productos.push(prod);
-      guardarLS();
-      renderTabla();
-      this.reset();
+      productos.push(p);
+      saveProductos(); renderGestion();
+      e.target.reset();
     });
 
-    function eliminar(idx) {
-      productos.splice(idx, 1);
-      guardarLS();
-      renderTabla();
-    }
+    // Registrar venta
+    document.getElementById('formRegistro').addEventListener('submit', e => {
+      e.preventDefault();
+      const idx  = parseInt(document.getElementById('selProducto').value);
+      const uni  = parseInt(document.getElementById('unidadesVendidas').value);
+      if (uni > productos[idx].saldo) {
+        return alert('No hay suficiente saldo para esa venta.');
+      }
+      // descontar saldo
+      productos[idx].saldo -= uni;
+      // crear venta
+      ventas.push({
+        codigo:      idx+1,
+        nombre:      productos[idx].producto,
+        costo:       productos[idx].precioCompra,
+        venta:       productos[idx].precioVenta,
+        unidad:      uni
+      });
+      saveProductos(); saveVentas();
+      renderGestion(); renderRegistro();
+      e.target.reset();
+      document.getElementById('costoVenta').value = '';
+      document.getElementById('precioVentaReg').value = '';
+    });
 
-    function editar(idx) {
-      const p = productos[idx];
+    // Funciones Edit/Delete Gestión
+    function deleteGestion(i) {
+      productos.splice(i,1);
+      saveProductos(); renderGestion();
+    }
+    function editGestion(i) {
+      const p = productos.splice(i,1)[0];
       document.getElementById('producto').value     = p.producto;
       document.getElementById('ingreso').value      = p.ingreso;
       document.getElementById('precioCompra').value = p.precioCompra;
       document.getElementById('venta').value        = p.venta;
       document.getElementById('precioVenta').value  = p.precioVenta;
       document.getElementById('saldo').value        = p.saldo;
-      eliminar(idx);
+      saveProductos(); renderGestion();
     }
 
-    // inicializar
-    renderTabla();
+    // Funciones Edit/Delete Venta
+    function deleteVenta(i) {
+      ventas.splice(i,1);
+      saveVentas(); renderRegistro();
+    }
+    function editVenta(i) {
+      const v = ventas.splice(i,1)[0];
+      // al editar venta, devolver unidades al producto
+      productos[v.codigo-1].saldo += v.unidad;
+      document.getElementById('selProducto').value = v.codigo-1;
+      document.getElementById('costoVenta').value   = v.costo.toFixed(2);
+      document.getElementById('precioVentaReg').value = v.venta.toFixed(2);
+      document.getElementById('unidadesVendidas').value = v.unidad;
+      saveVentas(); saveProductos();
+      renderGestion(); renderRegistro();
+    }
+
+    // Modal de alerta (saldo bajo)
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="modal fade" id="alertaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+              <h5 class="modal-title">⚠️ Stock Bajo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              El producto <strong id="nombreProductoAlerta"></strong> tiene <strong>saldo bajo</strong> (≤ 5 unidades).<br>
+              💡 Se recomienda comprar más y subirle S/5 al precio de venta.
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-outline-warning" data-bs-dismiss="modal">Entendido</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    // Iniciar
+    renderGestion();
+    renderRegistro();
   </script>
 </body>
 </html>
