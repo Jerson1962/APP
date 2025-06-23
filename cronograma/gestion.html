@@ -2,273 +2,363 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Balance + Inventario y Gestión</title>
+  <title>Aplicación Completa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    .panel { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
-    .total { margin-top:10px; font-weight:bold; }
-    .sidebar { position: fixed; top: 0; left: 0; width: 250px; height: 100%; background: #343a40; color: #fff; padding-top: 20px; transition: left .3s ease; z-index:1000; }
-    .sidebar.show { left: 0; }
-    .sidebar a { color: #fff; padding: 10px 20px; display: block; text-decoration: none; }
-    .sidebar a:hover { background: #495057; }
-    .hamburger { display: none; position: absolute; top: 20px; left: 20px; font-size: 30px; background: none; border: none; cursor: pointer; z-index:1100; color: #343a40; }
-    @media(max-width:767px) { .sidebar { left: -250px; } .hamburger { display: block; } }
-    .content { margin-left: 260px; padding: 20px; }
-    .card { margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+    body { background: #f0f2f5; }
+    .panel { background: #fff; border-radius: .5rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .edit-btn, .delete-btn { visibility: hidden; }
+    .manage-mode .edit-btn, .manage-mode .delete-btn { visibility: visible; }
+    .flex-center { display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
+  <div class="container py-4">
 
-  <button class="hamburger" id="hamburgerMenu">☰</button>
-  <nav class="sidebar" id="sidebarNav">
-    <h3 class="text-center text-white">𝐌𝐆 𝐀𝐔𝐓𝐎𝐌𝐎𝐓𝐑𝐈𝐙</h3>
-    <a href="#incomePanel">Ingresos</a>
-    <a href="#expensePanel">Egresos</a>
-    <a href="#inventarioSection">Inventario</a>
-  </nav>
-
-  <main class="content">
-    <div class="container">
-
-      <!-- Botón gestión -->
-      <div class="text-right mb-3">
-        <button class="btn btn-warning" id="manageBtn">Gestionar (editar/eliminar)</button>
-      </div>
-
-      <!-- Ingresos -->
-      <section class="panel" id="incomePanel">
-        <h3>Registro de Ingresos</h3>
-        <form id="incomeForm" class="form-row mb-3">
-          <input type="date" id="incomeDate" class="form-control col-md-2" required>
-          <input type="text" id="incomeConcept" class="form-control col-md-4" placeholder="Concepto" required>
-          <input type="text" id="incomeDocType" class="form-control col-md-3" placeholder="Tipo de Doc" required>
-          <input type="number" step="0.01" id="incomeAmount" class="form-control col-md-1" placeholder="Monto" required>
-          <button type="submit" class="btn btn-success col-md-2">Agregar</button>
-        </form>
-        <div id="totalIncome" class="total">Total Ingresos: $0</div>
-        <table class="table table-sm mt-2">
-          <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo Doc</th><th>Monto</th><th>Acciones</th></tr></thead>
-          <tbody id="incomesList"></tbody>
-        </table>
-      </section>
-
-      <!-- Egresos -->
-      <section class="panel" id="expensePanel">
-        <h3>Registro de Egresos</h3>
-        <form id="expenseForm" class="form-row mb-3">
-          <input type="date" id="expenseDate" class="form-control col-md-3" required>
-          <input type="text" id="expenseConcept" class="form-control col-md-5" placeholder="Concepto" required>
-          <input type="number" step="0.01" id="expenseAmount" class="form-control col-md-1" placeholder="Monto" required>
-          <button type="submit" class="btn btn-danger col-md-3">Agregar</button>
-        </form>
-        <div id="totalExpense" class="total">Total Egresos: $0</div>
-        <table class="table table-sm mt-2">
-          <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
-          <tbody id="expensesList"></tbody>
-        </table>
-      </section>
-
-      <!-- Inventario -->
-      <div class="card p-4" id="inventarioSection">
-        <h3>Inventario</h3>
-        <form id="formInventario" class="row g-3 mb-3">
-          <div class="col-md-2"><input type="text" id="itemInv" class="form-control" placeholder="Item" required></div>
-          <div class="col-md-2"><input type="text" id="codigoInv" class="form-control" placeholder="Código" required></div>
-          <div class="col-md-4"><input type="text" id="nombreInv" class="form-control" placeholder="Nombre" required></div>
-          <div class="col-md-2"><input type="number" id="unidadesInv" class="form-control" placeholder="Unidades" required></div>
-          <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Agregar Inventario</button></div>
-        </form>
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered text-center">
-            <thead class="table-dark">
-              <tr>
-                <th>Item</th><th>Código</th><th>Nombre</th><th>Unidades</th><th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="inventarioBody"></tbody>
-          </table>
-        </div>
-      </div>
-
+    <!-- Botón gestionar -->
+    <div class="mb-4 text-end">
+      <button id="manageBtn" class="btn btn-warning">Gestionar (✎ / 🗑️)</button>
     </div>
-  </main>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- 1) REGISTRO DE INGRESOS -->
+    <div class="panel" id="incomePanel">
+      <h4>Registro de Ingresos</h4>
+      <form id="incomeForm" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="date" id="incomeDate" class="form-control" required></div>
+        <div class="col-md-4"><input type="text" id="incomeConcept" class="form-control" placeholder="Concepto" required></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="incomeAmount" class="form-control" placeholder="Monto" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-success w-100">Agregar</button></div>
+      </form>
+      <table class="table table-sm">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
+        <tbody id="incomesList"></tbody>
+      </table>
+    </div>
+
+    <!-- 2) REGISTRO DE EGRESOS -->
+    <div class="panel" id="expensePanel">
+      <h4>Registro de Egresos</h4>
+      <form id="expenseForm" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="date" id="expenseDate" class="form-control" required></div>
+        <div class="col-md-6"><input type="text" id="expenseConcept" class="form-control" placeholder="Concepto" required></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="expenseAmount" class="form-control" placeholder="Monto" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-danger w-100">Agregar</button></div>
+      </form>
+      <table class="table table-sm">
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
+        <tbody id="expensesList"></tbody>
+      </table>
+    </div>
+
+    <!-- 3) BÚSQUEDA POR FECHA -->
+    <div class="panel" id="searchPanel">
+      <h4>Buscar por Fecha</h4>
+      <div class="row g-2 mb-3">
+        <div class="col-md-3"><input type="date" id="searchDate" class="form-control"></div>
+        <div class="col-md-2"><button id="btnSearch" class="btn btn-primary w-100">Buscar</button></div>
+        <div class="col-md-2"><button id="btnClear" class="btn btn-secondary w-100">Limpiar</button></div>
+      </div>
+      <table class="table table-sm">
+        <thead><tr><th>Ingreso</th><th>Egreso</th><th>Saldo</th></tr></thead>
+        <tbody id="searchResults"></tbody>
+      </table>
+    </div>
+
+    <!-- 4) INVENTARIO -->
+    <div class="panel" id="inventarioSection">
+      <h4>Inventario</h4>
+      <form id="formInventario" class="row g-2 mb-3">
+        <div class="col-md-2"><input type="text" id="itemInv" class="form-control" placeholder="Item" required></div>
+        <div class="col-md-2"><input type="text" id="codigoInv" class="form-control" placeholder="Código" required></div>
+        <div class="col-md-4"><input type="text" id="nombreInv" class="form-control" placeholder="Nombre" required></div>
+        <div class="col-md-2"><input type="number" id="unidadesInv" class="form-control" placeholder="Unidades" required></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Agregar</button></div>
+      </form>
+      <table class="table table-sm text-center">
+        <thead><tr><th>Item</th><th>Código</th><th>Nombre</th><th>Unidades</th><th>Acciones</th></tr></thead>
+        <tbody id="inventarioBody"></tbody>
+      </table>
+    </div>
+
+    <!-- 5) GESTIÓN DE MERCADERÍA -->
+    <div class="panel" id="gestionSection">
+      <h4>📦 Gestión de Mercadería</h4>
+      <form id="formGestion" class="row g-2 mb-3">
+        <div class="col-md-3"><input type="text" id="prodG" class="form-control" placeholder="Producto" required></div>
+        <div class="col-md-2"><input type="number" id="ingresoG" class="form-control" placeholder="Ingreso" readonly></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="costoG" class="form-control" placeholder="Costo" required></div>
+        <div class="col-md-1"><input type="number" id="ventaG" class="form-control" placeholder="Venta" required></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="precioVentaG" class="form-control" placeholder="Precio Venta" required></div>
+        <div class="col-md-1"><input type="number" id="saldoG" class="form-control" placeholder="Saldo" readonly></div>
+        <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+ Agregar</button></div>
+      </form>
+      <table class="table table-sm text-center">
+        <thead class="table-dark"><tr>
+          <th>#</th><th>Producto</th><th>Ingreso</th><th>Costo</th><th>Venta</th>
+          <th>Precio Venta</th><th>Saldo</th><th>Acciones</th>
+        </tr></thead>
+        <tbody id="gestionBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
   <script>
-    // contraseña para gestionar
     const PASSWORD = 'fernandez123';
     let manageMode = false;
-    const manageBtn = document.getElementById('manageBtn');
-    manageBtn.onclick = () => {
-      if (manageMode) {
-        manageMode = false;
-        manageBtn.textContent = 'Gestionar (editar/eliminar)';
-      } else {
-        const pass = prompt('Ingrese contraseña:');
+    const container = document.querySelector('.container');
+
+    document.getElementById('manageBtn').onclick = () => {
+      if (!manageMode) {
+        const pass = prompt('Contraseña:');
         if (pass === PASSWORD) {
           manageMode = true;
-          manageBtn.textContent = 'Salir gestionar';
-        } else {
-          return alert('Contraseña incorrecta');
+          container.classList.add('manage-mode');
+          document.getElementById('manageBtn').textContent = 'Salir Gestión';
         }
+      } else {
+        manageMode = false;
+        container.classList.remove('manage-mode');
+        document.getElementById('manageBtn').textContent = 'Gestionar (✎ / 🗑️)';
       }
-      renderAll();
     };
 
-    // toggle sidebar
-    document.getElementById('hamburgerMenu').onclick = () =>
-      document.getElementById('sidebarNav').classList.toggle('show');
+    // LocalStorage keys
+    const KEY_INC = 'app_incomes', KEY_EXP = 'app_expenses', KEY_INV = 'app_inventory', KEY_GES = 'app_gestion';
+    let incomes   = JSON.parse(localStorage.getItem(KEY_INC)) || [];
+    let expenses  = JSON.parse(localStorage.getItem(KEY_EXP))|| [];
+    let inventory = JSON.parse(localStorage.getItem(KEY_INV)) || [];
+    let gestion   = JSON.parse(localStorage.getItem(KEY_GES))|| [];
 
-    // --- DATOS ---
-    const KEY_INC = 'balance_incomes', KEY_EXP = 'balance_expenses', KEY_INV = 'inv';
-    let incomes   = JSON.parse(localStorage.getItem(KEY_INC))  || [];
-    let expenses  = JSON.parse(localStorage.getItem(KEY_EXP)) || [];
-    let inventario= JSON.parse(localStorage.getItem(KEY_INV)) || [];
-
-    // Elementos
-    const incomesList   = document.getElementById('incomesList');
-    const expensesList  = document.getElementById('expensesList');
-    const inventarioBody= document.getElementById('inventarioBody');
-    const totalIncome   = document.getElementById('totalIncome');
-    const totalExpense  = document.getElementById('totalExpense');
-
-    // Guardar
-    function saveAll() {
+    // Helpers
+    const $ = id=>document.getElementById(id);
+    function saveAll(){
       localStorage.setItem(KEY_INC, JSON.stringify(incomes));
       localStorage.setItem(KEY_EXP, JSON.stringify(expenses));
-      localStorage.setItem(KEY_INV, JSON.stringify(inventario));
+      localStorage.setItem(KEY_INV, JSON.stringify(inventory));
+      localStorage.setItem(KEY_GES, JSON.stringify(gestion));
     }
 
-    // Render Ingresos
-    function renderIncomes() {
-      incomesList.innerHTML = '';
+    // 1) Ingresos
+    function renderIncomes(){
+      const tbody = $('incomesList'); tbody.innerHTML = '';
       incomes.forEach((i, idx) => {
-        let row = `<tr>
-          <td>${i.date}</td><td>${i.concept}</td><td>${i.docType}</td><td>$${i.amount.toFixed(2)}</td>`;
-        row += `<td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editIncome(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteIncome(${idx})">🗑️</button>
-        </td></tr>`;
-        incomesList.insertAdjacentHTML('beforeend', row);
-      });
-      totalIncome.textContent = `Total Ingresos: $${incomes.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
-    }
-
-    // Render Egresos
-    function renderExpenses() {
-      expensesList.innerHTML = '';
-      expenses.forEach((e, idx) => {
-        let row = `<tr>
-          <td>${e.date}</td><td>${e.concept}</td><td>$${e.amount.toFixed(2)}</td>`;
-        row += `<td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editExpense(${idx})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteExpense(${idx})">🗑️</button>
-        </td></tr>`;
-        expensesList.insertAdjacentHTML('beforeend', row);
-      });
-      totalExpense.textContent = `Total Egresos: $${expenses.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
-    }
-
-    // Render Inventario
-    function renderInv() {
-      inventarioBody.innerHTML = '';
-      inventario.forEach((v, i) => {
-        let row = `<tr>
-          <td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td><td>${v.unidades}</td>`;
-        row += `<td>
-          <button class="btn btn-sm btn-primary edit-btn" onclick="editInv(${i})">✎</button>
-          <button class="btn btn-sm btn-danger delete-btn" onclick="deleteInv(${i})">🗑️</button>
-        </td></tr>`;
-        inventarioBody.insertAdjacentHTML('beforeend', row);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${i.date}</td>
+          <td>${i.concept}</td>
+          <td>$${i.amount.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editIncome(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteIncome(${idx})">🗑️</button>
+          </td>`;
+        tbody.append(row);
       });
     }
-
-    // Edit/Delete Ingresos
+    $('incomeForm').onsubmit = e=>{
+      e.preventDefault();
+      incomes.push({ date: $('incomeDate').value,
+                     concept: $('incomeConcept').value,
+                     amount: parseFloat($('incomeAmount').value) });
+      saveAll(); renderIncomes(); renderSummary(); e.target.reset();
+    };
     window.editIncome = idx => {
       const i = incomes[idx];
-      const d = prompt('Fecha', i.date);   if(!d) return;
-      const c = prompt('Concepto', i.concept); if(c===null) return;
-      const dt= prompt('Tipo Doc', i.docType); if(dt===null) return;
-      const a = parseFloat(prompt('Monto', i.amount)); if(isNaN(a)) return;
-      incomes[idx] = { date:d, concept:c, docType:dt, amount:a };
-      saveAll(); renderAll();
+      const d = prompt('Fecha',i.date); if(!d) return;
+      const c = prompt('Concepto',i.concept); if(c===null) return;
+      const a = parseFloat(prompt('Monto',i.amount)); if(isNaN(a)) return;
+      incomes[idx] = { date:d, concept:c, amount:a };
+      saveAll(); renderIncomes(); renderSummary();
     };
     window.deleteIncome = idx => {
-      if(confirm('Eliminar ingreso?')) { incomes.splice(idx,1); saveAll(); renderAll(); }
+      if(confirm('Eliminar ingreso?')){
+        incomes.splice(idx,1);
+        saveAll(); renderIncomes(); renderSummary();
+      }
     };
 
-    // Edit/Delete Egresos
+    // 2) Egresos
+    function renderExpenses(){
+      const tbody = $('expensesList'); tbody.innerHTML = '';
+      expenses.forEach((e, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${e.date}</td>
+          <td>${e.concept}</td>
+          <td>$${e.amount.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editExpense(${idx})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteExpense(${idx})">🗑️</button>
+          </td>`;
+        tbody.append(row);
+      });
+    }
+    $('expenseForm').onsubmit = e=>{
+      e.preventDefault();
+      expenses.push({ date: $('expenseDate').value,
+                      concept: $('expenseConcept').value,
+                      amount: parseFloat($('expenseAmount').value) });
+      saveAll(); renderExpenses(); renderSummary(); e.target.reset();
+    };
     window.editExpense = idx => {
-      const e = expenses[idx];
-      const d = prompt('Fecha', e.date);   if(!d) return;
-      const c = prompt('Concepto', e.concept); if(c===null) return;
-      const a = parseFloat(prompt('Monto', e.amount)); if(isNaN(a)) return;
+      const ex = expenses[idx];
+      const d  = prompt('Fecha',ex.date); if(!d) return;
+      const c  = prompt('Concepto',ex.concept); if(c===null) return;
+      const a  = parseFloat(prompt('Monto',ex.amount)); if(isNaN(a)) return;
       expenses[idx] = { date:d, concept:c, amount:a };
-      saveAll(); renderAll();
+      saveAll(); renderExpenses(); renderSummary();
     };
     window.deleteExpense = idx => {
-      if(confirm('Eliminar egreso?')) { expenses.splice(idx,1); saveAll(); renderAll(); }
+      if(confirm('Eliminar egreso?')){
+        expenses.splice(idx,1);
+        saveAll(); renderExpenses(); renderSummary();
+      }
     };
 
-    // Edit/Delete Inventario
+    // 3) Resumen por Fecha
+    function renderSummary(){
+      const tbody = $('searchResults'); tbody.innerHTML = '';
+      const dates = new Set([...incomes.map(i=>i.date), ...expenses.map(e=>e.date)]);
+      Array.from(dates).sort().forEach(date => {
+        const inc = incomes.filter(i=>i.date===date).reduce((s,i)=>s+i.amount,0);
+        const exp = expenses.filter(e=>e.date===date).reduce((s,e)=>s+e.amount,0);
+        const saldo = inc - exp;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${date}</td>
+          <td>$${inc.toFixed(2)}</td>
+          <td>$${exp.toFixed(2)}</td>
+          <td>$${saldo.toFixed(2)}</td>`;
+        tbody.append(tr);
+      });
+    }
+    $('btnSearch').onclick = ()=>{
+      const d = $('searchDate').value;
+      const inc = incomes.filter(i=>i.date===d).reduce((s,i)=>s+i.amount,0);
+      const exp = expenses.filter(e=>e.date===d).reduce((s,e)=>s+e.amount,0);
+      const saldo = inc - exp;
+      const tbody = $('searchResults'); tbody.innerHTML = `
+        <tr>
+          <td>$${inc.toFixed(2)}</td>
+          <td>$${exp.toFixed(2)}</td>
+          <td>$${saldo.toFixed(2)}</td>
+        </tr>`;
+    };
+    $('btnClear').onclick = ()=>{ $('searchDate').value=''; renderSummary(); };
+
+    // 4) Inventario
+    function renderInv(){
+      const tbody = $('inventarioBody'); tbody.innerHTML = '';
+      inventory.forEach((v,i)=>{
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td><td>${v.unidades}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editInv(${i})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteInv(${i})">🗑️</button>
+          </td>`;
+        tbody.append(row);
+      });
+    }
+    $('formInventario').onsubmit = e=>{
+      e.preventDefault();
+      inventory.push({
+        item:     $('itemInv').value,
+        codigo:   $('codigoInv').value,
+        nombre:   $('nombreInv').value,
+        unidades: parseInt($('unidadesInv').value,10)
+      });
+      saveAll(); renderInv(); e.target.reset();
+    };
     window.editInv = idx => {
-      const v = inventario[idx];
-      document.getElementById('itemInv').value     = v.item;
-      document.getElementById('codigoInv').value   = v.codigo;
-      document.getElementById('nombreInv').value   = v.nombre;
-      document.getElementById('unidadesInv').value = v.unidades;
-      inventario.splice(idx,1);
-      saveAll(); renderAll();
+      const v = inventory[idx];
+      $('itemInv').value     = v.item;
+      $('codigoInv').value   = v.codigo;
+      $('nombreInv').value   = v.nombre;
+      $('unidadesInv').value = v.unidades;
+      inventory.splice(idx,1);
+      saveAll(); renderInv();
     };
     window.deleteInv = idx => {
-      if(confirm('Eliminar inventario?')) { inventario.splice(idx,1); saveAll(); renderAll(); }
+      if(confirm('Eliminar inventario?')){
+        inventory.splice(idx,1);
+        saveAll(); renderInv();
+      }
     };
 
-    // Formularios
-    document.getElementById('incomeForm').onsubmit = e => {
-      e.preventDefault();
-      incomes.push({
-        date: document.getElementById('incomeDate').value,
-        concept: document.getElementById('incomeConcept').value,
-        docType: document.getElementById('incomeDocType').value,
-        amount: parseFloat(document.getElementById('incomeAmount').value)
+    // 5) Gestión de Mercadería
+    function renderGestion(){
+      const tbody = $('gestionBody'); tbody.innerHTML = '';
+      gestion.forEach((g,i)=>{
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${i+1}</td>
+          <td>${g.producto}</td>
+          <td>${g.ingreso}</td>
+          <td>S/ ${g.costo.toFixed(2)}</td>
+          <td>${g.venta}</td>
+          <td>S/ ${g.precioVenta.toFixed(2)}</td>
+          <td>${g.saldo}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${i})">✎</button>
+            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${i})">🗑️</button>
+          </td>`;
+        tbody.append(row);
       });
-      saveAll(); renderAll(); e.target.reset();
+    }
+    $('formGestion').onsubmit = e=>{
+      e.preventDefault();
+      const prod = $('prodG').value;
+      const venta = parseInt($('ventaG').value,10);
+      const ingresoTot = incomes.filter(i=>i.concept===prod).reduce((s,i)=>s+i.amount,0);
+      // descontar del inventario
+      const inv = inventory.find(x=>x.nombre===prod);
+      if(inv){ inv.unidades = Math.max(0, inv.unidades - venta);}
+      // saldo = ingreso - egreso
+      const egTot = expenses.filter(e=>e.concept===prod).reduce((s,e)=>s+e.amount,0);
+      const saldo = ingresoTot - egTot;
+      gestion.push({
+        producto: prod,
+        ingreso: ingresoTot,
+        costo: parseFloat($('costoG').value),
+        venta: venta,
+        precioVenta: parseFloat($('precioVentaG').value),
+        saldo: saldo
+      });
+      saveAll();
+      renderInv();
+      renderGestion();
+      e.target.reset();
     };
-    document.getElementById('expenseForm').onsubmit = e => {
-      e.preventDefault();
-      expenses.push({
-        date: document.getElementById('expenseDate').value,
-        concept: document.getElementById('expenseConcept').value,
-        amount: parseFloat(document.getElementById('expenseAmount').value)
-      });
-      saveAll(); renderAll(); e.target.reset();
+    window.editGestion = i => {
+      const g = gestion.splice(i,1)[0];
+      $('prodG').value       = g.producto;
+      $('ingresoG').value    = g.ingreso;
+      $('costoG').value      = g.costo;
+      $('ventaG').value      = g.venta;
+      $('precioVentaG').value= g.precioVenta;
+      $('saldoG').value      = g.saldo;
+      saveAll(); renderGestion();
     };
-    document.getElementById('formInventario').onsubmit = e => {
-      e.preventDefault();
-      inventario.push({
-        item: document.getElementById('itemInv').value,
-        codigo: document.getElementById('codigoInv').value,
-        nombre: document.getElementById('nombreInv').value,
-        unidades: parseInt(document.getElementById('unidadesInv').value,10)
-      });
-      saveAll(); renderAll(); e.target.reset();
+    window.deleteGestion = i => {
+      if(confirm('Eliminar gestión?')){
+        gestion.splice(i,1);
+        saveAll(); renderGestion();
+      }
     };
 
-    // Render all
-    function renderAll() {
+    // Inicial
+    function renderAll(){
       renderIncomes();
       renderExpenses();
+      renderSummary();
       renderInv();
-      document.querySelectorAll('.edit-btn, .delete-btn').forEach(b=>{
-        b.style.visibility = manageMode ? 'visible' : 'hidden';
-      });
+      renderGestion();
     }
     window.onload = renderAll;
   </script>
 </body>
 </html>
+
 
