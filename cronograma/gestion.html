@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -13,7 +13,7 @@
     .hamburger { display: none; position: absolute; top: 20px; left: 20px; font-size: 30px; color: #343a40; background: none; border: none; cursor: pointer; z-index:1100; }
     @media(max-width:767px) { .sidebar { left: -250px; } .hamburger { display: block; } }
     .content { margin-left: 260px; padding: 20px; }
-    .panel { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+    .panel { background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 15px; }
     .total { margin-top:10px; font-weight:bold; }
     .action-btn { margin-left:5px; }
     .card { margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
@@ -34,7 +34,6 @@
   <main class="content">
     <div class="container">
 
-      <!-- Botón gestión -->
       <div class="text-right mb-2">
         <button class="btn btn-warning" id="manageBtn">Gestionar (editar/eliminar)</button>
       </div>
@@ -51,12 +50,6 @@
           <button type="submit" class="btn btn-success col-md-2">Agregar</button>
         </form>
         <div id="totalIncome" class="total">Total Ingresos: $0</div>
-        <table class="table table-sm mt-2">
-          <thead><tr>
-            <th>Fecha</th><th>Concepto</th><th>Tipo Doc</th><th>Método</th><th>Monto</th><th>Acciones</th>
-          </tr></thead>
-          <tbody id="incomesList"></tbody>
-        </table>
       </section>
 
       <!-- Egresos -->
@@ -69,12 +62,12 @@
           <button type="submit" class="btn btn-danger col-md-3">Agregar</button>
         </form>
         <div id="totalExpense" class="total">Total Egresos: $0</div>
-        <table class="table table-sm mt-2">
-          <thead><tr>
-            <th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th>
-          </tr></thead>
-          <tbody id="expensesList"></tbody>
-        </table>
+      </section>
+
+      <!-- Saldo Total -->
+      <section class="panel">
+        <h3>Saldo Total</h3>
+        <div id="totalBalance" class="total">Saldo: $0</div>
       </section>
 
       <!-- Inventario -->
@@ -137,71 +130,50 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
   <script>
+    // contraseña para gestionar
     const PASSWORD = 'fernandez123';
     let manageMode = false;
-    document.getElementById('manageBtn').onclick = () => {
+    const manageBtn = document.getElementById('manageBtn');
+    manageBtn.onclick = () => {
       if (manageMode) {
         manageMode = false;
-        document.getElementById('manageBtn').textContent = 'Gestionar (editar/eliminar)';
+        manageBtn.textContent = 'Gestionar (editar/eliminar)';
       } else {
         const pass = prompt('Ingrese contraseña:');
         if (pass === PASSWORD) {
           manageMode = true;
-          document.getElementById('manageBtn').textContent = 'Salir gestionar';
+          manageBtn.textContent = 'Salir gestionar';
         } else {
           return alert('Contraseña incorrecta');
         }
       }
       renderAll();
     };
+
+    // toggle sidebar
     document.getElementById('hamburgerMenu').onclick = () =>
       document.getElementById('sidebarNav').classList.toggle('show');
 
-    // Balance (Ingresos/Egresos)
+    // --- BALANCE ---
     const KEY_INC = 'balance_incomes', KEY_EXP = 'balance_expenses';
     let incomes  = JSON.parse(localStorage.getItem(KEY_INC))  || [];
     let expenses = JSON.parse(localStorage.getItem(KEY_EXP)) || [];
-    const incomesList  = document.getElementById('incomesList');
-    const expensesList = document.getElementById('expensesList');
     const totalIncome  = document.getElementById('totalIncome');
     const totalExpense = document.getElementById('totalExpense');
+    const totalBalance = document.getElementById('totalBalance');
 
     function saveBalance() {
       localStorage.setItem(KEY_INC, JSON.stringify(incomes));
       localStorage.setItem(KEY_EXP, JSON.stringify(expenses));
     }
     function renderBalance() {
-      // Ingresos
-      incomesList.innerHTML = '';
-      incomes.forEach((i, idx) => {
-        let row = `<td>${i.date}</td><td>${i.concept}</td><td>${i.docType}</td><td>${i.method}</td><td>$${i.amount.toFixed(2)}</td>`;
-        row += manageMode
-          ? `<td>
-               <button class="btn btn-sm btn-primary action-btn" onclick="editIncome(${idx})">✎</button>
-               <button class="btn btn-sm btn-danger action-btn"  onclick="deleteIncome(${idx})">🗑️</button>
-             </td>`
-          : `<td></td>`;
-        incomesList.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
-      });
-      // Egresos
-      expensesList.innerHTML = '';
-      expenses.forEach((e, idx) => {
-        let row = `<td>${e.date}</td><td>${e.concept}</td><td>$${e.amount.toFixed(2)}</td>`;
-        row += manageMode
-          ? `<td>
-               <button class="btn btn-sm btn-primary action-btn" onclick="editExpense(${idx})">✎</button>
-               <button class="btn btn-sm btn-danger action-btn"  onclick="deleteExpense(${idx})">🗑️</button>
-             </td>`
-          : `<td></td>`;
-        expensesList.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
-      });
-      // Totales
-      const ti = incomes.reduce((s, i) => s + i.amount, 0);
-      const te = expenses.reduce((s, e) => s + e.amount, 0);
+      // totales
+      const ti = incomes.reduce((s,i)=>s+i.amount,0);
+      const te = expenses.reduce((s,e)=>s+e.amount,0);
       totalIncome.textContent  = `Total Ingresos: $${ti.toFixed(2)}`;
       totalExpense.textContent = `Total Egresos: $${te.toFixed(2)}`;
+      totalBalance.textContent = `Saldo: $${(ti-te).toFixed(2)}`;
     }
-
     document.getElementById('incomeForm').onsubmit = e => {
       e.preventDefault();
       incomes.push({
@@ -223,49 +195,24 @@
       saveBalance(); renderBalance(); e.target.reset();
     };
 
-    window.editIncome = idx => {
-      const i = incomes[idx];
-      const d = prompt('Fecha', i.date);   if (!d) return;
-      const c = prompt('Concepto', i.concept); if (c===null) return;
-      const dt= prompt('Tipo Doc', i.docType); if (dt===null) return;
-      const m = prompt('Método', i.method);    if (m===null) return;
-      const a = parseFloat(prompt('Monto', i.amount)); if (isNaN(a)) return;
-      incomes[idx] = { date: d, concept: c, docType: dt, method: m, amount: a };
-      saveBalance(); renderBalance();
-    };
-    window.deleteIncome = idx => {
-      if (confirm('Eliminar ingreso?')) { incomes.splice(idx,1); saveBalance(); renderBalance(); }
-    };
-    window.editExpense = idx => {
-      const e = expenses[idx];
-      const d = prompt('Fecha', e.date); if (!d) return;
-      const c = prompt('Concepto', e.concept); if (c===null) return;
-      const a = parseFloat(prompt('Monto', e.amount)); if (isNaN(a)) return;
-      expenses[idx] = { date: d, concept: c, amount: a };
-      saveBalance(); renderBalance();
-    };
-    window.deleteExpense = idx => {
-      if (confirm('Eliminar egreso?')) { expenses.splice(idx,1); saveBalance(); renderBalance(); }
-    };
-
-    // Inventario
+    // --- INVENTARIO ---
     let inventario = JSON.parse(localStorage.getItem('inv')) || [];
-    function saveInv() { localStorage.setItem('inv', JSON.stringify(inventario)); }
-    function renderInv() {
-      const t = document.getElementById('inventarioBody'); t.innerHTML = '';
-      inventario.forEach((v,i) => {
-        // sacamos ingreso/egreso acumulado para este nombre
+    function saveInv(){ localStorage.setItem('inv', JSON.stringify(inventario)); }
+    function renderInv(){
+      const tbody = document.getElementById('inventarioBody');
+      tbody.innerHTML = '';
+      inventario.forEach((v,i)=>{
         const ing = incomes.filter(x=>x.concept===v.nombre).reduce((s,x)=>s+x.amount,0);
         const eg  = expenses.filter(x=>x.concept===v.nombre).reduce((s,x)=>s+x.amount,0);
         let row = `<td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td>
-                   <td>${ing.toFixed(2)}</td><td>${eg.toFixed(2)}</td><td>${v.unidades}</td>`;
+          <td>${ing.toFixed(2)}</td><td>${eg.toFixed(2)}</td><td>${v.unidades}</td>`;
         row += manageMode
           ? `<td>
                <button class="btn btn-sm btn-warning edit-btn" onclick="editInv(${i})">✎</button>
                <button class="btn btn-sm btn-danger delete-btn" onclick="delInv(${i})">🗑️</button>
              </td>`
           : `<td></td>`;
-        t.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
+        tbody.insertAdjacentHTML('beforeend',`<tr>${row}</tr>`);
       });
     }
     document.getElementById('formInventario').onsubmit = e => {
@@ -288,57 +235,51 @@
       saveInv(); renderInv();
     };
 
-    // Gestión de Mercadería
+    // --- GESTIÓN DE MERCADERÍA ---
     let gestion = JSON.parse(localStorage.getItem('ges')) || [];
-    function saveGes() { localStorage.setItem('ges', JSON.stringify(gestion)); }
-    function refreshSelect() {
+    function saveGes(){ localStorage.setItem('ges', JSON.stringify(gestion)); }
+    function refreshSelect(){
       const sel = document.getElementById('selProducto');
       sel.innerHTML = '<option value="" disabled selected>Selecciona Nombre</option>';
       inventario.forEach(v=> sel.innerHTML += `<option>${v.nombre}</option>`);
     }
     document.getElementById('selProducto').onchange = e => {
       const nom = e.target.value;
-      const inv = inventario.find(x=>x.nombre===nom);
       document.getElementById('ingresoG').value = incomes
         .filter(x=>x.concept===nom).reduce((s,x)=>s+x.amount,0);
-      document.getElementById('saldoG').value = inv ? inv.unidades : 0;
+      // nuevo saldo: ingreso - egreso
+      const eg = expenses.filter(x=>x.concept===nom).reduce((s,x)=>s+x.amount,0);
+      document.getElementById('saldoG').value = (parseFloat(document.getElementById('ingresoG').value) - eg).toFixed(2);
     };
-    function renderGes() {
-      const t = document.getElementById('gestionBody'); t.innerHTML = '';
-      gestion.forEach((p,i) => {
+    function renderGes(){
+      const tbody = document.getElementById('gestionBody');
+      tbody.innerHTML = '';
+      gestion.forEach((p,i)=>{
         const v1 = p.ingreso * p.venta;
         const v2 = p.precioVenta * p.saldo;
         let row = `<td>${i+1}</td><td>${p.producto}</td><td>${p.ingreso}</td>
-                   <td>S/ ${p.precioCompra.toFixed(2)}</td><td>${p.venta}</td>
-                   <td>S/ ${p.precioVenta.toFixed(2)}</td><td>${p.saldo}</td>
-                   <td>${v1}</td><td>S/ ${v2.toFixed(2)}</td>`;
+          <td>S/ ${p.precioCompra.toFixed(2)}</td><td>${p.venta}</td>
+          <td>S/ ${p.precioVenta.toFixed(2)}</td><td>${p.saldo}</td>
+          <td>${v1}</td><td>S/ ${v2.toFixed(2)}</td>`;
         row += manageMode
           ? `<td>
                <button class="btn btn-sm btn-warning edit-btn" onclick="editGes(${i})">✎</button>
                <button class="btn btn-sm btn-danger delete-btn" onclick="delGes(${i})">🗑️</button>
              </td>`
           : `<td></td>`;
-        t.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
+        tbody.insertAdjacentHTML('beforeend', `<tr>${row}</tr>`);
       });
     }
-
-    // Aquí el cambio: al añadir gestión se descuenta del inventario y jala el ingreso
     document.getElementById('formGestion').onsubmit = e => {
       e.preventDefault();
       const nom       = document.getElementById('selProducto').value;
-      const inv       = inventario.find(x=>x.nombre===nom);
       const ventaCant = parseInt(document.getElementById('ventaG').value,10);
-
-      // ingreso total acumulado
-      const ingresoTotal = incomes
-        .filter(x=>x.concept===nom)
-        .reduce((s,x)=>s+x.amount,0);
-
-      // descontar del inventario
-      if(inv) {
-        inv.unidades = Math.max(0, inv.unidades - ventaCant);
-        saveInv(); renderInv();
-      }
+      // ingreso acumulado
+      const ingresoTotal = incomes.filter(x=>x.concept===nom).reduce((s,x)=>s+x.amount,0);
+      // egreso acumulado
+      const egTotal = expenses.filter(x=>x.concept===nom).reduce((s,x)=>s+x.amount,0);
+      // saldo = ingreso - egreso
+      const nuevoSaldo = ingresoTotal - egTotal;
 
       const p = {
         producto:     nom,
@@ -346,14 +287,13 @@
         precioCompra: parseFloat(document.getElementById('precioCompraG').value),
         venta:        ventaCant,
         precioVenta:  parseFloat(document.getElementById('precioVentaG').value),
-        saldo:        inv ? inv.unidades : 0
+        saldo:        parseFloat(nuevoSaldo.toFixed(2))
       };
 
       gestion.push(p);
       saveGes(); renderGes();
       e.target.reset();
     };
-
     window.delGes = i => { gestion.splice(i,1); saveGes(); renderGes(); };
     window.editGes = i => {
       const p = gestion.splice(i,1)[0];
@@ -366,18 +306,14 @@
       saveGes(); renderGes();
     };
 
-    function renderAll() {
+    // renderiza todo
+    function renderAll(){
       renderBalance();
       renderInv();
       refreshSelect();
       renderGes();
     }
     window.onload = renderAll;
-
-    // Funciones de editar/eliminar balance
-    // (idénticas a las que ya estaban arriba)
   </script>
 </body>
 </html>
-
-
