@@ -1,410 +1,251 @@
-  <!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>App Completa: Balance, Inventario y Gestión</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario de Productos</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
   <style>
-    body { background: #f0f2f5; }
-    .panel { background: #fff; border-radius: .5rem; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .edit-btn, .delete-btn { visibility: hidden; }
-    .manage-mode .edit-btn, .manage-mode .delete-btn { visibility: visible; }
-    /* Sidebar */
-    .offcanvas-start { width: 250px; }
+    .table-bordered td, .table-bordered th {
+      border: 1px solid #dee2e6;
+    }
+    .panel {
+      background: #f8f9fa;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h4 {
+      margin-top: 30px;
+    }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 200px;
+      height: 100%;
+      background-color: #343a40;
+      color: white;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 10px;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+    .main-content {
+      margin-left: 220px;
+    }
   </style>
 </head>
 <body>
+<div class="sidebar">
+  <a href="cronograma.html">📅 Inicio</a>
+  <a href="#" onclick="activarEdicion()">🔒 Editar/Eliminar</a>
+</div>
+<div class="container mt-4 main-content">
+  <h2 class="text-center">Sistema de Inventario</h2>
 
-  <!-- Botón hamburguesa -->
-  <button class="btn btn-outline-dark m-3" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
-    ☰ Menú
-  </button>
-
-  <!-- Offcanvas Sidebar -->
-  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="sidebarLabel">𝐌𝐆 𝐀𝐔𝐓𝐎𝐌𝐎𝐓𝐑𝐈𝐙</h5>
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  <div class="panel">
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        <label>Fecha</label>
+        <input type="date" class="form-control" id="fecha">
+      </div>
+      <div class="form-group col-md-2">
+        <label>Producto</label>
+        <input type="text" class="form-control" id="producto">
+      </div>
+      <div class="form-group col-md-2">
+        <label>Cantidad Ingreso</label>
+        <input type="number" class="form-control" id="cantidadIngreso">
+      </div>
+      <div class="form-group col-md-2">
+        <label>Precio Unitario</label>
+        <input type="number" class="form-control" id="precioUni">
+      </div>
+      <div class="form-group col-md-2">
+        <label>Cantidad Venta</label>
+        <input type="number" class="form-control" id="cantidadVenta">
+      </div>
+      <div class="form-group col-md-2">
+        <label>Precio Venta</label>
+        <input type="number" class="form-control" id="precioVenta">
+      </div>
     </div>
-    <div class="offcanvas-body px-0">
-      <nav class="nav flex-column">
-        <a class="nav-link" href="cronograma.html" data-bs-dismiss="offcanvas">INICIO</a>
-        <a class="nav-link" href="#expensePanel" data-bs-dismiss="offcanvas">Egresos</a>
-        <a class="nav-link" href="cronograma.html" data-bs-dismiss="offcanvas">CRONOGRAMA</a>
- 
-      </nav>
-    </div>
+    <button class="btn btn-success" onclick="agregarProducto()">Agregar Producto</button>
+    <button class="btn btn-warning" onclick="limpiarFormulario()">Limpiar</button>
+    <button class="btn btn-primary" onclick="generarPDF()">Guardar PDF</button>
   </div>
 
-  <div class="container py-4">
-
-    <!-- Gestionar global -->
-    <div class="text-end mb-4">
-      <button id="manageBtn" class="btn btn-warning">Gestionar (✎/🗑️)</button>
-    </div>
-
-    <!-- 1) Ingresos -->
-    <div class="panel" id="incomePanel">
-      <h4>Registro de Ingresos</h4>
-      <form id="incomeForm" class="row g-2 mb-3">
-        <div class="col-md-2"><input type="date" id="incomeDate" class="form-control" required></div>
-        <div class="col-md-6"><input type="text" id="incomeConcept" class="form-control" placeholder="Concepto" required></div>
-        <div class="col-md-2"><input type="number" step="0.01" id="incomeAmount" class="form-control" placeholder="Monto" required></div>
-        <div class="col-md-2"><button type="submit" class="btn btn-success w-100">Agregar</button></div>
-      </form>
-      <div class="mb-2">Total Ingresos: <span id="totalIncome">$0.00</span></div>
-      <table class="table table-sm">
-        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
-        <tbody id="incomesList"></tbody>
-      </table>
-    </div>
-
-    <!-- 2) Egresos -->
-    <div class="panel" id="expensePanel">
-      <h4>Registro de Egresos</h4>
-      <form id="expenseForm" class="row g-2 mb-3">
-        <div class="col-md-2"><input type="date" id="expenseDate" class="form-control" required></div>
-        <div class="col-md-6"><input type="text" id="expenseConcept" class="form-control" placeholder="Concepto" required></div>
-        <div class="col-md-2"><input type="number" step="0.01" id="expenseAmount" class="form-control" placeholder="Monto" required></div>
-        <div class="col-md-2"><button type="submit" class="btn btn-danger w-100">Agregar</button></div>
-      </form>
-      <div class="mb-2">Total Egresos: <span id="totalExpense">$0.00</span></div>
-      <table class="table table-sm">
-        <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th>Acciones</th></tr></thead>
-        <tbody id="expensesList"></tbody>
-      </table>
-    </div>
-
-    <!-- 3) Resumen por Fecha -->
-    <div class="panel" id="summaryPanel">
-      <h4>Resumen por Fecha</h4>
-      <div class="row g-2 mb-3">
-        <div class="col-md-3"><input type="date" id="searchDate" class="form-control"></div>
-        <div class="col-md-3"><button id="btnSearch" class="btn btn-primary w-100">Buscar</button></div>
-        <div class="col-md-3"><button id="btnClear" class="btn btn-secondary w-100">Limpiar</button></div>
-      </div>
-      <table class="table table-sm">
-        <thead><tr><th>Ingreso</th><th>Egreso</th><th>Saldo</th></tr></thead>
-        <tbody id="searchResults"></tbody>
-      </table>
-    </div>
-
-    <!-- 4) Inventario -->
-    <div class="panel" id="inventarioSection">
-      <h4>Inventario</h4>
-      <form id="formInventario" class="row g-2 mb-3">
-        <div class="col-md-2"><input type="text" id="itemInv" class="form-control" placeholder="Item" required></div>
-        <div class="col-md-2"><input type="text" id="codigoInv" class="form-control" placeholder="Código" required></div>
-        <div class="col-md-4"><input type="text" id="nombreInv" class="form-control" placeholder="Nombre" required></div>
-        <div class="col-md-2"><input type="number" id="unidadesInv" class="form-control" placeholder="Unidades" required></div>
-        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Agregar</button></div>
-      </form>
-      <table class="table table-sm text-center">
-        <thead><tr><th>Item</th><th>Código</th><th>Nombre</th><th>Unidades</th><th>Acciones</th></tr></thead>
-        <tbody id="inventarioBody"></tbody>
-      </table>
-    </div>
-
-    <!-- 5) Gestión de Mercadería -->
-    <div class="panel" id="gestionSection">
-      <h4>📦 Gestión de Mercadería</h4>
-      <form id="formGestion" class="row g-2 mb-3">
-        <div class="col-md-2"><input type="date" id="gestionDate" class="form-control" required></div>
-        <div class="col-md-3"><input type="text" id="prodG" class="form-control" placeholder="Producto" required></div>
-        <div class="col-md-1"><input type="number" id="ingresoG" class="form-control" placeholder="Ingreso" readonly></div>
-        <div class="col-md-1"><input type="number" step="0.01" id="costoG" class="form-control" placeholder="Costo" required></div>
-        <div class="col-md-1"><input type="number" id="ventaG" class="form-control" placeholder="Venta" required></div>
-        <div class="col-md-1"><input type="number" step="0.01" id="precioVentaG" class="form-control" placeholder="Precio Vta" required></div>
-        <div class="col-md-1"><input type="number" id="saldoG" class="form-control" placeholder="Saldo" readonly></div>
-        <div class="col-md-2"><button type="submit" class="btn btn-success w-100">+ Agregar</button></div>
-      </form>
-      <div class="mb-3">
-        <input type="date" id="searchGestionDate" class="form-control d-inline-block w-auto">
-        <button id="btnSearchGes" class="btn btn-outline-primary">Buscar Gestión</button>
-        <button id="btnClearGes" class="btn btn-outline-secondary">Limpiar</button>
-      </div>
-      <table class="table table-sm text-center">
-        <thead class="table-dark"><tr>
-          <th>#</th><th>Fecha</th><th>Producto</th><th>Ingreso</th><th>Costo</th>
-          <th>Venta</th><th>Precio Vta</th><th>Saldo</th>
-          <th>Val.1</th><th>Val.2</th><th>Acciones</th>
-        </tr></thead>
-        <tbody id="gestionBody"></tbody>
-      </table>
-    </div>
-
+  <div class="form-group">
+    <label>Buscar por fecha</label>
+    <input type="date" id="buscarFecha" class="form-control" onchange="buscarPorFecha()">
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const PASSWORD = 'fernandez123';
-    let manageMode = false;
-    const container = document.querySelector('.container');
-    document.getElementById('manageBtn').onclick = () => {
-      if (!manageMode) {
-        const p = prompt('Contraseña:');
-        if (p === PASSWORD) {
-          manageMode = true;
-          container.classList.add('manage-mode');
-          document.getElementById('manageBtn').textContent = 'Salir Gestión';
-        }
-      } else {
-        manageMode = false;
-        container.classList.remove('manage-mode');
-        document.getElementById('manageBtn').textContent = 'Gestionar (✎/🗑️)';
-      }
-    };
+  <div id="tablaContainer">
+    <h4>Inventario</h4>
+    <table class="table table-bordered" id="tablaInventario">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Salida</th>
+          <th>Valoración 1 (Stock * Precio Unitario)</th>
+          <th>Valoración 2 (Stock * Precio Venta)</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-    const K_INC='inc', K_EXP='exp', K_INV='inv', K_GES='ges';
-    let incomes=JSON.parse(localStorage.getItem(K_INC))||[],
-        expenses=JSON.parse(localStorage.getItem(K_EXP))||[],
-        inventory=JSON.parse(localStorage.getItem(K_INV))||[],
-        gestion=JSON.parse(localStorage.getItem(K_GES))||[];
+    <h4>Ingresos</h4>
+    <table class="table table-bordered" id="tablaIngreso">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-    const saveAll=_=>{
-      localStorage.setItem(K_INC,JSON.stringify(incomes));
-      localStorage.setItem(K_EXP,JSON.stringify(expenses));
-      localStorage.setItem(K_INV,JSON.stringify(inventory));
-      localStorage.setItem(K_GES,JSON.stringify(gestion));
-    };
+    <h4>Ventas</h4>
+    <table class="table table-bordered" id="tablaVentas">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
 
-    // Render Ingresos
-    function renderIncomes(){
-      const t=document.getElementById('incomesList'); t.innerHTML='';
-      incomes.forEach((i,idx)=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${i.date}</td>
-          <td>${i.concept}</td>
-          <td>$${i.amount.toFixed(2)}</td>
-          <td>
-            <button class="btn btn-sm btn-primary edit-btn" onclick="editIncome(${idx})">✎</button>
-            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteIncome(${idx})">🗑️</button>
-          </td>`;
-        t.append(tr);
-      });
-      document.getElementById('totalIncome').textContent = `$${incomes.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
+<script>
+let datos = [];
+let edicionActiva = false;
+
+function activarEdicion() {
+  const clave = prompt("Ingrese la contraseña para editar o eliminar:");
+  if (clave === "fernandez123") {
+    edicionActiva = true;
+    alert("Modo edición activado. Puedes eliminar entradas.");
+    renderizarTablas(datos);
+  } else {
+    alert("Contraseña incorrecta");
+  }
+}
+
+function agregarProducto() {
+  const fecha = document.getElementById("fecha").value;
+  const producto = document.getElementById("producto").value.trim();
+  const cantidad = parseInt(document.getElementById("cantidadIngreso").value);
+  const precioUni = parseFloat(document.getElementById("precioUni").value);
+  const salida = parseInt(document.getElementById("cantidadVenta").value);
+  const precioVenta = parseFloat(document.getElementById("precioVenta").value);
+
+  if (!fecha || !producto || isNaN(cantidad) || isNaN(precioUni)) {
+    return alert("Complete todos los campos obligatorios");
+  }
+
+  const stock = cantidad - (isNaN(salida) ? 0 : salida);
+  const valoracion1 = stock * precioUni;
+  const valoracion2 = isNaN(precioVenta) ? 0 : stock * precioVenta;
+
+  const registro = { fecha, producto, cantidad, salida, valoracion1, valoracion2, stock, precioUni, precioVenta };
+  datos.push(registro);
+  renderizarTablas(datos);
+  limpiarFormulario();
+}
+
+function renderizarTablas(data) {
+  const invTbody = document.querySelector("#tablaInventario tbody");
+  const ingTbody = document.querySelector("#tablaIngreso tbody");
+  const venTbody = document.querySelector("#tablaVentas tbody");
+
+  invTbody.innerHTML = "";
+  ingTbody.innerHTML = "";
+  venTbody.innerHTML = "";
+
+  data.forEach((item, index) => {
+    invTbody.innerHTML += `<tr>
+      <td>${item.fecha}</td>
+      <td>${item.producto}</td>
+      <td>${item.cantidad}</td>
+      <td>${item.salida ?? 0}</td>
+      <td>${item.valoracion1.toFixed(2)}</td>
+      <td>${item.valoracion2.toFixed(2)}</td>
+      <td>${item.stock}</td>
+      <td>${edicionActiva ? `<button class='btn btn-danger btn-sm' onclick='eliminarElemento(${index})'>Eliminar</button>` : ''}</td>
+    </tr>`;
+
+    ingTbody.innerHTML += `<tr>
+      <td>${item.fecha}</td>
+      <td>${item.producto}</td>
+      <td>${item.cantidad}</td>
+      <td>${item.precioUni}</td>
+      <td>${(item.cantidad * item.precioUni).toFixed(2)}</td>
+    </tr>`;
+
+    if (!isNaN(item.salida) && !isNaN(item.precioVenta)) {
+      venTbody.innerHTML += `<tr>
+        <td>${item.fecha}</td>
+        <td>${item.producto}</td>
+        <td>${item.salida}</td>
+        <td>${item.precioVenta}</td>
+        <td>${(item.salida * item.precioVenta).toFixed(2)}</td>
+      </tr>`;
     }
-    document.getElementById('incomeForm').onsubmit=e=>{
-      e.preventDefault();
-      incomes.push({
-        date:document.getElementById('incomeDate').value,
-        concept:document.getElementById('incomeConcept').value,
-        amount:parseFloat(document.getElementById('incomeAmount').value)
-      });
-      saveAll(); renderIncomes(); renderSummary(); e.target.reset();
-    };
-    window.editIncome=idx=>{
-      const i=incomes[idx];
-      const d=prompt('Fecha',i.date); if(!d)return;
-      const c=prompt('Concepto',i.concept); if(c===null)return;
-      const a=parseFloat(prompt('Monto',i.amount)); if(isNaN(a))return;
-      incomes[idx]={date:d,concept:c,amount:a};
-      saveAll(); renderIncomes(); renderSummary();
-    };
-    window.deleteIncome=idx=>{
-      if(confirm('Eliminar ingreso?')){
-        incomes.splice(idx,1);
-        saveAll(); renderIncomes(); renderSummary();
-      }
-    };
+  });
+}
 
-    // Render Egresos
-    function renderExpenses(){
-      const t=document.getElementById('expensesList'); t.innerHTML='';
-      expenses.forEach((e,idx)=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${e.date}</td>
-          <td>${e.concept}</td>
-          <td>$${e.amount.toFixed(2)}</td>
-          <td>
-            <button class="btn btn-sm btn-primary edit-btn" onclick="editExpense(${idx})">✎</button>
-            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteExpense(${idx})">🗑️</button>
-          </td>`;
-        t.append(tr);
-      });
-      document.getElementById('totalExpense').textContent = `$${expenses.reduce((s,x)=>s+x.amount,0).toFixed(2)}`;
-    }
-    document.getElementById('expenseForm').onsubmit=e=>{
-      e.preventDefault();
-      expenses.push({
-        date:document.getElementById('expenseDate').value,
-        concept:document.getElementById('expenseConcept').value,
-        amount:parseFloat(document.getElementById('expenseAmount').value)
-      });
-      saveAll(); renderExpenses(); renderSummary(); e.target.reset();
-    };
-    window.editExpense=idx=>{
-      const ex=expenses[idx];
-      const d=prompt('Fecha',ex.date); if(!d)return;
-      const c=prompt('Concepto',ex.concept); if(c===null)return;
-      const a=parseFloat(prompt('Monto',ex.amount)); if(isNaN(a))return;
-      expenses[idx]={date:d,concept:c,amount:a};
-      saveAll(); renderExpenses(); renderSummary();
-    };
-    window.deleteExpense=idx=>{
-      if(confirm('Eliminar egreso?')){
-        expenses.splice(idx,1);
-        saveAll(); renderExpenses(); renderSummary();
-      }
-    };
+function eliminarElemento(index) {
+  if (confirm("¿Estás seguro de eliminar este registro?")) {
+    datos.splice(index, 1);
+    renderizarTablas(datos);
+  }
+}
 
-    // Resumen por Fecha
-    function renderSummary(){
-      const tbody=document.getElementById('searchResults'); tbody.innerHTML='';
-      const dates=new Set([...incomes.map(i=>i.date),...expenses.map(e=>e.date)]);
-      Array.from(dates).sort().forEach(d=>{
-        const inc=incomes.filter(i=>i.date===d).reduce((s,x)=>s+x.amount,0);
-        const exp=expenses.filter(e=>e.date===d).reduce((s,x)=>s+x.amount,0);
-        const sal=inc-exp;
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>$${inc.toFixed(2)}</td><td>$${exp.toFixed(2)}</td><td>$${sal.toFixed(2)}</td>`;
-        tbody.append(tr);
-      });
-    }
-    document.getElementById('btnSearch').onclick=e=>{
-      e.preventDefault();
-      const d=document.getElementById('searchDate').value;
-      const inc=incomes.filter(i=>i.date===d).reduce((s,x)=>s+x.amount,0);
-      const exp=expenses.filter(e=>e.date===d).reduce((s,x)=>s+x.amount,0);
-      const sal=inc-exp;
-      document.getElementById('searchResults').innerHTML=`
-        <tr><td>$${inc.toFixed(2)}</td><td>$${exp.toFixed(2)}</td><td>$${sal.toFixed(2)}</td></tr>`;
-    };
-    document.getElementById('btnClear').onclick=e=>{
-      e.preventDefault();
-      document.getElementById('searchDate').value='';
-      renderSummary();
-    };
+function limpiarFormulario() {
+  document.getElementById("fecha").value = "";
+  document.getElementById("producto").value = "";
+  document.getElementById("cantidadIngreso").value = "";
+  document.getElementById("precioUni").value = "";
+  document.getElementById("cantidadVenta").value = "";
+  document.getElementById("precioVenta").value = "";
+}
 
-    // Inventario
-    function renderInv(){
-      const t=document.getElementById('inventarioBody'); t.innerHTML='';
-      inventory.forEach((v,idx)=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${v.item}</td><td>${v.codigo}</td><td>${v.nombre}</td><td>${v.unidades}</td>
-          <td>
-            <button class="btn btn-sm btn-primary edit-btn" onclick="editInv(${idx})">✎</button>
-            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteInv(${idx})">🗑️</button>
-          </td>`;
-        t.append(tr);
-      });
-    }
-    document.getElementById('formInventario').onsubmit=e=>{
-      e.preventDefault();
-      inventory.push({
-        item:document.getElementById('itemInv').value,
-        codigo:document.getElementById('codigoInv').value,
-        nombre:document.getElementById('nombreInv').value,
-        unidades:parseInt(document.getElementById('unidadesInv').value,10)
-      });
-      saveAll(); renderInv(); e.target.reset();
-    };
-    window.editInv=idx=>{
-      const v=inventory[idx];
-      document.getElementById('itemInv').value=v.item;
-      document.getElementById('codigoInv').value=v.codigo;
-      document.getElementById('nombreInv').value=v.nombre;
-      document.getElementById('unidadesInv').value=v.unidades;
-      inventory.splice(idx,1);
-      saveAll(); renderInv();
-    };
-    window.deleteInv=idx=>{
-      if(confirm('Eliminar inventario?')){
-        inventory.splice(idx,1);
-        saveAll(); renderInv();
-      }
-    };
+function buscarPorFecha() {
+  const fecha = document.getElementById("buscarFecha").value;
+  if (!fecha) return renderizarTablas(datos);
+  const filtrados = datos.filter(item => item.fecha === fecha);
+  renderizarTablas(filtrados);
+}
 
-    // Gestión de Mercadería
-    function renderGestion(){
-      const t=document.getElementById('gestionBody'); t.innerHTML='';
-      gestion.forEach((g,idx)=>{
-        const val1=g.ingreso*g.venta;
-        const val2=g.precioVenta*g.saldo;
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${idx+1}</td><td>${g.date}</td><td>${g.producto}</td><td>${g.ingreso}</td>
-          <td>S/ ${g.costo.toFixed(2)}</td><td>${g.venta}</td><td>S/ ${g.precioVenta.toFixed(2)}</td>
-          <td>${g.saldo}</td><td>${val1}</td><td>S/ ${val2.toFixed(2)}</td>
-          <td>
-            <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${idx})">✎</button>
-            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${idx})">🗑️</button>
-          </td>`;
-        t.append(tr);
-      });
-    }
-    document.getElementById('formGestion').onsubmit=e=>{
-      e.preventDefault();
-      const date=document.getElementById('gestionDate').value;
-      const prod=document.getElementById('prodG').value;
-      const costo=parseFloat(document.getElementById('costoG').value);
-      const venta=parseInt(document.getElementById('ventaG').value,10);
-      const precioVenta=parseFloat(document.getElementById('precioVentaG').value);
-      const ingresoTot=incomes.filter(i=>i.concept===prod).reduce((s,x)=>s+x.amount,0);
-      const egTot=expenses.filter(e=>e.concept===prod).reduce((s,x)=>s+ x.amount,0);
-      const saldo=ingresoTot-egTot;
-      const inv=inventory.find(x=>x.nombre===prod);
-      if(inv) inv.unidades=Math.max(0,inv.unidades-venta);
-      gestion.push({ date, producto:prod, ingreso:ingresoTot, costo, venta, precioVenta, saldo });
-      saveAll(); renderInv(); renderGestion();
-      e.target.reset();
-    };
-    window.editGestion=idx=>{
-      const g=gestion.splice(idx,1)[0];
-      document.getElementById('gestionDate').value=g.date;
-      document.getElementById('prodG').value=g.producto;
-      document.getElementById('costoG').value=g.costo;
-      document.getElementById('ventaG').value=g.venta;
-      document.getElementById('precioVentaG').value=g.precioVenta;
-      document.getElementById('saldoG').value=g.saldo;
-      saveAll(); renderGestion();
-    };
-    window.deleteGestion=idx=>{
-      if(confirm('Eliminar gestión?')){
-        gestion.splice(idx,1);
-        saveAll(); renderGestion();
-      }
-    };
-    document.getElementById('btnSearchGes').onclick=e=>{
-      e.preventDefault();
-      const d=document.getElementById('searchGestionDate').value;
-      const t=document.getElementById('gestionBody'); t.innerHTML='';
-      gestion.filter(g=>g.date===d).forEach((g,idx)=>{
-        const val1=g.ingreso*g.venta, val2=g.precioVenta*g.saldo;
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td>${idx+1}</td><td>${g.date}</td><td>${g.producto}</td><td>${g.ingreso}</td>
-          <td>S/ ${g.costo.toFixed(2)}</td><td>${g.venta}</td><td>S/ ${g.precioVenta.toFixed(2)}</td>
-          <td>${g.saldo}</td><td>${val1}</td><td>S/ ${val2.toFixed(2)}</td>
-          <td>
-            <button class="btn btn-sm btn-primary edit-btn" onclick="editGestion(${idx})">✎</button>
-            <button class="btn btn-sm btn-danger delete-btn" onclick="deleteGestion(${idx})">🗑️</button>
-          </td>`;
-        t.append(tr);
-      });
-    };
-    document.getElementById('btnClearGes').onclick=e=>{
-      e.preventDefault();
-      document.getElementById('searchGestionDate').value='';
-      renderGestion();
-    };
-
-    function renderAll(){
-      renderIncomes();
-      renderExpenses();
-      renderSummary();
-      renderInv();
-      renderGestion();
-    }
-    window.onload=renderAll;
-  </script>
+function generarPDF() {
+  const element = document.getElementById("tablaContainer");
+  html2pdf().from(element).save("inventario_completo.pdf");
+}
+</script>
 </body>
 </html>
-
 
 
 
