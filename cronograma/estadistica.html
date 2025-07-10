@@ -1,0 +1,264 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Capital y Mercadería</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { display: flex; min-height: 100vh; overflow-x: hidden; }
+    .sidebar { width: 220px; background-color: #343a40; color: white; position: fixed; height: 100%; padding-top: 20px; }
+    .sidebar a { color: white; display: block; padding: 10px 20px; text-decoration: none; }
+    .sidebar a:hover { background-color: #495057; }
+    .content { margin-left: 220px; padding: 20px; flex: 1; }
+    .floating-btn { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+    .ganancia-positive { color: green; }
+    .ganancia-negative { color: red; }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="sidebar">
+  <h4 class="text-center">📋 Menú</h4>
+  <a href="cronograma.html">💰 inicio</a>
+ 
+</div>
+
+<div class="content">
+  <div class="container py-4">
+    <h2 class="mb-4">💰 Gestión de Capital y Mercadería</h2>
+
+    <!-- Sección Capital -->
+    <div id="capital" class="mb-4">
+      <label for="capitalInicial" class="form-label">Capital Inicial:</label>
+      <input type="number" id="capitalInicial" class="form-control" placeholder="Ingrese su capital inicial" />
+      <button onclick="guardarCapital()" class="btn btn-primary mt-2">Guardar Capital</button>
+      <button onclick="reiniciarTodo()" class="btn btn-danger mt-2">🔁 Reiniciar Todo</button>
+    </div>
+
+    <!-- Resumen -->
+    <div id="resumen" class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">📊 Estado Actual</h5>
+        <p>💵 Capital Disponible: <strong id="capitalDisponible">0</strong></p>
+        <p>📈 Ganancia Total: <strong id="gananciaTotal" class="ganancia-positive">0</strong></p>
+        <p id="estadoCapital" class="fw-bold text-white p-2 rounded"></p>
+        <button class="btn btn-info mt-2" data-bs-toggle="modal" data-bs-target="#modalHistorialCapital">📘 Historial de Capital Recuperado</button>
+      </div>
+    </div>
+
+    <!-- Botón Flotante para Compras -->
+    <button class="btn btn-success rounded-circle floating-btn" data-bs-toggle="modal" data-bs-target="#modalCompra">＋</button>
+
+    <!-- Botón Ventas -->
+    <div id="ventas" class="mt-4">
+      <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#modalVenta">🧾 Registrar Venta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modales -->
+
+<!-- Modal Compra -->
+<div class="modal fade" id="modalCompra" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Registrar Compra de Mercadería</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="nombreProducto" class="form-control mb-2" placeholder="Nombre del producto">
+        <input type="number" id="costoProducto" class="form-control mb-2" placeholder="Costo del producto">
+        <button onclick="registrarCompra()" class="btn btn-primary w-100 mb-3">Registrar Compra</button>
+        <h6>🧾 Historial de Compras</h6>
+        <table class="table table-bordered">
+          <thead><tr><th>Producto</th><th>Costo</th><th>Fecha</th></tr></thead>
+          <tbody id="historialCompras"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Venta -->
+<div class="modal fade" id="modalVenta" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Registrar Venta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <select id="ventaNombre" class="form-control mb-2"></select>
+        <input type="number" id="ventaCantidad" class="form-control mb-2" placeholder="Cantidad">
+        <input type="number" id="ventaPrecio" class="form-control mb-2" placeholder="Precio de Venta Unitario">
+        <button onclick="registrarVenta()" class="btn btn-success w-100 mb-3">Registrar Venta</button>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <input type="date" id="filtroFecha" class="form-control w-50" onchange="filtrarVentasPorFecha()">
+          <button onclick="exportarVentasPDF()" class="btn btn-danger ms-2">📄 Exportar PDF</button>
+        </div>
+
+        <h6>📋 Historial de Ventas</h6>
+        <table class="table table-bordered" id="tablaVentas">
+          <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Ganancia</th><th>Fecha</th></tr></thead>
+          <tbody id="historialVentas"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Historial Capital -->
+<div class="modal fade" id="modalHistorialCapital" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">💵 Historial de Capital Recuperado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Capital Inicial: <strong id="capitalInicialHist"></strong></p>
+        <p>Capital Actual: <strong id="capitalActualHist"></strong></p>
+        <table class="table table-bordered">
+          <thead><tr><th>Producto</th><th>Cantidad</th><th>Aporte a Capital</th><th>Fecha</th></tr></thead>
+          <tbody id="historialCapitalRecuperado"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script>
+let capital = 0;
+let capitalInicial = 0;
+let compras = [];
+let ventas = [];
+let recuperaciones = [];
+
+window.onload = () => {
+  capitalInicial = parseFloat(localStorage.getItem('capitalInicial')) || 0;
+  capital = parseFloat(localStorage.getItem('capital')) || capitalInicial;
+  compras = JSON.parse(localStorage.getItem('compras')) || [];
+  ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+  recuperaciones = JSON.parse(localStorage.getItem('recuperaciones')) || [];
+  actualizarTodo();
+};
+
+function guardarCapital() {
+  capitalInicial = parseFloat(document.getElementById('capitalInicial').value) || 0;
+  capital = capitalInicial;
+  localStorage.setItem('capitalInicial', capitalInicial);
+  localStorage.setItem('capital', capital);
+  actualizarTodo();
+}
+
+function registrarCompra() {
+  const nombre = document.getElementById('nombreProducto').value.trim();
+  const costo = parseFloat(document.getElementById('costoProducto').value);
+  if (!nombre || isNaN(costo) || costo > capital) {
+    return alert('Verifica datos o capital insuficiente');
+  }
+  compras.push({ nombre, costo, fecha: new Date().toLocaleString() });
+  capital -= costo;
+  guardarState();
+  actualizarTodo();
+}
+
+function registrarVenta() {
+  const nombre = document.getElementById('ventaNombre').value;
+  const cantidad = parseInt(document.getElementById('ventaCantidad').value);
+  const precio = parseFloat(document.getElementById('ventaPrecio').value);
+  if (!nombre || isNaN(cantidad) || isNaN(precio)) return alert('Datos inválidos');
+  // Calcular costo medio
+  const comprasProd = compras.filter(c => c.nombre === nombre);
+  const costoMedio = comprasProd.reduce((s,c) => s + c.costo, 0) / comprasProd.length;
+  const ingreso = precio * cantidad;
+  let gananciaBruta = ingreso - (costoMedio * cantidad);
+  let aporte = 0;
+  if (capital < capitalInicial) {
+    const faltante = capitalInicial - capital;
+    aporte = Math.min(faltante, gananciaBruta);
+    capital += aporte;
+    gananciaBruta -= aporte;
+    recuperaciones.push({ nombre, cantidad, aporte, fecha: new Date().toLocaleString() });
+  }
+  ventas.push({ nombre, cantidad, precio, ganancia: gananciaBruta, fecha: new Date().toLocaleString() });
+  guardarState();
+  actualizarTodo();
+}
+
+function actualizarTodo() {
+  document.getElementById('capitalDisponible').textContent = capital.toFixed(2);
+  document.getElementById('capitalInicialHist').textContent = capitalInicial.toFixed(2);
+  document.getElementById('capitalActualHist').textContent = capital.toFixed(2);
+
+  const ganTotal = ventas.reduce((s,v) => s + v.ganancia, 0);
+  document.getElementById('gananciaTotal').textContent = ganTotal.toFixed(2);
+  document.getElementById('gananciaTotal').className = ganTotal >= 0 ? 'ganancia-positive' : 'ganancia-negative';
+
+  const estado = document.getElementById('estadoCapital');
+  if (capital >= capitalInicial) {
+    estado.textContent = '✅ Capital Inicial Recuperado'; estado.style.background='#28a745';
+  } else {
+    estado.textContent = '❌ Faltante para Recuperar Capital'; estado.style.background='#dc3545';
+  }
+
+  // Historial compras
+  document.getElementById('historialCompras').innerHTML = compras.map(c => 
+    `<tr><td>${c.nombre}</td><td>${c.costo.toFixed(2)}</td><td>${c.fecha}</td></tr>`
+  ).join('');
+
+  // Select productos
+  const opciones = [...new Set(compras.map(c=>c.nombre))].map(n=>`<option value="${n}">${n}</option>`);
+  document.getElementById('ventaNombre').innerHTML = opciones.join('');
+
+  // Historial ventas
+  document.getElementById('historialVentas').innerHTML = ventas.map(v =>
+    `<tr><td>${v.nombre}</td><td>${v.cantidad}</td><td>${v.precio.toFixed(2)}</td><td class="${v.ganancia>=0?'ganancia-positive':'ganancia-negative'}">${v.ganancia.toFixed(2)}</td><td>${v.fecha}</td></tr>`
+  ).join('');
+
+  // Historial recuperaciones
+  document.getElementById('historialCapitalRecuperado').innerHTML = recuperaciones.map(r =>
+    `<tr><td>${r.nombre}</td><td>${r.cantidad}</td><td>${r.aporte.toFixed(2)}</td><td>${r.fecha}</td></tr>`
+  ).join('');
+}
+
+function filtrarVentasPorFecha() {
+  const f = document.getElementById('filtroFecha').value;
+  if (!f) return actualizarTodo();
+  const filtradas = ventas.filter(v => new Date(v.fecha).toISOString().split('T')[0] === f);
+  document.getElementById('historialVentas').innerHTML = filtradas.map(v =>
+    `<tr><td>${v.nombre}</td><td>${v.cantidad}</td><td>${v.precio.toFixed(2)}</td><td class="${v.ganancia>=0?'ganancia-positive':'ganancia-negative'}">${v.ganancia.toFixed(2)}</td><td>${v.fecha}</td></tr>`
+  ).join('');
+}
+
+function exportarVentasPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.text('Historial de Ventas', 14, 15);
+  doc.autoTable({ html: '#tablaVentas', startY: 20, styles:{ fontSize:10 } });
+  doc.save('historial_ventas.pdf');
+}
+
+function reiniciarTodo() {
+  const pass = prompt('Contraseña:');
+  if (pass !== 'fernandez123') return alert('Contraseña incorrecta');
+  if (!confirm('Borrar todos los datos?')) return;
+  localStorage.clear(); window.location.reload();
+}
+
+function guardarState() {
+  localStorage.setItem('capital', capital);
+  localStorage.setItem('capitalInicial', capitalInicial);
+  localStorage.setItem('compras', JSON.stringify(compras));
+  localStorage.setItem('ventas', JSON.stringify(ventas));
+  localStorage.setItem('recuperaciones', JSON.stringify(recuperaciones));
+}
+</script>
+</body>
+</html>
