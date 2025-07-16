@@ -1,6 +1,5 @@
    
-
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -9,52 +8,44 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    .btn-flotante {
-      position: fixed;
-      right: 20px;
-      border-radius: 50px;
-      padding: 12px 20px;
-      font-size: 16px;
-      z-index: 1050;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .btn-resumen { bottom: 20px; }
-    .btn-ventas { bottom: 80px; background-color: #28a745; color: white; }
-    .btn-historial { bottom: 140px; background-color: #6c757d; color: white; }
+    .btn-flotante { position: fixed; right: 20px; border-radius: 50px; padding:12px 20px; font-size:16px; z-index:1050; box-shadow:0 4px 8px rgba(0,0,0,0.2); }
+    .btn-resumen { bottom: 20px; background: #007bff; color:#fff; }
+    .btn-historial { bottom: 80px; background: #6c757d; color:#fff; }
+    .btn-venta-capital { bottom: 140px; background: #28a745; color:#fff; }
   </style>
 </head>
 <body class="bg-light">
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="cronograma.html">Inventario</a>
-    </div>
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container-fluid"><a class="navbar-brand" href="cronograma.html">Inventario</a></div>
   </nav>
-
   <div class="container py-4">
     <div class="card mb-4">
       <div class="card-header bg-secondary text-white">Registrar Movimiento</div>
       <div class="card-body">
         <form id="formMovimiento" class="row g-3">
           <div class="col-md-3">
-            <label for="fecha" class="form-label">Fecha</label>
-            <input type="date" id="fecha" class="form-control" required />
+            <label class="form-label">Fecha</label>
+            <input type="date" id="fecha" class="form-control" required>
           </div>
           <div class="col-md-3">
-            <label for="producto" class="form-label">Producto</label>
-            <input type="text" id="producto" class="form-control" required />
+            <label class="form-label">Producto</label>
+            <input type="text" id="producto" class="form-control" required>
           </div>
-          <div class="col-md-3">
-            <label for="entrada" class="form-label">Entrada</label>
-            <input type="number" id="entrada" class="form-control" min="0" value="0" />
+          <div class="col-md-2">
+            <label class="form-label">Entrada</label>
+            <input type="number" id="entrada" class="form-control" min="0" value="0">
           </div>
-          <div class="col-md-3">
-            <label for="salida" class="form-label">Salida</label>
-            <input type="number" id="salida" class="form-control" min="0" value="0" />
+          <div class="col-md-2">
+            <label class="form-label">Salida</label>
+            <input type="number" id="salida" class="form-control" min="0" value="0">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Costo Unit.</label>
+            <input type="number" id="costoMov" class="form-control" min="0" step="0.01" value="0">
           </div>
           <div class="col-12 text-end">
-            <button type="submit" class="btn btn-primary">Agregar</button>
-            <button type="reset" class="btn btn-outline-secondary">Limpiar</button>
+            <button class="btn btn-primary" type="submit">Agregar</button>
+            <button class="btn btn-outline-secondary" type="reset">Limpiar</button>
           </div>
         </form>
       </div>
@@ -62,47 +53,61 @@
   </div>
 
   <!-- Botones flotantes -->
-  <button class="btn btn-primary btn-flotante btn-resumen" data-bs-toggle="modal" data-bs-target="#modalResumen">📊 Inventario</button>
-  <button class="btn btn-ventas btn-flotante" data-bs-toggle="modal" data-bs-target="#modalVentas">🛒 Registrar Venta</button>
-  <button class="btn btn-historial btn-flotante" data-bs-toggle="modal" data-bs-target="#modalHistorial">📄 Historial de Inventario</button>
-
-  <!-- Modal Resumen -->
+  <button class="btn btn-flotante btn-resumen" data-bs-toggle="modal" data-bs-target="#modalResumen">📊 Inventario</button>
+  <button class="btn btn-flotante btn-historial" data-bs-toggle="modal" data-bs-target="#modalHistorial">📄 Historial</button>
+  <button class="btn btn-flotante btn-venta-capital" data-bs-toggle="modal" data-bs-target="#modalVentaCapital">💰🛒 Venta & Capital</button>
+  <!-- Modal Resumen (Inventario) -->
   <div class="modal fade" id="modalResumen" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-secondary text-white">
-          <h5 class="modal-title">Stock Actual por Producto</h5>
+          <h5 class="modal-title">Stock y Costos</h5>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-0">
           <div class="table-responsive">
             <table class="table mb-0" id="tablaResumen">
-              <thead class="table-dark"><tr><th>Producto</th><th>Stock</th></tr></thead>
+              <thead class="table-dark">
+                <tr>
+                  <th>Producto</th>
+                  <th>Stock</th>
+                  <th>Costo Unit.</th>
+                  <th>Editar Costo</th>
+                </tr>
+              </thead>
               <tbody></tbody>
             </table>
           </div>
-          <button class="btn btn-danger me-auto" onclick="reiniciarTodo()">🗑 Reiniciar Todo</button>
         </div>
         <div class="modal-footer">
+          <button class="btn btn-danger me-auto" onclick="reiniciarTodo()">🗑 Reiniciar Todo</button>
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Historial -->
+  <!-- Modal Historial Movimientos -->
   <div class="modal fade" id="modalHistorial" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title">Historial de Inventario</h5>
+          <h5 class="modal-title">Historial de Movimientos</h5>
+          <button class="btn btn-secondary me-2" onclick="exportMovimientosPDF()">📥 PDF</button>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-0">
           <div class="table-responsive">
             <table class="table table-striped mb-0" id="tablaMovimientos">
               <thead class="table-dark">
-                <tr><th>#</th><th>Fecha</th><th>Producto</th><th>Entrada</th><th>Salida</th><th>Saldo</th></tr>
+                <tr>
+                  <th>#</th>
+                  <th>Fecha</th>
+                  <th>Producto</th>
+                  <th>Entrada</th>
+                  <th>Salida</th>
+                  <th>Saldo</th>
+                </tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -114,52 +119,91 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal Ventas -->
-  <div class="modal fade" id="modalVentas" tabindex="-1">
+  <!-- Modal Venta & Capital -->
+  <div class="modal fade" id="modalVentaCapital" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-success text-white">
-          <h5 class="modal-title">Registrar Venta</h5>
+          <h5 class="modal-title">Venta & Capital</h5>
+          <div class="ms-auto">
+            <div>Capital Disponible: S/ <span id="capitalVC">0.00</span></div>
+            <div>Valor de Stock: S/ <span id="valorStock">0.00</span></div>
+            <div>Total General: S/ <span id="totalGeneral">0.00</span></div>
+          </div>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <form id="formVenta" class="row g-3">
+          <div class="row">
+            <!-- Formulario de Venta -->
+            <div class="col-md-6">
+              <form id="formVenta" class="row g-3">
+                <div class="col-6">
+                  <label class="form-label">Producto</label>
+                  <select id="selectVenta" class="form-select" required></select>
+                </div>
+                <div class="col-3">
+                  <label class="form-label">Cantidad</label>
+                  <input type="number" id="cantVenta" class="form-control" min="1" required>
+                </div>
+                <div class="col-3">
+                  <label class="form-label">Costo Unit.</label>
+                  <input type="number" id="precioCosto" class="form-control" step="0.01" readonly>
+                </div>
+                <div class="col-3">
+                  <label class="form-label">Precio Venta</label>
+                  <input type="number" id="precioVenta" class="form-control" min="0" step="0.01" required>
+                </div>
+                <div class="col-12 text-end">
+                  <button type="button" id="calcGain" class="btn btn-info">Calcular Ganancia</button>
+                </div>
+              </form>
+              <div class="mt-2">Ganancia: S/ <span id="gananciaCalc">0.00</span></div>
+              <div class="text-end mt-2">
+                <button id="regVenta" class="btn btn-success">Registrar Venta</button>
+              </div>
+            </div>
+            <!-- Historial Ventas -->
+            <div class="col-md-6">
+              <h6>Historial de Ventas <button class="btn btn-sm btn-secondary ms-2" onclick="exportVentasPDF()">📥 PDF</button></h6>
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Producto</th>
+                      <th>Cant.</th>
+                      <th>Costo</th>
+                      <th>Precio Venta</th>
+                      <th>Total Costo</th>
+                      <th>Ganancia</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bodyVentas"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección de ingreso de nueva mercadería -->
+          <hr>
+          <h6 class="mt-3">Ingresar Nueva Mercadería al Inventario</h6>
+          <form id="formIngresoProducto" class="row g-3 mt-1">
             <div class="col-md-4">
-              <label for="productoVenta" class="form-label">Producto</label>
-              <select id="productoVenta" class="form-select" required></select>
+              <label class="form-label">Nombre del Producto</label>
+              <input type="text" id="nuevoProducto" class="form-control" required>
             </div>
             <div class="col-md-2">
-              <label for="cantidadVenta" class="form-label">Cantidad</label>
-              <input type="number" id="cantidadVenta" class="form-control" min="1" required />
+              <label class="form-label">Cantidad</label>
+              <input type="number" id="nuevaCantidad" class="form-control" min="1" required>
             </div>
-            <div class="col-md-3">
-              <label for="precioVenta" class="form-label">Precio Unitario</label>
-              <input type="number" id="precioVenta" class="form-control" min="0" required />
+            <div class="col-md-2">
+              <label class="form-label">Costo Unitario</label>
+              <input type="number" id="nuevoCosto" class="form-control" min="0" step="0.01" required>
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-              <button type="submit" class="btn btn-success w-100">Registrar</button>
+            <div class="col-md-4 d-flex align-items-end justify-content-end">
+              <button type="submit" class="btn btn-primary">Agregar al Inventario</button>
             </div>
           </form>
-
-          <hr />
-
-          <div class="d-flex justify-content-between align-items-center my-2">
-            <h6 class="m-0">Historial de Ventas</h6>
-            <div>
-              <input type="text" id="busquedaVenta" placeholder="Buscar producto..." class="form-control d-inline" style="width: 200px;" />
-              <button class="btn btn-danger btn-sm ms-2" onclick="generarPDF()">📄 PDF</button>
-            </div>
-          </div>
-
-          <div class="table-responsive" id="historialVentasContainer">
-            <table class="table table-bordered table-sm" id="tablaVentas">
-              <thead class="table-dark">
-                <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Total</th></tr>
-              </thead>
-              <tbody id="tablaVentasBody"></tbody>
-            </table>
-          </div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -167,218 +211,214 @@
       </div>
     </div>
   </div>
-
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const form = document.getElementById('formMovimiento');
-    const tablaBody = document.getElementById('tablaMovimientos').querySelector('tbody');
-    const resumenBody = document.getElementById('tablaResumen').querySelector('tbody');
-    const ventasBody = document.getElementById('tablaVentasBody');
-    const buscador = document.getElementById('busquedaVenta');
-    const selectVenta = document.getElementById('productoVenta');
+    let stock = {}, costos = {}, movs = [], ventas = [], capital = 0;
+    const tbRes = document.querySelector('#tablaResumen tbody'),
+          tbMov = document.querySelector('#tablaMovimientos tbody'),
+          selV = document.getElementById('selectVenta'),
+          tbVen = document.getElementById('bodyVentas'),
+          spanCapital = document.getElementById('capitalVC'),
+          spanStock = document.getElementById('valorStock'),
+          spanTotal = document.getElementById('totalGeneral');
 
-    let stock = {};
-    let historialMovimientos = [];
-    let historialVentas = [];
-
-    function guardarEnLocalStorage() {
-      localStorage.setItem('stock', JSON.stringify(stock));
-      localStorage.setItem('movimientos', JSON.stringify(historialMovimientos));
-      localStorage.setItem('ventas', JSON.stringify(historialVentas));
+    // Guardar en localStorage
+    function save() {
+      localStorage.setItem('stk', JSON.stringify(stock));
+      localStorage.setItem('cost', JSON.stringify(costos));
+      localStorage.setItem('mov', JSON.stringify(movs));
+      localStorage.setItem('ven', JSON.stringify(ventas));
+      localStorage.setItem('cap', capital);
     }
 
-    function cargarDesdeLocalStorage() {
-      stock = JSON.parse(localStorage.getItem('stock')) || {};
-      historialMovimientos = JSON.parse(localStorage.getItem('movimientos')) || [];
-      historialVentas = JSON.parse(localStorage.getItem('ventas')) || [];
-      renderizarResumen();
-      renderizarMovimientos();
-      renderizarVentas();
-      actualizarProductosVenta();
+    // Cargar desde localStorage
+    function load() {
+      stock = JSON.parse(localStorage.getItem('stk')) || {};
+      costos = JSON.parse(localStorage.getItem('cost')) || {};
+      movs = JSON.parse(localStorage.getItem('mov')) || [];
+      ventas = JSON.parse(localStorage.getItem('ven')) || [];
+      capital = parseFloat(localStorage.getItem('cap')) || 0;
+      renderAll();
     }
 
-    form.addEventListener('submit', e => {
+    // Evento para movimientos de stock
+    document.getElementById('formMovimiento').addEventListener('submit', e => {
       e.preventDefault();
-      const fecha = document.getElementById('fecha').value;
-      const prod = document.getElementById('producto').value.trim();
-      const ent = parseInt(document.getElementById('entrada').value) || 0;
-      const sal = parseInt(document.getElementById('salida').value) || 0;
-
-      if (ent > 0 && sal > 0) return alert('Solo Entrada o Salida, no ambas.');
-      if (!stock[prod]) stock[prod] = 0;
-      if (sal > stock[prod]) return alert('Stock insuficiente.');
-
-      stock[prod] += ent - sal;
-
-      historialMovimientos.push({
-        id: historialMovimientos.length + 1,
-        fecha,
-        producto: prod,
-        entrada: ent,
-        salida: sal,
-        saldo: stock[prod]
-      });
-
-      guardarEnLocalStorage();
-      renderizarMovimientos();
-      renderizarResumen();
-      actualizarProductosVenta();
-      form.reset();
-      document.getElementById('entrada').value = 0;
-      document.getElementById('salida').value = 0;
-      document.getElementById('fecha').focus();
+      const f = document.getElementById('fecha').value,
+            p = document.getElementById('producto').value.trim(),
+            ent = +document.getElementById('entrada').value,
+            sal = +document.getElementById('salida').value,
+            cMov = +document.getElementById('costoMov').value;
+      if (ent > 0 && sal > 0) return alert('Solo una acción');
+      if (!(p in stock)) stock[p] = 0;
+      if (!(p in costos)) costos[p] = cMov;
+      if (sal > stock[p]) return alert('Insuficiente');
+      stock[p] += ent - sal;
+      movs.push({ id: movs.length+1, fecha: f, producto: p, entrada: ent, salida: sal, saldo: stock[p] });
+      save(); renderAll(); e.target.reset();
     });
 
-    function renderizarResumen() {
-      resumenBody.innerHTML = '';
-      for (let prod in stock) {
-        resumenBody.innerHTML += `<tr>
-          <td>${prod}</td>
-          <td>
-            ${stock[prod]}
-            <button class="btn btn-sm btn-outline-primary ms-2" onclick="editarStock('${prod}')">✏</button>
-          </td>
-        </tr>`;
+    // Render tabla resumen
+    function renderRes() {
+      tbRes.innerHTML = '';
+      for (const p in stock) {
+        tbRes.insertAdjacentHTML('beforeend',
+          `<tr>
+             <td>${p}</td>
+             <td>${stock[p]}</td>
+             <td>S/ ${costos[p]||0}</td>
+             <td><button class='btn btn-sm btn-outline-warning' onclick="editCosto('${p}')">✏</button></td>
+           </tr>`);
       }
     }
 
-    function actualizarProductosVenta() {
-      selectVenta.innerHTML = '';
-      for (let prod in stock) {
-        if (stock[prod] > 0) {
-          selectVenta.innerHTML += `<option value="${prod}">${prod}</option>`;
-        }
+    // Render historial movimientos
+    function renderMov() {
+      tbMov.innerHTML = '';
+      movs.forEach(m => {
+        tbMov.insertAdjacentHTML('beforeend',
+          `<tr>
+             <th>${m.id}</th>
+             <td>${m.fecha}</td>
+             <td>${m.producto}</td>
+             <td class="text-success">${m.entrada}</td>
+             <td class="text-danger">${m.salida}</td>
+             <td>${m.saldo}</td>
+           </tr>`);
+      });
+    }
+
+    // Render historial ventas
+    function renderVen() {
+      tbVen.innerHTML = '';
+      ventas.forEach(v => {
+        tbVen.insertAdjacentHTML('beforeend',
+          `<tr>
+             <td>${v.fecha}</td>
+             <td>${v.producto}</td>
+             <td>${v.cantidad}</td>
+             <td>S/ ${v.costo}</td>
+             <td>S/ ${v.precioVenta}</td>
+             <td>S/ ${v.totalCosto}</td>
+             <td>S/ ${v.ganancia}</td>
+           </tr>`);
+      });
+    }
+
+    // Llenar selector de venta
+    function fillSel() {
+      selV.innerHTML = '';
+      for (const p in stock) {
+        if (stock[p] > 0) selV.insertAdjacentHTML('beforeend', `<option>${p}</option>`);
       }
+      if (selV.options.length) selV.dispatchEvent(new Event('change'));
     }
 
-    function renderizarMovimientos() {
-      tablaBody.innerHTML = '';
-      historialMovimientos.forEach(item => {
-        tablaBody.innerHTML += `
-          <tr>
-            <th>${item.id}</th>
-            <td>${item.fecha}</td>
-            <td>${item.producto}</td>
-            <td class="text-success">${item.entrada}</td>
-            <td class="text-danger">${item.salida}</td>
-            <td>${item.saldo}</td>
-          </tr>`;
-      });
-    }
+    // Al cambiar producto en venta
+    selV.addEventListener('change', () => {
+      const p = selV.value;
+      document.getElementById('precioCosto').value = costos[p] || 0;
+    });
 
-    document.getElementById('formVenta').addEventListener('submit', e => {
+    // Calcular ganancia
+    document.getElementById('calcGain').addEventListener('click', () => {
+      const q = +document.getElementById('cantVenta').value;
+      const c = +document.getElementById('precioCosto').value;
+      const pv = +document.getElementById('precioVenta').value;
+      if (pv < c) return alert('Precio venta menor al costo');
+      const ganancia = (pv - c) * q;
+      document.getElementById('gananciaCalc').textContent = ganancia.toFixed(2);
+    });
+
+    // Registrar venta
+    document.getElementById('regVenta').addEventListener('click', () => {
+      const p = selV.value,
+            q = +document.getElementById('cantVenta').value,
+            c = +document.getElementById('precioCosto').value,
+            pv = +document.getElementById('precioVenta').value,
+            gan = parseFloat(document.getElementById('gananciaCalc').textContent) || 0;
+      if (!p || q<1) return alert('Completa');
+      if (q > stock[p]) return alert('Insuficiente');
+      const now = new Date(), fh = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+      const totalCosto = (c*q).toFixed(2);
+      stock[p] -= q;
+      // Capital disponible incrementa con monto de venta
+      capital += pv*q;
+      ventas.push({ fecha: fh, producto: p, cantidad: q, costo: c.toFixed(2), precioVenta: pv.toFixed(2), totalCosto, ganancia: gan.toFixed(2) });
+      movs.push({ id: movs.length+1, fecha: fh, producto: `${p} (Venta)`, entrada: 0, salida: q, saldo: stock[p] });
+      save(); renderAll();
+      document.getElementById('formVenta').reset();
+      document.getElementById('gananciaCalc').textContent = '0.00';
+    });
+
+    // Ingresar nueva mercadería (no afecta capital)
+    document.getElementById('formIngresoProducto').addEventListener('submit', e => {
       e.preventDefault();
-      const prod = selectVenta.value;
-      const cant = parseInt(document.getElementById('cantidadVenta').value);
-      const precio = parseFloat(document.getElementById('precioVenta').value);
-      if (cant > stock[prod]) return alert('Stock insuficiente');
-
-      stock[prod] -= cant;
-      actualizarProductosVenta();
-      renderizarResumen();
-
-      const now = new Date();
-      const fechaHora = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-      const total = (cant * precio).toFixed(2);
-
-      historialVentas.push({
-        fecha: fechaHora,
-        producto: prod,
-        cantidad: cant,
-        precio: precio.toFixed(2),
-        total
-      });
-
-      historialMovimientos.push({
-        id: historialMovimientos.length + 1,
-        fecha: fechaHora,
-        producto: `${prod} (Venta)`,
-        entrada: 0,
-        salida: cant,
-        saldo: stock[prod]
-      });
-
-      guardarEnLocalStorage();
-      renderizarVentas();
-      renderizarMovimientos();
-      e.target.reset();
+      const nombre = document.getElementById('nuevoProducto').value.trim();
+      const cantidad = +document.getElementById('nuevaCantidad').value;
+      const costoUnitario = +document.getElementById('nuevoCosto').value;
+      if (!nombre || cantidad<=0 || costoUnitario<0) return alert('Datos inválidos');
+      if (!(nombre in stock)) stock[nombre] = 0;
+      stock[nombre] += cantidad;
+      costos[nombre] = costoUnitario;
+      const now = new Date(), fh = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+      movs.push({ id: movs.length+1, fecha: fh, producto: `${nombre} (Ingreso)`, entrada: cantidad, salida: 0, saldo: stock[nombre] });
+      save(); renderAll(); e.target.reset();
+      alert('Mercadería agregada al inventario.');
     });
 
-    function renderizarVentas() {
-      ventasBody.innerHTML = '';
-      historialVentas.forEach(v => {
-        ventasBody.innerHTML += `
-          <tr>
-            <td>${v.fecha}</td>
-            <td>${v.producto}</td>
-            <td>${v.cantidad}</td>
-            <td>S/ ${v.precio}</td>
-            <td><strong>S/ ${v.total}</strong></td>
-          </tr>`;
-      });
+    // Editar costo con contraseña
+    function editCosto(p) {
+      if (prompt('Contraseña:')!=='fernandez') return alert('Incorrecta');
+      const n = prompt(`Nuevo costo para ${p}:`, costos[p]||0),
+            v = parseFloat(n);
+      if (!isNaN(v)&& v>=0) {
+        costos[p] = v;
+        save(); renderRes(); alert('Costo actualizado.');
+      } else alert('Valor inválido');
     }
 
-    buscador.addEventListener('input', () => {
-      const filtro = buscador.value.toLowerCase();
-      Array.from(ventasBody.children).forEach(fila => {
-        fila.style.display = fila.textContent.toLowerCase().includes(filtro) ? '' : 'none';
-      });
-    });
-
-    function generarPDF() {
-      const element = document.getElementById('historialVentasContainer');
-      const opt = {
-        margin: 0.3,
-        filename: 'Historial_Ventas.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
-      };
-      html2pdf().from(element).set(opt).save();
-    }
-
+    // Reiniciar todo
     function reiniciarTodo() {
-      const pass = prompt('Ingrese la contraseña para borrar todo:');
-      if (pass !== 'fernandez') {
-        alert('Contraseña incorrecta');
-        return;
-      }
-      if (confirm('¿Está seguro de que desea borrar todos los datos del inventario? Esta acción no se puede deshacer.')) {
+      if (prompt('Contraseña:')!=='fernandez') return alert('Incorrecta');
+      if (confirm('¿Borrar todo?')) {
         localStorage.clear();
-        stock = {};
-        historialMovimientos = [];
-        historialVentas = [];
-        renderizarResumen();
-        renderizarMovimientos();
-        renderizarVentas();
-        actualizarProductosVenta();
-        alert('Inventario reiniciado con éxito.');
+        stock = {}; costos = {}; movs = []; ventas = []; capital = 0;
+        renderAll(); alert('Reiniciado');
       }
     }
 
-    function editarStock(producto) {
-      const pass = prompt(`Ingrese la contraseña para editar "${producto}":`);
-      if (pass !== 'fernandez') {
-        alert('Contraseña incorrecta');
-        return;
-      }
-      const nuevoStock = prompt(`Nuevo stock para "${producto}":`, stock[producto]);
-      const valor = parseInt(nuevoStock);
-      if (!isNaN(valor) && valor >= 0) {
-        stock[producto] = valor;
-        guardarEnLocalStorage();
-        renderizarResumen();
-        alert('Stock actualizado.');
-      } else {
-        alert('Valor inválido');
-      }
+    // Exportar PDF movimientos
+    function exportMovimientosPDF() {
+      html2pdf().set({ margin:0.4, filename:'Movimientos.pdf', html2canvas:{scale:2}, jsPDF:{unit:'in',format:'letter',orientation:'landscape'} })
+        .from(document.getElementById('tablaMovimientos').parentElement).save();
+    }
+    // Exportar PDF ventas
+    function exportVentasPDF() {
+      html2pdf().set({ margin:0.4, filename:'Ventas.pdf', html2canvas:{scale:2}, jsPDF:{unit:'in',format:'letter',orientation:'landscape'} })
+        .from(tbVen.parentElement).save();
+    }
+
+    // Calcular y mostrar indicadores
+    function actualizarIndicadores() {
+      // Valor stock = sum(stock[p] * costos[p])
+      let vs = 0;
+      for (const p in stock) vs += stock[p] * (costos[p]||0);
+      spanStock.textContent = vs.toFixed(2);
+      spanCapital.textContent = capital.toFixed(2);
+      spanTotal.textContent = (capital + vs).toFixed(2);
+    }
+
+    // Renderizar todo
+    function renderAll() {
+      renderRes(); renderMov(); renderVen(); fillSel(); actualizarIndicadores();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      load();
       document.getElementById('fecha').valueAsDate = new Date();
-      cargarDesdeLocalStorage();
     });
   </script>
 </body>
 </html>
+
