@@ -1,4 +1,5 @@
-  <!DOCTYPE html>
+ 
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -59,12 +60,13 @@
   <div style="margin-left: 200px; width: 100%;">
     <div class="container caja-panel">
       <h3 class="text-center mb-4">📦 Caja Diario</h3>
-
       <!-- Botones -->
-      <div class="text-end mb-3 d-flex justify-content-end gap-2">
-        <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalYape">📲 Dinero por Yape</button>
+      <div class="d-flex justify-content-between mb-3">
         <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalGastos">💸 Ver Gastos</button>
+        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalTransferencias">💳 Transferencias</button>
       </div>
+
+      <!-- Formulario principal -->
       <form id="formCaja">
         <div class="row mb-3">
           <div class="col-md-6">
@@ -94,6 +96,7 @@
               <option value="Yape">Yape</option>
               <option value="Plin">Plin</option>
               <option value="Transferencia">Transferencia</option>
+              <option value="Efectivo">Efectivo</option>
             </select>
           </div>
         </div>
@@ -105,219 +108,161 @@
 
       <hr>
 
+      <!-- Total disponible -->
       <div class="total-box text-center mt-3">
         💰 Total Disponible en Caja: <span id="totalCaja">S/ 0.00</span>
       </div>
 
       <hr>
 
+      <!-- Historial -->
       <h5 class="mt-4">📜 Historial</h5>
       <ul class="list-group" id="historialLista"></ul>
     </div>
-
-<!-- Modal Gastos -->
-<div class="modal fade" id="modalGastos" tabindex="-1" aria-labelledby="modalGastosLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form id="formGastos">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalGastosLabel">💸 Registro de Gastos</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <label for="fechaGasto" class="form-label">Fecha</label>
-              <input type="date" class="form-control" id="fechaGasto" required>
-            </div>
-            <div class="col-md-4">
-              <label for="descGasto" class="form-label">Descripción</label>
-              <input type="text" class="form-control" id="descGasto" required>
-            </div>
-            <div class="col-md-4">
-              <label for="montoGasto" class="form-label">Monto (S/)</label>
-              <input type="number" class="form-control" id="montoGasto" min="0" required>
-            </div>
-          </div>
-
-          <div class="d-grid mb-3">
-            <button type="submit" class="btn btn-danger">Agregar Gasto</button>
-          </div>
-
-          <div class="alert alert-secondary">
-            <strong>🧾 Total Gastado:</strong> S/ <span id="totalGastos">0.00</span>
-          </div>
-
-          <h6>📋 Historial de Gastos:</h6>
-          <ul class="list-group" id="listaGastos"></ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </form>
-    </div>
   </div>
 </div>
-
-<!-- Modal Yape -->
-<div class="modal fade" id="modalYape" tabindex="-1" aria-labelledby="modalYapeLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<!-- MODAL GASTOS -->
+<div class="modal fade" id="modalGastos" tabindex="-1" aria-labelledby="modalGastosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalYapeLabel">📲 Dinero por Yape</h5>
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalGastosLabel">💸 Historial de Gastos</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-success">
-          💰 <strong>Total en Yape:</strong> S/ <span id="totalYape">0.00</span>
-        </div>
-        <h6>📋 Historial de Yape:</h6>
-        <ul class="list-group" id="listaYape"></ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <ul class="list-group" id="listaGastos"></ul>
       </div>
     </div>
   </div>
 </div>
-<!-- Botón Flotante -->
-<button onclick="reiniciarDatos()" class="btn btn-danger floating-reset-btn">🔁 Reiniciar</button>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- MODAL TRANSFERENCIAS -->
+<div class="modal fade" id="modalTransferencias" tabindex="-1" aria-labelledby="modalTransferenciasLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="modalTransferenciasLabel">🏦 Historial Transferencias</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group mb-3" id="listaYape"></ul>
+        <ul class="list-group mb-3" id="listaPlin"></ul>
+        <ul class="list-group" id="listaTransferencia"></ul>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
-  let totalCajaActual = parseFloat(localStorage.getItem("totalCaja")) || 0;
-  let historial = JSON.parse(localStorage.getItem("historial")) || [];
+  // Variables y recuperación de datos
+  let registros = JSON.parse(localStorage.getItem("registros")) || [];
+  let totalCaja = parseFloat(localStorage.getItem("totalCaja")) || 0;
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-  let totalGastos = parseFloat(localStorage.getItem("totalGastos")) || 0;
 
   let yapeRegistros = JSON.parse(localStorage.getItem("yapeRegistros")) || [];
-  let totalYape = parseFloat(localStorage.getItem("totalYape")) || 0;
+  let plinRegistros = JSON.parse(localStorage.getItem("plinRegistros")) || [];
+  let transferenciaRegistros = JSON.parse(localStorage.getItem("transferenciaRegistros")) || [];
 
-  const totalCaja = document.getElementById("totalCaja");
+  const totalCajaElemento = document.getElementById("totalCaja");
   const historialLista = document.getElementById("historialLista");
-  const totalGastosElem = document.getElementById("totalGastos");
   const listaGastos = document.getElementById("listaGastos");
-  const totalYapeElemento = document.getElementById("totalYape");
   const listaYape = document.getElementById("listaYape");
+  const listaPlin = document.getElementById("listaPlin");
+  const listaTransferencia = document.getElementById("listaTransferencia");
 
   document.getElementById("formCaja").addEventListener("submit", function (e) {
     e.preventDefault();
-
-    const venta = parseFloat(document.getElementById("venta").value) || 0;
-    const descripcion = document.getElementById("descripcionVenta").value.trim();
-    const gasto = parseFloat(document.getElementById("gastos").value) || 0;
-    const pago = parseFloat(document.getElementById("montoPago").value) || 0;
+    const venta = parseFloat(document.getElementById("venta").value);
+    const descripcion = document.getElementById("descripcionVenta").value;
+    const gasto = parseFloat(document.getElementById("gastos").value);
+    const pago = parseFloat(document.getElementById("montoPago").value);
     const tipo = document.getElementById("tipoPago").value;
+    const fecha = new Date().toLocaleDateString();
 
-    const fecha = new Date().toLocaleString();
+    const entrada = {
+      fecha,
+      venta,
+      descripcion,
+      gasto,
+      pago,
+      tipo
+    };
 
-    totalCajaActual += venta + pago - gasto;
+    registros.push(entrada);
+    localStorage.setItem("registros", JSON.stringify(registros));
 
-    if (tipo === "Yape") {
+    if (!isNaN(venta)) totalCaja += venta;
+    if (!isNaN(gasto)) {
+      totalCaja -= gasto;
+      gastos.push({ fecha, gasto, descripcion });
+    }
+
+    if (tipo === "Efectivo") {
+      totalCaja += pago;
+    } else if (tipo === "Yape") {
       yapeRegistros.push({ fecha, monto: pago, descripcion });
-      totalYape += pago;
-      actualizarYape();
-      renderYape();
+    } else if (tipo === "Plin") {
+      plinRegistros.push({ fecha, monto: pago, descripcion });
+    } else if (tipo === "Transferencia") {
+      transferenciaRegistros.push({ fecha, monto: pago, descripcion });
     }
 
-    historial.push({ fecha, venta, descripcion, gasto, pago, tipo });
     guardarDatos();
-    renderHistorial();
-    actualizarCaja();
-
-    // Limpiar
-    document.getElementById("formCaja").reset();
+    renderizarTodo();
+    this.reset();
   });
-
-  document.getElementById("formGastos").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const fecha = document.getElementById("fechaGasto").value;
-    const descripcion = document.getElementById("descGasto").value;
-    const monto = parseFloat(document.getElementById("montoGasto").value);
-
-    if (fecha && descripcion && monto >= 0) {
-      gastos.push({ fecha, descripcion, monto });
-      totalGastos += monto;
-      totalCajaActual -= monto;
-      guardarDatos();
-      renderGastos();
-      actualizarCaja();
-      document.getElementById("formGastos").reset();
-    }
-  });
-
-  function actualizarCaja() {
-    totalCaja.textContent = `S/ ${totalCajaActual.toFixed(2)}`;
-    localStorage.setItem("totalCaja", totalCajaActual.toFixed(2));
-  }
 
   function guardarDatos() {
-    localStorage.setItem("historial", JSON.stringify(historial));
+    localStorage.setItem("totalCaja", totalCaja.toFixed(2));
     localStorage.setItem("gastos", JSON.stringify(gastos));
-    localStorage.setItem("totalGastos", totalGastos.toFixed(2));
+    localStorage.setItem("yapeRegistros", JSON.stringify(yapeRegistros));
+    localStorage.setItem("plinRegistros", JSON.stringify(plinRegistros));
+    localStorage.setItem("transferenciaRegistros", JSON.stringify(transferenciaRegistros));
   }
 
-  function renderHistorial() {
+  function renderizarTodo() {
+    totalCajaElemento.textContent = "S/ " + totalCaja.toFixed(2);
+
     historialLista.innerHTML = "";
-    historial.forEach(item => {
+    registros.forEach(r => {
       const li = document.createElement("li");
       li.className = "list-group-item";
-      li.innerHTML = `📅 ${item.fecha} - <strong>${item.descripcion}</strong> | Venta: S/ ${item.venta.toFixed(2)} | Pago: S/ ${item.pago.toFixed(2)} (${item.tipo}) | Gasto: S/ ${item.gasto.toFixed(2)}`;
+      li.textContent = `📅 ${r.fecha} - Venta: S/ ${r.venta} - Gasto: S/ ${r.gasto} - Pago (${r.tipo}): S/ ${r.pago} (${r.descripcion})`;
       historialLista.appendChild(li);
     });
-  }
 
-  function renderGastos() {
     listaGastos.innerHTML = "";
     gastos.forEach(g => {
       const li = document.createElement("li");
       li.className = "list-group-item";
-      li.textContent = `📅 ${g.fecha} - S/ ${g.monto.toFixed(2)} (${g.descripcion})`;
+      li.textContent = `📅 ${g.fecha} - S/ ${g.gasto} (${g.descripcion})`;
       listaGastos.appendChild(li);
     });
-    totalGastosElem.textContent = totalGastos.toFixed(2);
+
+    renderizarLista(listaYape, yapeRegistros, "Yape");
+    renderizarLista(listaPlin, plinRegistros, "Plin");
+    renderizarLista(listaTransferencia, transferenciaRegistros, "Transferencia");
   }
 
-  function actualizarYape() {
-    totalYapeElemento.textContent = totalYape.toFixed(2);
-    localStorage.setItem("totalYape", totalYape.toFixed(2));
-    localStorage.setItem("yapeRegistros", JSON.stringify(yapeRegistros));
-  }
+  function renderizarLista(elemento, datos, label) {
+    elemento.innerHTML = "";
+    const total = datos.reduce((sum, r) => sum + r.monto, 0);
+    const resumen = document.createElement("li");
+    resumen.className = "list-group-item active";
+    resumen.textContent = `💰 Total en ${label}: S/ ${total.toFixed(2)}`;
+    elemento.appendChild(resumen);
 
-  function renderYape() {
-    listaYape.innerHTML = "";
-    yapeRegistros.forEach(y => {
+    datos.forEach(d => {
       const li = document.createElement("li");
       li.className = "list-group-item";
-      li.textContent = `📅 ${y.fecha} - S/ ${y.monto.toFixed(2)} (${y.descripcion})`;
-      listaYape.appendChild(li);
+      li.textContent = `📅 ${d.fecha} - S/ ${d.monto.toFixed(2)} (${d.descripcion})`;
+      elemento.appendChild(li);
     });
   }
 
-  function reiniciarDatos() {
-    if (confirm("¿Seguro que deseas reiniciar todos los datos?")) {
-      localStorage.clear();
-      totalCajaActual = 0;
-      historial = [];
-      gastos = [];
-      totalGastos = 0;
-      yapeRegistros = [];
-      totalYape = 0;
-      renderHistorial();
-      renderGastos();
-      renderYape();
-      actualizarCaja();
-      actualizarYape();
-    }
-  }
-
-  // Al cargar
-  renderHistorial();
-  renderGastos();
-  renderYape();
-  actualizarCaja();
-  actualizarYape();
+  // Inicializar todo
+  renderizarTodo();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
