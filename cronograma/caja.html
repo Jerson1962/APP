@@ -60,14 +60,11 @@
     <div class="container caja-panel">
       <h3 class="text-center mb-4">📦 Caja Diario</h3>
 
-      <!-- Botón Modal Gastos -->
-      <div class="text-end mb-3">
-        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalGastos">
-          💸 Ver Gastos
-        </button>
+      <!-- Botones -->
+      <div class="text-end mb-3 d-flex justify-content-end gap-2">
+        <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#modalYape">📲 Dinero por Yape</button>
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalGastos">💸 Ver Gastos</button>
       </div>
-
-      <!-- Formulario principal -->
       <form id="formCaja">
         <div class="row mb-3">
           <div class="col-md-6">
@@ -108,17 +105,16 @@
 
       <hr>
 
-      <!-- Total disponible -->
       <div class="total-box text-center mt-3">
         💰 Total Disponible en Caja: <span id="totalCaja">S/ 0.00</span>
       </div>
 
       <hr>
 
-      <!-- Historial -->
       <h5 class="mt-4">📜 Historial</h5>
       <ul class="list-group" id="historialLista"></ul>
     </div>
+
 <!-- Modal Gastos -->
 <div class="modal fade" id="modalGastos" tabindex="-1" aria-labelledby="modalGastosLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -162,24 +158,104 @@
     </div>
   </div>
 </div>
-<!-- Botón de reinicio -->
+
+<!-- Modal Yape -->
+<div class="modal fade" id="modalYape" tabindex="-1" aria-labelledby="modalYapeLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalYapeLabel">📲 Dinero por Yape</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-success">
+          💰 <strong>Total en Yape:</strong> S/ <span id="totalYape">0.00</span>
+        </div>
+        <h6>📋 Historial de Yape:</h6>
+        <ul class="list-group" id="listaYape"></ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Botón Flotante -->
 <button onclick="reiniciarDatos()" class="btn btn-danger floating-reset-btn">🔁 Reiniciar</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Variables globales
+  let totalCajaActual = parseFloat(localStorage.getItem("totalCaja")) || 0;
   let historial = JSON.parse(localStorage.getItem("historial")) || [];
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-  let totalCajaActual = parseFloat(localStorage.getItem("totalCaja")) || 0;
+  let totalGastos = parseFloat(localStorage.getItem("totalGastos")) || 0;
+
+  let yapeRegistros = JSON.parse(localStorage.getItem("yapeRegistros")) || [];
+  let totalYape = parseFloat(localStorage.getItem("totalYape")) || 0;
 
   const totalCaja = document.getElementById("totalCaja");
   const historialLista = document.getElementById("historialLista");
+  const totalGastosElem = document.getElementById("totalGastos");
   const listaGastos = document.getElementById("listaGastos");
-  const totalGastos = document.getElementById("totalGastos");
+  const totalYapeElemento = document.getElementById("totalYape");
+  const listaYape = document.getElementById("listaYape");
+
+  document.getElementById("formCaja").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const venta = parseFloat(document.getElementById("venta").value) || 0;
+    const descripcion = document.getElementById("descripcionVenta").value.trim();
+    const gasto = parseFloat(document.getElementById("gastos").value) || 0;
+    const pago = parseFloat(document.getElementById("montoPago").value) || 0;
+    const tipo = document.getElementById("tipoPago").value;
+
+    const fecha = new Date().toLocaleString();
+
+    totalCajaActual += venta + pago - gasto;
+
+    if (tipo === "Yape") {
+      yapeRegistros.push({ fecha, monto: pago, descripcion });
+      totalYape += pago;
+      actualizarYape();
+      renderYape();
+    }
+
+    historial.push({ fecha, venta, descripcion, gasto, pago, tipo });
+    guardarDatos();
+    renderHistorial();
+    actualizarCaja();
+
+    // Limpiar
+    document.getElementById("formCaja").reset();
+  });
+
+  document.getElementById("formGastos").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const fecha = document.getElementById("fechaGasto").value;
+    const descripcion = document.getElementById("descGasto").value;
+    const monto = parseFloat(document.getElementById("montoGasto").value);
+
+    if (fecha && descripcion && monto >= 0) {
+      gastos.push({ fecha, descripcion, monto });
+      totalGastos += monto;
+      totalCajaActual -= monto;
+      guardarDatos();
+      renderGastos();
+      actualizarCaja();
+      document.getElementById("formGastos").reset();
+    }
+  });
 
   function actualizarCaja() {
-    totalCaja.textContent = "S/ " + totalCajaActual.toFixed(2);
+    totalCaja.textContent = `S/ ${totalCajaActual.toFixed(2)}`;
     localStorage.setItem("totalCaja", totalCajaActual.toFixed(2));
+  }
+
+  function guardarDatos() {
+    localStorage.setItem("historial", JSON.stringify(historial));
+    localStorage.setItem("gastos", JSON.stringify(gastos));
+    localStorage.setItem("totalGastos", totalGastos.toFixed(2));
   }
 
   function renderHistorial() {
@@ -187,92 +263,61 @@
     historial.forEach(item => {
       const li = document.createElement("li");
       li.className = "list-group-item";
-      li.textContent = `🗓️ ${item.fecha} - Venta: S/ ${item.venta} (${item.descripcion}), Gasto: S/ ${item.gasto}, Pago: S/ ${item.pago} (${item.tipo})`;
+      li.innerHTML = `📅 ${item.fecha} - <strong>${item.descripcion}</strong> | Venta: S/ ${item.venta.toFixed(2)} | Pago: S/ ${item.pago.toFixed(2)} (${item.tipo}) | Gasto: S/ ${item.gasto.toFixed(2)}`;
       historialLista.appendChild(li);
     });
   }
 
   function renderGastos() {
     listaGastos.innerHTML = "";
-    let total = 0;
     gastos.forEach(g => {
-      total += g.monto;
       const li = document.createElement("li");
       li.className = "list-group-item";
-      li.textContent = `📅 ${g.fecha} - ${g.descripcion}: S/ ${g.monto}`;
+      li.textContent = `📅 ${g.fecha} - S/ ${g.monto.toFixed(2)} (${g.descripcion})`;
       listaGastos.appendChild(li);
     });
-    totalGastos.textContent = total.toFixed(2);
+    totalGastosElem.textContent = totalGastos.toFixed(2);
   }
 
-  document.getElementById("formCaja").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const venta = parseFloat(document.getElementById("venta").value) || 0;
-    const descripcion = document.getElementById("descripcionVenta").value;
-    const gasto = parseFloat(document.getElementById("gastos").value) || 0;
-    const pago = parseFloat(document.getElementById("montoPago").value) || 0;
-    const tipo = document.getElementById("tipoPago").value;
-    const fecha = new Date().toLocaleDateString("es-PE");
+  function actualizarYape() {
+    totalYapeElemento.textContent = totalYape.toFixed(2);
+    localStorage.setItem("totalYape", totalYape.toFixed(2));
+    localStorage.setItem("yapeRegistros", JSON.stringify(yapeRegistros));
+  }
 
-    if (!tipo || descripcion === "") {
-      alert("Por favor completa todos los campos.");
-      return;
-    }
-
-    totalCajaActual += venta + pago - gasto;
-
-    historial.push({ fecha, venta, descripcion, gasto, pago, tipo });
-    localStorage.setItem("historial", JSON.stringify(historial));
-
-    actualizarCaja();
-    renderHistorial();
-    this.reset();
-  });
-
-  document.getElementById("formGastos").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const fecha = document.getElementById("fechaGasto").value;
-    const descripcion = document.getElementById("descGasto").value;
-    const monto = parseFloat(document.getElementById("montoGasto").value) || 0;
-
-    gastos.push({ fecha, descripcion, monto });
-    localStorage.setItem("gastos", JSON.stringify(gastos));
-
-    totalCajaActual -= monto;
-
-    actualizarCaja();
-    renderGastos();
-    this.reset();
-  });
+  function renderYape() {
+    listaYape.innerHTML = "";
+    yapeRegistros.forEach(y => {
+      const li = document.createElement("li");
+      li.className = "list-group-item";
+      li.textContent = `📅 ${y.fecha} - S/ ${y.monto.toFixed(2)} (${y.descripcion})`;
+      listaYape.appendChild(li);
+    });
+  }
 
   function reiniciarDatos() {
-    const clave = prompt("Introduce la contraseña para reiniciar todo:");
-
-    if (clave === "fernandez123") {
-      if (confirm("¿Estás seguro de que deseas eliminar todo el historial y los gastos?")) {
-        localStorage.removeItem("historial");
-        localStorage.removeItem("gastos");
-        localStorage.removeItem("totalCaja");
-        historial = [];
-        gastos = [];
-        totalCajaActual = 0;
-        renderHistorial();
-        renderGastos();
-        actualizarCaja();
-        alert("✅ Datos reiniciados correctamente.");
-      }
-    } else {
-      alert("❌ Contraseña incorrecta. No se hizo ningún cambio.");
+    if (confirm("¿Seguro que deseas reiniciar todos los datos?")) {
+      localStorage.clear();
+      totalCajaActual = 0;
+      historial = [];
+      gastos = [];
+      totalGastos = 0;
+      yapeRegistros = [];
+      totalYape = 0;
+      renderHistorial();
+      renderGastos();
+      renderYape();
+      actualizarCaja();
+      actualizarYape();
     }
   }
 
-  // Inicializar al cargar
+  // Al cargar
   renderHistorial();
-  actualizarCaja();
   renderGastos();
+  renderYape();
+  actualizarCaja();
+  actualizarYape();
 </script>
-</div>
-</div>
 </body>
 </html>
-
