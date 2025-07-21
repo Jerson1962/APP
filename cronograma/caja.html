@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -25,8 +25,22 @@
       padding: 10px;
       border-radius: 10px;
     }
+    .floating-reset-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .floating-reset-btn:hover {
+      background-color: #c82333;
+    }
   </style>
 </head>
+<body>
 <div class="d-flex">
   <!-- Sidebar -->
   <div class="bg-dark text-white p-3" style="min-width: 200px; height: 100vh; position: fixed;">
@@ -43,74 +57,69 @@
 
   <!-- Contenido principal -->
   <div style="margin-left: 200px; width: 100%;">
+    <div class="container caja-panel">
+      <h3 class="text-center mb-4">📦 Caja Diario</h3>
 
-<body>
-
-<div class="container caja-panel">
-  <h3 class="text-center mb-4">📦 Caja Diario</h3>
-
-  <!-- 🔹 Botón Modal Gastos -->
-  <div class="text-end mb-3">
-    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalGastos">
-      💸 Ver Gastos
-    </button>
-  </div>
-
-  <!-- 🔹 Formulario de Caja Diario -->
-  <form id="formCaja">
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <label for="venta" class="form-label">Venta Diaria (S/)</label>
-        <input type="number" class="form-control" id="venta" required>
+      <!-- Botón Modal Gastos -->
+      <div class="text-end mb-3">
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalGastos">
+          💸 Ver Gastos
+        </button>
       </div>
-      <div class="col-md-6">
-        <label for="descripcionVenta" class="form-label">Descripción</label>
-        <input type="text" class="form-control" id="descripcionVenta" required>
+
+      <!-- Formulario principal -->
+      <form id="formCaja">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="venta" class="form-label">Venta Diaria (S/)</label>
+            <input type="number" class="form-control" id="venta" min="0" required>
+          </div>
+          <div class="col-md-6">
+            <label for="descripcionVenta" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="descripcionVenta" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="gastos" class="form-label">Gastos (S/)</label>
+          <input type="number" class="form-control" id="gastos" min="0" required>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="montoPago" class="form-label">Monto de Pago (S/)</label>
+            <input type="number" class="form-control" id="montoPago" min="0" required>
+          </div>
+          <div class="col-md-6">
+            <label for="tipoPago" class="form-label">Tipo de Pago</label>
+            <select class="form-select" id="tipoPago" required>
+              <option value="">Seleccione una opción</option>
+              <option value="Yape">Yape</option>
+              <option value="Plin">Plin</option>
+              <option value="Transferencia">Transferencia</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary">Agregar Registro</button>
+        </div>
+      </form>
+
+      <hr>
+
+      <!-- Total disponible -->
+      <div class="total-box text-center mt-3">
+        💰 Total Disponible en Caja: <span id="totalCaja">S/ 0.00</span>
       </div>
+
+      <hr>
+
+      <!-- Historial -->
+      <h5 class="mt-4">📜 Historial</h5>
+      <ul class="list-group" id="historialLista"></ul>
     </div>
-
-    <div class="mb-3">
-      <label for="gastos" class="form-label">Gastos (S/)</label>
-      <input type="number" class="form-control" id="gastos" required>
-    </div>
-
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <label for="montoPago" class="form-label">Monto de Pago (S/)</label>
-        <input type="number" class="form-control" id="montoPago" required>
-      </div>
-      <div class="col-md-6">
-        <label for="tipoPago" class="form-label">Tipo de Pago</label>
-        <select class="form-select" id="tipoPago" required>
-          <option value="">Seleccione una opción</option>
-          <option value="Yape">Yape</option>
-          <option value="Plin">Plin</option>
-          <option value="Transferencia">Transferencia</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="d-grid gap-2">
-      <button type="submit" class="btn btn-primary">Agregar Registro</button>
-    </div>
-  </form>
-
-  <hr>
-
-  <!-- 🔹 Total disponible -->
-  <div class="total-box text-center mt-3">
-    💰 Total Disponible en Caja: <span id="totalCaja">S/ 0.00</span>
-  </div>
-
-  <hr>
-
-  <!-- 🔹 Historial -->
-  <h5 class="mt-4">📜 Historial</h5>
-  <ul class="list-group" id="historialLista"></ul>
-</div>
-
-<!-- Aquí irá el modal de Gastos en la PARTE 2 -->
-<!-- 🔹 Modal de Gastos -->
+<!-- Modal Gastos -->
 <div class="modal fade" id="modalGastos" tabindex="-1" aria-labelledby="modalGastosLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -120,7 +129,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-
           <div class="row mb-3">
             <div class="col-md-4">
               <label for="fechaGasto" class="form-label">Fecha</label>
@@ -132,7 +140,7 @@
             </div>
             <div class="col-md-4">
               <label for="montoGasto" class="form-label">Monto (S/)</label>
-              <input type="number" class="form-control" id="montoGasto" required>
+              <input type="number" class="form-control" id="montoGasto" min="0" required>
             </div>
           </div>
 
@@ -146,7 +154,6 @@
 
           <h6>📋 Historial de Gastos:</h6>
           <ul class="list-group" id="listaGastos"></ul>
-
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -155,31 +162,29 @@
     </div>
   </div>
 </div>
+<!-- Botón de reinicio -->
+<button onclick="reiniciarDatos()" class="btn btn-danger floating-reset-btn">🔁 Reiniciar</button>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Datos globales
+  // Variables globales
   let historial = JSON.parse(localStorage.getItem("historial")) || [];
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
+  let totalCajaActual = parseFloat(localStorage.getItem("totalCaja")) || 0;
 
-  // Elementos HTML
   const totalCaja = document.getElementById("totalCaja");
   const historialLista = document.getElementById("historialLista");
   const listaGastos = document.getElementById("listaGastos");
   const totalGastos = document.getElementById("totalGastos");
 
-  // ▶️ Función para actualizar el total de caja
   function actualizarCaja() {
-    let total = 0;
-    historial.forEach(item => {
-      total += item.venta + item.pago - item.gasto;
-    });
-    totalCaja.textContent = "S/ " + total.toFixed(2);
+    totalCaja.textContent = "S/ " + totalCajaActual.toFixed(2);
+    localStorage.setItem("totalCaja", totalCajaActual.toFixed(2));
   }
 
-  // ▶️ Función para renderizar historial principal
   function renderHistorial() {
     historialLista.innerHTML = "";
-    historial.forEach((item, index) => {
+    historial.forEach(item => {
       const li = document.createElement("li");
       li.className = "list-group-item";
       li.textContent = `🗓️ ${item.fecha} - Venta: S/ ${item.venta} (${item.descripcion}), Gasto: S/ ${item.gasto}, Pago: S/ ${item.pago} (${item.tipo})`;
@@ -187,11 +192,10 @@
     });
   }
 
-  // ▶️ Función para renderizar historial de gastos
   function renderGastos() {
     listaGastos.innerHTML = "";
     let total = 0;
-    gastos.forEach((g, i) => {
+    gastos.forEach(g => {
       total += g.monto;
       const li = document.createElement("li");
       li.className = "list-group-item";
@@ -201,7 +205,6 @@
     totalGastos.textContent = total.toFixed(2);
   }
 
-  // ▶️ Evento al enviar formulario principal
   document.getElementById("formCaja").addEventListener("submit", function (e) {
     e.preventDefault();
     const venta = parseFloat(document.getElementById("venta").value) || 0;
@@ -216,15 +219,16 @@
       return;
     }
 
+    totalCajaActual += venta + pago - gasto;
+
     historial.push({ fecha, venta, descripcion, gasto, pago, tipo });
     localStorage.setItem("historial", JSON.stringify(historial));
 
-    renderHistorial();
     actualizarCaja();
+    renderHistorial();
     this.reset();
   });
 
-  // ▶️ Evento al enviar formulario de gastos
   document.getElementById("formGastos").addEventListener("submit", function (e) {
     e.preventDefault();
     const fecha = document.getElementById("fechaGasto").value;
@@ -234,36 +238,13 @@
     gastos.push({ fecha, descripcion, monto });
     localStorage.setItem("gastos", JSON.stringify(gastos));
 
+    totalCajaActual -= monto;
+
+    actualizarCaja();
     renderGastos();
     this.reset();
   });
 
-  // ▶️ Inicializar datos al cargar
-  renderHistorial();
-  actualizarCaja();
-  renderGastos();
-</script>
-<button onclick="reiniciarDatos()" class="btn btn-danger floating-reset-btn">
-  🔁 Reiniciar
-</button>
-
-<style>
-  .floating-reset-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 999;
-    border-radius: 50px;
-    padding: 10px 20px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  }
-
-  .floating-reset-btn:hover {
-    background-color: #c82333;
-  }
-</style>
-<script>
   function reiniciarDatos() {
     const clave = prompt("Introduce la contraseña para reiniciar todo:");
 
@@ -271,8 +252,10 @@
       if (confirm("¿Estás seguro de que deseas eliminar todo el historial y los gastos?")) {
         localStorage.removeItem("historial");
         localStorage.removeItem("gastos");
+        localStorage.removeItem("totalCaja");
         historial = [];
         gastos = [];
+        totalCajaActual = 0;
         renderHistorial();
         renderGastos();
         actualizarCaja();
@@ -282,9 +265,14 @@
       alert("❌ Contraseña incorrecta. No se hizo ningún cambio.");
     }
   }
-</script>
-  </div>  
-</div>  
 
+  // Inicializar al cargar
+  renderHistorial();
+  actualizarCaja();
+  renderGastos();
+</script>
+</div>
+</div>
 </body>
 </html>
+
