@@ -1,4 +1,4 @@
- 
+  
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -83,6 +83,10 @@
           <label for="gastos" class="form-label">Gastos (S/)</label>
           <input type="number" class="form-control" id="gastos" min="0" required>
         </div>
+<div class="mb-3">
+  <label for="descripcionGasto" class="form-label">Descripción de Gasto</label>
+  <input type="text" class="form-control" id="descripcionGasto">
+</div>
 
         <div class="row mb-3">
           <div class="col-md-6">
@@ -173,7 +177,9 @@
     e.preventDefault();
     const venta = parseFloat(document.getElementById("venta").value);
     const descripcion = document.getElementById("descripcionVenta").value;
-    const gasto = parseFloat(document.getElementById("gastos").value);
+     const gasto = parseFloat(document.getElementById("gastos").value);
+const descripcionGasto = document.getElementById("descripcionGasto").value || "Sin descripción";
+
     const pago = parseFloat(document.getElementById("montoPago").value);
     const tipo = document.getElementById("tipoPago").value;
     const fecha = new Date().toLocaleDateString();
@@ -191,10 +197,10 @@
     localStorage.setItem("registros", JSON.stringify(registros));
 
     if (!isNaN(venta)) totalCaja += venta;
-    if (!isNaN(gasto)) {
-      totalCaja -= gasto;
-      gastos.push({ fecha, gasto, descripcion });
-    }
+     if (!isNaN(gasto)) {
+  totalCaja -= gasto;
+  gastos.push({ fecha, gasto, descripcion: descripcionGasto });
+}
 
     if (tipo === "Efectivo") {
       totalCaja += pago;
@@ -209,8 +215,10 @@
     guardarDatos();
     renderizarTodo();
     this.reset();
-  });
+    document.getElementById("descripcionGasto").value = "";
 
+  });
+ 
   function guardarDatos() {
     localStorage.setItem("totalCaja", totalCaja.toFixed(2));
     localStorage.setItem("gastos", JSON.stringify(gastos));
@@ -261,8 +269,70 @@
 
   // Inicializar todo
   renderizarTodo();
+  function mostrarConfirmacion() {
+  const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+  modal.show();
+}
+
+function reiniciarTodo() {
+  const clave = document.getElementById("claveConfirmacion").value.trim();
+  if (clave !== "fernandez") {
+    alert("❌ Contraseña incorrecta. No se realizó el reinicio.");
+    return;
+  }
+
+  if (confirm("¿Seguro que quieres borrar todos los datos?")) {
+    localStorage.removeItem("registros");
+    localStorage.removeItem("gastos");
+    localStorage.removeItem("yapeRegistros");
+    localStorage.removeItem("plinRegistros");
+    localStorage.removeItem("transferenciaRegistros");
+    localStorage.removeItem("totalCaja");
+
+    registros = [];
+    gastos = [];
+    yapeRegistros = [];
+    plinRegistros = [];
+    transferenciaRegistros = [];
+    totalCaja = 0;
+
+    renderizarTodo();
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacion'));
+    modal.hide();
+    alert("✅ Todos los datos fueron reiniciados.");
+  }
+}
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<button class="btn btn-danger floating-reset-btn" onclick="mostrarConfirmacion()">
+  🔁 Reiniciar Todo
+</button>
+<!-- Modal de confirmación de reinicio -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalConfirmacionLabel">¿Reiniciar Todo?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas reiniciar todos los datos? Esta acción no se puede deshacer.</p>
+        <div class="mb-3">
+          <label for="claveConfirmacion" class="form-label">Escribe <strong>contraseña</strong> para confirmar:</label>
+          <input type="password" class="form-control" id="claveConfirmacion" placeholder="Contraseña">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" onclick="reiniciarTodo()">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
-</html>
+</html> 
+ 
