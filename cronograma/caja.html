@@ -1,4 +1,6 @@
-  
+
+ 
+   
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -38,7 +40,68 @@
     }
     .floating-reset-btn:hover {
       background-color: #c82333;
-    }
+    }.floating-cerrar-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 150px;
+  z-index: 999;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #198754;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.floating-cerrar-btn:hover {
+  background-color: #157347;
+}
+.floating-cerrar-btn {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  z-index: 999;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #198754;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.floating-cerrar-btn:hover {
+  background-color: #157347;
+} .floating-reset-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background-color: #dc3545;
+  color: white;
+}
+.floating-reset-btn:hover {
+  background-color: #bb2d3b;
+}
+
+.floating-cerrar-btn {
+  position: fixed;
+  bottom: 90px; /* separa del botón inferior */
+  right: 20px;
+  z-index: 999;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #198754;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.floating-cerrar-btn:hover {
+  background-color: #157347;
+}
+
+
   </style>
 </head>
 <body>
@@ -288,6 +351,8 @@ function reiniciarTodo() {
     localStorage.removeItem("plinRegistros");
     localStorage.removeItem("transferenciaRegistros");
     localStorage.removeItem("totalCaja");
+    localStorage.removeItem("cierresCaja");
+
 
     registros = [];
     gastos = [];
@@ -302,6 +367,59 @@ function reiniciarTodo() {
     modal.hide();
     alert("✅ Todos los datos fueron reiniciados.");
   }
+  localStorage.removeItem("cierresCaja");
+cierresCaja = [];
+}
+let cierresCaja = JSON.parse(localStorage.getItem("cierresCaja")) || [];
+
+function mostrarModalCierre() {
+  renderizarCierresCaja();
+  const modal = new bootstrap.Modal(document.getElementById('modalCierreCaja'));
+  modal.show();
+}
+
+function registrarCierreCaja() {
+  const fecha = new Date().toLocaleString();
+  const cierre = {
+    fecha,
+    monto: totalCaja
+  };
+  cierresCaja.push(cierre);
+  localStorage.setItem("cierresCaja", JSON.stringify(cierresCaja));
+  renderizarCierresCaja();
+  alert("✅ Cierre registrado sin reiniciar caja.");
+// Mostrar check visual
+const check = document.createElement("div");
+check.innerHTML = "✅ Cierre guardado exitosamente.";
+check.style.position = "fixed";
+check.style.top = "50%";
+check.style.left = "50%";
+check.style.transform = "translate(-50%, -50%)";
+check.style.background = "#d4edda";
+check.style.padding = "20px 30px";
+check.style.border = "2px solid #28a745";
+check.style.borderRadius = "10px";
+check.style.fontSize = "1.2rem";
+check.style.color = "#155724";
+check.style.zIndex = "10000";
+check.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
+document.body.appendChild(check);
+setTimeout(() => check.remove(), 2500); // Quita el check tras 2.5s
+}
+
+function renderizarCierresCaja() {
+  const lista = document.getElementById("listaCierresCaja");
+  lista.innerHTML = "";
+  if (cierresCaja.length === 0) {
+    lista.innerHTML = "<li class='list-group-item text-muted'>Sin cierres registrados.</li>";
+    return;
+  }
+  cierresCaja.forEach(c => {
+    const li = document.createElement("li");
+    li.className = "list-group-item";
+    li.textContent = `📅 ${c.fecha} - 💰 S/ ${c.monto.toFixed(2)}`;
+    lista.appendChild(li);
+  });
 }
 
 </script>
@@ -310,6 +428,7 @@ function reiniciarTodo() {
 <button class="btn btn-danger floating-reset-btn" onclick="mostrarConfirmacion()">
   🔁 Reiniciar Todo
 </button>
+ 
 <!-- Modal de confirmación de reinicio -->
 <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -332,6 +451,30 @@ function reiniciarTodo() {
     </div>
   </div>
 </div>
+ 
+<!-- Modal Cierre de Caja -->
+<div class="modal fade" id="modalCierreCaja" tabindex="-1" aria-labelledby="modalCierreCajaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalCierreCajaLabel">📦 Cierre de Caja</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">¿Deseas registrar el cierre de caja actual? Se guardará el total sin reiniciar los datos.</p>
+        <div class="d-grid gap-2 mb-3">
+          <button class="btn btn-success" onclick="registrarCierreCaja()">✅ Registrar Cierre Actual</button>
+        </div>
+        <hr>
+        <h6>📜 Historial de Cierres</h6>
+        <ul class="list-group" id="listaCierresCaja"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<button class="btn btn-success floating-cerrar-btn" onclick="mostrarModalCierre()">
+  📦 Cerrar Caja
+</button>
 
 </body>
 </html> 
