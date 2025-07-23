@@ -1,4 +1,5 @@
    
+        
   <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -419,6 +420,146 @@
       document.getElementById('fecha').valueAsDate = new Date();
     });
   </script>
+  <script>
+  // Cuando se abre el modal, carga productos desde tu objeto `stock`
+  document.getElementById("btnProyeccion").addEventListener("click", () => {
+    // Asegúrate que ya cargaste desde localStorage: load()
+    const select = document.getElementById("selectProyInv");
+    select.innerHTML = ""; 
+
+    // Si no hay stock, muestra mensaje
+    if (Object.keys(stock).length === 0) {
+      const opt = document.createElement("option");
+      opt.text = "Sin productos en inventario";
+      opt.value = "";
+      select.appendChild(opt);
+      return;
+    }
+
+    // Por cada producto en stock, crea una opción
+    for (const nombre in stock) {
+      if (stock[nombre] > 0) {
+        const opt = document.createElement("option");
+        opt.value = nombre;
+        opt.text = `${nombre} (Stock: ${stock[nombre]})`;
+        select.appendChild(opt);
+      }
+    }
+  });
+
+  // Al hacer clic en "Calcular"
+  document.getElementById("btnCalcularProyeccion").addEventListener("click", () => {
+    const producto = document.getElementById("selectProyInv").value;
+    const precioVenta = parseFloat(document.getElementById("precioVentaProy").value);
+    const out = document.getElementById("resultadoProyeccion");
+
+    if (!producto) {
+      out.textContent = "Selecciona un producto primero.";
+      out.className = "text-danger fw-bold";
+      return;
+    }
+    if (isNaN(precioVenta)) {
+      out.textContent = "Ingresa un precio de venta válido.";
+      out.className = "text-danger fw-bold";
+      return;
+    }
+
+    const cantidad = stock[producto];
+    const costoUnit = costos[producto] || 0;
+    const ganancia = (precioVenta - costoUnit) * cantidad;
+
+    out.textContent = `Ganancia proyectada: S/ ${ganancia.toFixed(2)}`;
+    out.className = ganancia >= 0
+      ? "text-success fw-bold"
+      : "text-danger fw-bold";
+  });
+</script>
+
+  <button
+  id="btnProyeccion"
+  class="btn btn-warning rounded-circle"
+  style="position: fixed; left: 20px; bottom: 200px; padding:12px 20px; font-size:16px; z-index:1050;"
+  data-bs-toggle="modal"
+  data-bs-target="#modalProyeccion"
+  title="Proyección de Ganancias"
+>
+  📈
+</button>
+<!-- Modal Proyección -->
+<div class="modal fade" id="modalProyeccion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-warning">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Proyección de Ganancia</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="selectProyInv" class="form-label">Seleccionar Producto</label>
+          <select id="selectProyInv" class="form-select"></select>
+        </div>
+        <div class="mb-3">
+          <label for="precioVentaProy" class="form-label">Precio de Venta (unidad)</label>
+          <input type="number" id="precioVentaProy" class="form-control" placeholder="S/">
+        </div>
+        <div class="mb-3">
+          <p id="resultadoProyeccion" class="fw-bold"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnCalcularProyeccion" class="btn btn-success">Calcular</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 5. Cargar opciones desde stock
+  document.getElementById("btnProyeccion").addEventListener("click", () => {
+    const select = document.getElementById("selectProyInv");
+    select.innerHTML = "";
+    // Recorre cada producto en stock
+    Object.keys(stock).forEach(nombre => {
+      if (stock[nombre] > 0) {
+        const opt = document.createElement("option");
+        opt.value = nombre;
+        opt.text  = `${nombre} (Stock: ${stock[nombre]})`;
+        select.appendChild(opt);
+      }
+    });
+    // Abre el modal
+    new bootstrap.Modal(document.getElementById("modalProyeccion")).show();
+  });
+
+  // 6. Calcular ganancia proyectada
+  document.getElementById("btnCalcularProyeccion").addEventListener("click", () => {
+    const producto   = document.getElementById("selectProyInv").value;
+    const precioVenta = parseFloat(document.getElementById("precioVentaProy").value);
+    const out         = document.getElementById("resultadoProyeccion");
+
+    if (!producto) {
+      out.textContent = "Selecciona un producto primero.";
+      out.className = "text-danger fw-bold";
+      return;
+    }
+    if (isNaN(precioVenta)) {
+      out.textContent = "Ingresa un precio válido.";
+      out.className = "text-danger fw-bold";
+      return;
+    }
+
+    const cantidad = stock[producto];
+    const costo    = costos[producto] || 0;
+    const ganancia = (precioVenta - costo) * cantidad;
+
+    out.textContent = `Ganancia proyectada: S/ ${ganancia.toFixed(2)}`;
+    out.className = ganancia >= 0
+      ? "text-success fw-bold"
+      : "text-danger fw-bold";
+  });
+});
+</script>
 </body>
 </html>
-
