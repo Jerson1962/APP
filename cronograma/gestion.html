@@ -1,6 +1,4 @@
-   
-        
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -57,6 +55,7 @@
   <button class="btn btn-flotante btn-resumen" data-bs-toggle="modal" data-bs-target="#modalResumen">📊 Inventario</button>
   <button class="btn btn-flotante btn-historial" data-bs-toggle="modal" data-bs-target="#modalHistorial">📄 Historial</button>
   <button class="btn btn-flotante btn-venta-capital" data-bs-toggle="modal" data-bs-target="#modalVentaCapital">💰🛒 Venta & Capital</button>
+  
   <!-- Modal Resumen (Inventario) -->
   <div class="modal fade" id="modalResumen" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -73,7 +72,7 @@
                   <th>Producto</th>
                   <th>Stock</th>
                   <th>Costo Unit.</th>
-                  <th>Editar Costo</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -120,6 +119,7 @@
       </div>
     </div>
   </div>
+  
   <!-- Modal Venta & Capital -->
   <div class="modal fade" id="modalVentaCapital" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -127,9 +127,9 @@
         <div class="modal-header bg-success text-white">
           <h5 class="modal-title">Venta & Capital</h5>
           <div class="ms-auto">
-        
+            <div>Capital: S/ <span id="capitalVC">0.00</span></div>
             <div>Valor de Stock: S/ <span id="valorStock">0.00</span></div>
-            
+            <div>Total General: S/ <span id="totalGeneral">0.00</span></div>
           </div>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
@@ -166,7 +166,7 @@
             <!-- Historial Ventas -->
             <div class="col-md-6">
               <h6>Historial de Ventas <button class="btn btn-sm btn-secondary ms-2" onclick="exportVentasPDF()">📥 PDF</button></h6>
-              <div class="table-responsive">
+              <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                 <table class="table table-bordered">
                   <thead class="table-dark">
                     <tr>
@@ -212,8 +212,51 @@
       </div>
     </div>
   </div>
+
+  <!-- Botón Proyección -->
+  <button
+    id="btnProyeccion"
+    class="btn btn-warning rounded-circle"
+    style="position: fixed; left: 20px; bottom: 200px; padding:12px 20px; font-size:16px; z-index:1050;"
+    data-bs-toggle="modal"
+    data-bs-target="#modalProyeccion"
+    title="Proyección de Ganancias"
+  >
+    📈
+  </button>
+
+  <!-- Modal Proyección -->
+  <div class="modal fade" id="modalProyeccion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-warning">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title">Proyección de Ganancia</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="selectProyInv" class="form-label">Seleccionar Producto</label>
+            <select id="selectProyInv" class="form-select"></select>
+          </div>
+          <div class="mb-3">
+            <label for="precioVentaProy" class="form-label">Precio de Venta (unidad)</label>
+            <input type="number" id="precioVentaProy" class="form-control" step="0.01" placeholder="S/">
+          </div>
+          <div class="mb-3">
+            <p id="resultadoProyeccion" class="fw-bold"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnCalcularProyeccion" class="btn btn-success">Calcular</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Variables globales
     let stock = {}, costos = {}, movs = [], ventas = [], capital = 0;
     const tbRes = document.querySelector('#tablaResumen tbody'),
           tbMov = document.querySelector('#tablaMovimientos tbody'),
@@ -229,337 +272,597 @@
       localStorage.setItem('cost', JSON.stringify(costos));
       localStorage.setItem('mov', JSON.stringify(movs));
       localStorage.setItem('ven', JSON.stringify(ventas));
-      localStorage.setItem('cap', capital);
+      localStorage.setItem('cap', capital.toString());
+      console.log('Datos guardados:', { stock, costos, movs, ventas, capital });
     }
 
     // Cargar desde localStorage
     function load() {
-      stock = JSON.parse(localStorage.getItem('stk')) || {};
-      costos = JSON.parse(localStorage.getItem('cost')) || {};
-      movs = JSON.parse(localStorage.getItem('mov')) || [];
-      ventas = JSON.parse(localStorage.getItem('ven')) || [];
-      capital = parseFloat(localStorage.getItem('cap')) || 0;
+      stock = JSON.parse(localStorage.getItem('stk') || '{}');
+      costos = JSON.parse(localStorage.getItem('cost') || '{}');
+      movs = JSON.parse(localStorage.getItem('mov') || '[]');
+      ventas = JSON.parse(localStorage.getItem('ven') || '[]');
+      capital = parseFloat(localStorage.getItem('cap') || '0');
+      console.log('Datos cargados:', { stock, costos, movs, ventas, capital });
       renderAll();
     }
 
+    // Establecer fecha actual
+    function setFechaActual() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      document.getElementById('fecha').value = `${year}-${month}-${day}`;
+    }
+
     // Evento para movimientos de stock
-    document.getElementById('formMovimiento').addEventListener('submit', e => {
+    document.getElementById('formMovimiento').addEventListener('submit', function(e) {
       e.preventDefault();
-      const f = document.getElementById('fecha').value,
-            p = document.getElementById('producto').value.trim(),
-            ent = +document.getElementById('entrada').value,
-            sal = +document.getElementById('salida').value,
-            cMov = +document.getElementById('costoMov').value;
-      if (ent > 0 && sal > 0) return alert('Solo una acción');
-      if (!(p in stock)) stock[p] = 0;
-      if (!(p in costos)) costos[p] = cMov;
-      if (sal > stock[p]) return alert('Insuficiente');
+      
+      const f = document.getElementById('fecha').value;
+      const p = document.getElementById('producto').value.trim();
+      const ent = parseFloat(document.getElementById('entrada').value) || 0;
+      const sal = parseFloat(document.getElementById('salida').value) || 0;
+      const cMov = parseFloat(document.getElementById('costoMov').value) || 0;
+      
+      // Validaciones
+      if (!f || !p) {
+        alert('Fecha y producto son obligatorios');
+        return;
+      }
+      
+      if (ent > 0 && sal > 0) {
+        alert('Solo puedes registrar entrada O salida, no ambas');
+        return;
+      }
+      
+      if (ent === 0 && sal === 0) {
+        alert('Debes registrar al menos una entrada o salida');
+        return;
+      }
+      
+      // Inicializar producto si no existe
+      if (!(p in stock)) {
+        stock[p] = 0;
+      }
+      if (!(p in costos)) {
+        costos[p] = cMov;
+      }
+      
+      // Verificar stock suficiente para salidas
+      if (sal > 0 && sal > stock[p]) {
+        alert('Stock insuficiente. Stock actual: ' + stock[p]);
+        return;
+      }
+      
+      // Actualizar stock
       stock[p] += ent - sal;
-      movs.push({ id: movs.length+1, fecha: f, producto: p, entrada: ent, salida: sal, saldo: stock[p] });
-      save(); renderAll(); e.target.reset();
+      
+      // Si es entrada y hay costo, actualizar costo
+      if (ent > 0 && cMov > 0) {
+        costos[p] = cMov;
+      }
+      
+      // Agregar movimiento al historial
+      const movimiento = {
+        id: movs.length + 1,
+        fecha: f,
+        producto: p,
+        entrada: ent,
+        salida: sal,
+        saldo: stock[p]
+      };
+      
+      movs.push(movimiento);
+      
+      save();
+      renderAll();
+      e.target.reset();
+      setFechaActual();
+      
+      alert('Movimiento registrado correctamente');
     });
 
     // Render tabla resumen
     function renderRes() {
+      if (!tbRes) return;
       tbRes.innerHTML = '';
+      
       for (const p in stock) {
-        tbRes.insertAdjacentHTML('beforeend',
-          `<tr>
-             <td>${p}</td>
-             <td>${stock[p]}</td>
-             <td>S/ ${costos[p]||0}</td>
-             <td><button class='btn btn-sm btn-outline-warning' onclick="editCosto('${p}')">✏</button></td>
-           </tr>`);
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${p}</td>
+          <td>${stock[p]}</td>
+          <td>S/ ${(costos[p] || 0).toFixed(2)}</td>
+          <td>
+            <button class='btn btn-sm btn-outline-primary me-1' onclick="editNombre('${p.replace(/'/g, "\\\'")}')" title="Editar Nombre">✏️</button>
+            <button class='btn btn-sm btn-outline-warning' onclick="editCosto('${p.replace(/'/g, "\\\'")}')" title="Editar Costo">💰</button>
+          </td>
+        `;
+        tbRes.appendChild(fila);
       }
     }
 
     // Render historial movimientos
     function renderMov() {
+      if (!tbMov) return;
       tbMov.innerHTML = '';
+      
       movs.forEach(m => {
-        tbMov.insertAdjacentHTML('beforeend',
-          `<tr>
-             <th>${m.id}</th>
-             <td>${m.fecha}</td>
-             <td>${m.producto}</td>
-             <td class="text-success">${m.entrada}</td>
-             <td class="text-danger">${m.salida}</td>
-             <td>${m.saldo}</td>
-           </tr>`);
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <th>${m.id}</th>
+          <td>${m.fecha}</td>
+          <td>${m.producto}</td>
+          <td class="text-success">${m.entrada}</td>
+          <td class="text-danger">${m.salida}</td>
+          <td>${m.saldo}</td>
+        `;
+        tbMov.appendChild(fila);
       });
     }
 
     // Render historial ventas
     function renderVen() {
+      if (!tbVen) return;
       tbVen.innerHTML = '';
+      
       ventas.forEach(v => {
-        tbVen.insertAdjacentHTML('beforeend',
-          `<tr>
-             <td>${v.fecha}</td>
-             <td>${v.producto}</td>
-             <td>${v.cantidad}</td>
-             <td>S/ ${v.costo}</td>
-             <td>S/ ${v.precioVenta}</td>
-             <td>S/ ${v.totalCosto}</td>
-             <td>S/ ${v.ganancia}</td>
-           </tr>`);
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+          <td>${v.fecha}</td>
+          <td>${v.producto}</td>
+          <td>${v.cantidad}</td>
+          <td>S/ ${v.costo}</td>
+          <td>S/ ${v.precioVenta}</td>
+          <td>S/ ${v.totalCosto}</td>
+          <td>S/ ${v.ganancia}</td>
+        `;
+        tbVen.appendChild(fila);
       });
     }
 
     // Llenar selector de venta
     function fillSel() {
-      selV.innerHTML = '';
+      if (!selV) return;
+      selV.innerHTML = '<option value="">Seleccionar producto...</option>';
+      
       for (const p in stock) {
-        if (stock[p] > 0) selV.insertAdjacentHTML('beforeend', `<option>${p}</option>`);
+        if (stock[p] > 0) {
+          const option = document.createElement('option');
+          option.value = p;
+          option.textContent = `${p} (Stock: ${stock[p]})`;
+          selV.appendChild(option);
+        }
       }
-      if (selV.options.length) selV.dispatchEvent(new Event('change'));
     }
 
     // Al cambiar producto en venta
-    selV.addEventListener('change', () => {
-      const p = selV.value;
-      document.getElementById('precioCosto').value = costos[p] || 0;
-    });
+    if (selV) {
+      selV.addEventListener('change', function() {
+        const p = selV.value;
+        const precioCostoInput = document.getElementById('precioCosto');
+        if (precioCostoInput && p) {
+          precioCostoInput.value = (costos[p] || 0).toFixed(2);
+        }
+      });
+    }
 
     // Calcular ganancia
-    document.getElementById('calcGain').addEventListener('click', () => {
-      const q = +document.getElementById('cantVenta').value;
-      const c = +document.getElementById('precioCosto').value;
-      const pv = +document.getElementById('precioVenta').value;
-      if (pv < c) return alert('Precio venta menor al costo');
-      const ganancia = (pv - c) * q;
-      document.getElementById('gananciaCalc').textContent = ganancia.toFixed(2);
-    });
+    const calcGainBtn = document.getElementById('calcGain');
+    if (calcGainBtn) {
+      calcGainBtn.addEventListener('click', function() {
+        const q = parseFloat(document.getElementById('cantVenta').value) || 0;
+        const c = parseFloat(document.getElementById('precioCosto').value) || 0;
+        const pv = parseFloat(document.getElementById('precioVenta').value) || 0;
+        
+        if (q <= 0) {
+          alert('Cantidad debe ser mayor a 0');
+          return;
+        }
+        
+        if (pv < c) {
+          alert('Precio de venta no puede ser menor al costo');
+          return;
+        }
+        
+        const ganancia = (pv - c) * q;
+        document.getElementById('gananciaCalc').textContent = ganancia.toFixed(2);
+      });
+    }
 
     // Registrar venta
-    document.getElementById('regVenta').addEventListener('click', () => {
-      const p = selV.value,
-            q = +document.getElementById('cantVenta').value,
-            c = +document.getElementById('precioCosto').value,
-            pv = +document.getElementById('precioVenta').value,
-            gan = parseFloat(document.getElementById('gananciaCalc').textContent) || 0;
-      if (!p || q<1) return alert('Completa');
-      if (q > stock[p]) return alert('Insuficiente');
-      const now = new Date(), fh = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-      const totalCosto = (c*q).toFixed(2);
-      stock[p] -= q;
-      // Capital disponible incrementa con monto de venta
-      capital += pv*q;
-      ventas.push({ fecha: fh, producto: p, cantidad: q, costo: c.toFixed(2), precioVenta: pv.toFixed(2), totalCosto, ganancia: gan.toFixed(2) });
-      movs.push({ id: movs.length+1, fecha: fh, producto: `${p} (Venta)`, entrada: 0, salida: q, saldo: stock[p] });
-      save(); renderAll();
-      document.getElementById('formVenta').reset();
-      document.getElementById('gananciaCalc').textContent = '0.00';
-    });
+    const regVentaBtn = document.getElementById('regVenta');
+    if (regVentaBtn) {
+      regVentaBtn.addEventListener('click', function() {
+        const p = selV.value;
+        const q = parseFloat(document.getElementById('cantVenta').value) || 0;
+        const c = parseFloat(document.getElementById('precioCosto').value) || 0;
+        const pv = parseFloat(document.getElementById('precioVenta').value) || 0;
+        const gan = parseFloat(document.getElementById('gananciaCalc').textContent) || 0;
+        
+        if (!p) {
+          alert('Selecciona un producto');
+          return;
+        }
+        
+        if (q <= 0) {
+          alert('La cantidad debe ser mayor a 0');
+          return;
+        }
+        
+        if (q > stock[p]) {
+          alert('Stock insuficiente. Stock disponible: ' + stock[p]);
+          return;
+        }
+        
+        if (pv <= 0) {
+          alert('El precio de venta debe ser mayor a 0');
+          return;
+        }
+        
+        // Registrar venta
+        const now = new Date();
+        const fh = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        const totalCosto = (c * q).toFixed(2);
+        
+        stock[p] -= q;
+        capital += pv * q;
+        
+        const venta = {
+          fecha: fh,
+          producto: p,
+          cantidad: q,
+          costo: c.toFixed(2),
+          precioVenta: pv.toFixed(2),
+          totalCosto: totalCosto,
+          ganancia: gan.toFixed(2)
+        };
+        
+        ventas.push(venta);
+        
+        // Agregar movimiento de venta
+        const movimiento = {
+          id: movs.length + 1,
+          fecha: now.toLocaleDateString(),
+          producto: `${p} (Venta)`,
+          entrada: 0,
+          salida: q,
+          saldo: stock[p]
+        };
+        
+        movs.push(movimiento);
+        
+        save();
+        renderAll();
+        
+        // Limpiar formulario
+        document.getElementById('cantVenta').value = '';
+        document.getElementById('precioVenta').value = '';
+        document.getElementById('gananciaCalc').textContent = '0.00';
+        selV.value = '';
+        document.getElementById('precioCosto').value = '';
+        
+        alert('Venta registrada correctamente');
+      });
+    }
 
-    // Ingresar nueva mercadería (no afecta capital)
-    document.getElementById('formIngresoProducto').addEventListener('submit', e => {
-      e.preventDefault();
-      const nombre = document.getElementById('nuevoProducto').value.trim();
-      const cantidad = +document.getElementById('nuevaCantidad').value;
-      const costoUnitario = +document.getElementById('nuevoCosto').value;
-      if (!nombre || cantidad<=0 || costoUnitario<0) return alert('Datos inválidos');
-      if (!(nombre in stock)) stock[nombre] = 0;
-      stock[nombre] += cantidad;
-      costos[nombre] = costoUnitario;
-      const now = new Date(), fh = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
-      movs.push({ id: movs.length+1, fecha: fh, producto: `${nombre} (Ingreso)`, entrada: cantidad, salida: 0, saldo: stock[nombre] });
-      save(); renderAll(); e.target.reset();
-      alert('Mercadería agregada al inventario.');
-    });
+    // Ingresar nueva mercadería
+    const formIngresoProducto = document.getElementById('formIngresoProducto');
+    if (formIngresoProducto) {
+      formIngresoProducto.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nombre = document.getElementById('nuevoProducto').value.trim();
+        const cantidad = parseFloat(document.getElementById('nuevaCantidad').value) || 0;
+        const costoUnitario = parseFloat(document.getElementById('nuevoCosto').value) || 0;
+        
+        if (!nombre) {
+          alert('El nombre del producto es obligatorio');
+          return;
+        }
+        
+        if (cantidad <= 0) {
+          alert('La cantidad debe ser mayor a 0');
+          return;
+        }
+        
+        if (costoUnitario < 0) {
+          alert('El costo unitario no puede ser negativo');
+          return;
+        }
+        
+        // Inicializar o actualizar stock
+        if (!(nombre in stock)) {
+          stock[nombre] = 0;
+        }
+        
+        stock[nombre] += cantidad;
+        costos[nombre] = costoUnitario;
+        
+        // Agregar movimiento
+        const now = new Date();
+        const fh = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        
+        const movimiento = {
+          id: movs.length + 1,
+          fecha: now.toLocaleDateString(),
+          producto: `${nombre} (Ingreso)`,
+          entrada: cantidad,
+          salida: 0,
+          saldo: stock[nombre]
+        };
+        
+        movs.push(movimiento);
+        
+        save();
+        renderAll();
+        e.target.reset();
+        
+        alert('Mercadería agregada al inventario correctamente');
+      });
+    }
+
+    // NUEVA FUNCIÓN: Editar nombre del producto
+    function editNombre(nombreAntiguo) {
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      const nuevoNombre = prompt(`Nuevo nombre para "${nombreAntiguo}":`, nombreAntiguo);
+      
+      if (!nuevoNombre || nuevoNombre.trim() === '') {
+        alert('El nombre no puede estar vacío');
+        return;
+      }
+      
+      const nombreTrim = nuevoNombre.trim();
+      
+      // Verificar que el nuevo nombre no exista ya (excepto si es el mismo)
+      if (nombreTrim !== nombreAntiguo && stock[nombreTrim] !== undefined) {
+        alert('Ya existe un producto con ese nombre');
+        return;
+      }
+      
+      // Si el nombre no cambió, no hacer nada
+      if (nombreTrim === nombreAntiguo) {
+        alert('El nombre no ha cambiado');
+        return;
+      }
+      
+      // Actualizar el stock y costos con el nuevo nombre
+      stock[nombreTrim] = stock[nombreAntiguo];
+      costos[nombreTrim] = costos[nombreAntiguo];
+      
+      // Eliminar las entradas antiguas
+      delete stock[nombreAntiguo];
+      delete costos[nombreAntiguo];
+      
+      // Actualizar movimientos históricos
+      movs.forEach(mov => {
+        if (mov.producto === nombreAntiguo) {
+          mov.producto = nombreTrim;
+        } else if (mov.producto === `${nombreAntiguo} (Venta)`) {
+          mov.producto = `${nombreTrim} (Venta)`;
+        } else if (mov.producto === `${nombreAntiguo} (Ingreso)`) {
+          mov.producto = `${nombreTrim} (Ingreso)`;
+        }
+      });
+      
+      // Actualizar ventas históricas
+      ventas.forEach(venta => {
+        if (venta.producto === nombreAntiguo) {
+          venta.producto = nombreTrim;
+        }
+      });
+      
+      save(); 
+      renderAll(); 
+      alert(`Producto renombrado de "${nombreAntiguo}" a "${nombreTrim}"`);
+    }
 
     // Editar costo con contraseña
     function editCosto(p) {
-      if (prompt('Contraseña:')!=='fernandez') return alert('Incorrecta');
-      const n = prompt(`Nuevo costo para ${p}:`, costos[p]||0),
-            v = parseFloat(n);
-      if (!isNaN(v)&& v>=0) {
-        costos[p] = v;
-        save(); renderRes(); alert('Costo actualizado.');
-      } else alert('Valor inválido');
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      const nuevoCosto = prompt(`Nuevo costo para ${p}:`, costos[p] || 0);
+      const valor = parseFloat(nuevoCosto);
+      
+      if (!isNaN(valor) && valor >= 0) {
+        costos[p] = valor;
+        save();
+        renderRes();
+        alert('Costo actualizado correctamente');
+      } else {
+        alert('Valor inválido');
+      }
     }
 
     // Reiniciar todo
     function reiniciarTodo() {
-      if (prompt('Contraseña:')!=='fernandez') return alert('Incorrecta');
-      if (confirm('¿Borrar todo?')) {
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      if (confirm('¿Estás seguro de que quieres borrar todos los datos? Esta acción no se puede deshacer.')) {
         localStorage.clear();
-        stock = {}; costos = {}; movs = []; ventas = []; capital = 0;
-        renderAll(); alert('Reiniciado');
+        stock = {};
+        costos = {};
+        movs = [];
+        ventas = [];
+        capital = 0;
+        renderAll();
+        alert('Sistema reiniciado correctamente');
       }
     }
 
     // Exportar PDF movimientos
     function exportMovimientosPDF() {
-      html2pdf().set({ margin:0.4, filename:'Movimientos.pdf', html2canvas:{scale:2}, jsPDF:{unit:'in',format:'letter',orientation:'landscape'} })
-        .from(document.getElementById('tablaMovimientos').parentElement).save();
+      const tabla = document.getElementById('tablaMovimientos').parentElement;
+      html2pdf()
+        .set({
+          margin: 0.4,
+          filename: 'Movimientos_' + new Date().toLocaleDateString().replace(/\//g, '-') + '.pdf',
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+        })
+        .from(tabla)
+        .save();
     }
+    
     // Exportar PDF ventas
     function exportVentasPDF() {
-      html2pdf().set({ margin:0.4, filename:'Ventas.pdf', html2canvas:{scale:2}, jsPDF:{unit:'in',format:'letter',orientation:'landscape'} })
-        .from(tbVen.parentElement).save();
+      const tabla = tbVen.parentElement;
+      html2pdf()
+        .set({
+          margin: 0.4,
+          filename: 'Ventas_' + new Date().toLocaleDateString().replace(/\//g, '-') + '.pdf',
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+        })
+        .from(tabla)
+        .save();
     }
 
     // Calcular y mostrar indicadores
     function actualizarIndicadores() {
       // Valor stock = sum(stock[p] * costos[p])
-      let vs = 0;
-      for (const p in stock) vs += stock[p] * (costos[p]||0);
-      spanStock.textContent = vs.toFixed(2);
-      spanCapital.textContent = capital.toFixed(2);
-      spanTotal.textContent = (capital + vs).toFixed(2);
+      let valorStock = 0;
+      for (const p in stock) {
+        valorStock += stock[p] * (costos[p] || 0);
+      }
+      
+      if (spanStock) spanStock.textContent = valorStock.toFixed(2);
+      if (spanCapital) spanCapital.textContent = capital.toFixed(2);
+      if (spanTotal) spanTotal.textContent = (capital + valorStock).toFixed(2);
     }
 
     // Renderizar todo
     function renderAll() {
-      renderRes(); renderMov(); renderVen(); fillSel(); actualizarIndicadores();
+      renderRes();
+      renderMov();
+      renderVen();
+      fillSel();
+      actualizarIndicadores();
+      llenarSelectProyeccion();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // Llenar selector de proyección
+    function llenarSelectProyeccion() {
+      const selectProy = document.getElementById("selectProyInv");
+      if (!selectProy) return;
+      
+      selectProy.innerHTML = '<option value="">Seleccionar producto...</option>';
+      
+      for (const nombre in stock) {
+        if (stock[nombre] > 0) {
+          const option = document.createElement("option");
+          option.value = nombre;
+          option.textContent = `${nombre} (Stock: ${stock[nombre]})`;
+          selectProy.appendChild(option);
+        }
+      }
+    }
+
+    // Proyección de ganancias - Calcular
+    const btnCalcularProyeccion = document.getElementById("btnCalcularProyeccion");
+    if (btnCalcularProyeccion) {
+      btnCalcularProyeccion.addEventListener("click", function() {
+        const producto = document.getElementById("selectProyInv").value;
+        const precioVenta = parseFloat(document.getElementById("precioVentaProy").value);
+        const resultado = document.getElementById("resultadoProyeccion");
+
+        if (!producto) {
+          resultado.textContent = "Selecciona un producto primero.";
+          resultado.className = "text-danger fw-bold";
+          return;
+        }
+        
+        if (isNaN(precioVenta) || precioVenta <= 0) {
+          resultado.textContent = "Ingresa un precio de venta válido.";
+          resultado.className = "text-danger fw-bold";
+          return;
+        }
+
+        const cantidad = stock[producto] || 0;
+        const costo = costos[producto] || 0;
+        const ganancia = (precioVenta - costo) * cantidad;
+        const totalVenta = precioVenta * cantidad;
+        const totalCosto = costo * cantidad;
+
+        resultado.innerHTML = `
+          <div class="border rounded p-3 bg-light">
+            <strong>Proyección para: ${producto}</strong><br>
+            <div class="row mt-2">
+              <div class="col-6">Stock disponible: <strong>${cantidad}</strong></div>
+              <div class="col-6">Costo unitario: <strong>S/ ${costo.toFixed(2)}</strong></div>
+            </div>
+            <hr class="my-2">
+            <div class="row">
+              <div class="col-6">Total ventas: <span class="text-info">S/ ${totalVenta.toFixed(2)}</span></div>
+              <div class="col-6">Total costos: <span class="text-secondary">S/ ${totalCosto.toFixed(2)}</span></div>
+            </div>
+            <div class="mt-2">
+              <strong>Ganancia proyectada: 
+                <span class="${ganancia >= 0 ? 'text-success' : 'text-danger'}">
+                  S/ ${ganancia.toFixed(2)}
+                </span>
+              </strong>
+            </div>
+          </div>
+        `;
+        resultado.className = "";
+      });
+    }
+
+    // Inicialización cuando se carga el documento
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Inicializando aplicación...');
+      setFechaActual();
       load();
-      document.getElementById('fecha').valueAsDate = new Date();
+      
+      // Event listener para limpiar proyección al cerrar modal
+      const modalProyeccion = document.getElementById('modalProyeccion');
+      if (modalProyeccion) {
+        modalProyeccion.addEventListener('hidden.bs.modal', function() {
+          document.getElementById('precioVentaProy').value = '';
+          document.getElementById('resultadoProyeccion').textContent = '';
+          document.getElementById('selectProyInv').value = '';
+        });
+      }
+
+      // Event listener para actualizar selector al abrir modal de proyección
+      const btnProyeccion = document.getElementById('btnProyeccion');
+      if (btnProyeccion) {
+        btnProyeccion.addEventListener('click', function() {
+          llenarSelectProyeccion();
+        });
+      }
+
+      // Event listener para actualizar selectores al abrir modal de ventas
+      const modalVentaCapital = document.getElementById('modalVentaCapital');
+      if (modalVentaCapital) {
+        modalVentaCapital.addEventListener('show.bs.modal', function() {
+          fillSel();
+          actualizarIndicadores();
+        });
+      }
     });
+
+    // Hacer funciones globales para que funcionen los onclick
+    window.editNombre = editNombre;
+    window.editCosto = editCosto;
+    window.reiniciarTodo = reiniciarTodo;
+    window.exportMovimientosPDF = exportMovimientosPDF;
+    window.exportVentasPDF = exportVentasPDF;
   </script>
-  <script>
-  // Cuando se abre el modal, carga productos desde tu objeto `stock`
-  document.getElementById("btnProyeccion").addEventListener("click", () => {
-    // Asegúrate que ya cargaste desde localStorage: load()
-    const select = document.getElementById("selectProyInv");
-    select.innerHTML = ""; 
-
-    // Si no hay stock, muestra mensaje
-    if (Object.keys(stock).length === 0) {
-      const opt = document.createElement("option");
-      opt.text = "Sin productos en inventario";
-      opt.value = "";
-      select.appendChild(opt);
-      return;
-    }
-
-    // Por cada producto en stock, crea una opción
-    for (const nombre in stock) {
-      if (stock[nombre] > 0) {
-        const opt = document.createElement("option");
-        opt.value = nombre;
-        opt.text = `${nombre} (Stock: ${stock[nombre]})`;
-        select.appendChild(opt);
-      }
-    }
-  });
-
-  // Al hacer clic en "Calcular"
-  document.getElementById("btnCalcularProyeccion").addEventListener("click", () => {
-    const producto = document.getElementById("selectProyInv").value;
-    const precioVenta = parseFloat(document.getElementById("precioVentaProy").value);
-    const out = document.getElementById("resultadoProyeccion");
-
-    if (!producto) {
-      out.textContent = "Selecciona un producto primero.";
-      out.className = "text-danger fw-bold";
-      return;
-    }
-    if (isNaN(precioVenta)) {
-      out.textContent = "Ingresa un precio de venta válido.";
-      out.className = "text-danger fw-bold";
-      return;
-    }
-
-    const cantidad = stock[producto];
-    const costoUnit = costos[producto] || 0;
-    const ganancia = (precioVenta - costoUnit) * cantidad;
-
-    out.textContent = `Ganancia proyectada: S/ ${ganancia.toFixed(2)}`;
-    out.className = ganancia >= 0
-      ? "text-success fw-bold"
-      : "text-danger fw-bold";
-  });
-</script>
-
-  <button
-  id="btnProyeccion"
-  class="btn btn-warning rounded-circle"
-  style="position: fixed; left: 20px; bottom: 200px; padding:12px 20px; font-size:16px; z-index:1050;"
-  data-bs-toggle="modal"
-  data-bs-target="#modalProyeccion"
-  title="Proyección de Ganancias"
->
-  📈
-</button>
-<!-- Modal Proyección -->
-<div class="modal fade" id="modalProyeccion" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content border-warning">
-      <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">Proyección de Ganancia</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="selectProyInv" class="form-label">Seleccionar Producto</label>
-          <select id="selectProyInv" class="form-select"></select>
-        </div>
-        <div class="mb-3">
-          <label for="precioVentaProy" class="form-label">Precio de Venta (unidad)</label>
-          <input type="number" id="precioVentaProy" class="form-control" placeholder="S/">
-        </div>
-        <div class="mb-3">
-          <p id="resultadoProyeccion" class="fw-bold"></p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button id="btnCalcularProyeccion" class="btn btn-success">Calcular</button>
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  // 5. Cargar opciones desde stock
-  document.getElementById("btnProyeccion").addEventListener("click", () => {
-    const select = document.getElementById("selectProyInv");
-    select.innerHTML = "";
-    // Recorre cada producto en stock
-    Object.keys(stock).forEach(nombre => {
-      if (stock[nombre] > 0) {
-        const opt = document.createElement("option");
-        opt.value = nombre;
-        opt.text  = `${nombre} (Stock: ${stock[nombre]})`;
-        select.appendChild(opt);
-      }
-    });
-    // Abre el modal
-    new bootstrap.Modal(document.getElementById("modalProyeccion")).show();
-  });
-
-  // 6. Calcular ganancia proyectada
-  document.getElementById("btnCalcularProyeccion").addEventListener("click", () => {
-    const producto   = document.getElementById("selectProyInv").value;
-    const precioVenta = parseFloat(document.getElementById("precioVentaProy").value);
-    const out         = document.getElementById("resultadoProyeccion");
-
-    if (!producto) {
-      out.textContent = "Selecciona un producto primero.";
-      out.className = "text-danger fw-bold";
-      return;
-    }
-    if (isNaN(precioVenta)) {
-      out.textContent = "Ingresa un precio válido.";
-      out.className = "text-danger fw-bold";
-      return;
-    }
-
-    const cantidad = stock[producto];
-    const costo    = costos[producto] || 0;
-    const ganancia = (precioVenta - costo) * cantidad;
-
-    out.textContent = `Ganancia proyectada: S/ ${ganancia.toFixed(2)}`;
-    out.className = ganancia >= 0
-      ? "text-success fw-bold"
-      : "text-danger fw-bold";
-  });
-});
-</script>
 </body>
-</html>
+</html>   
+        
+   
