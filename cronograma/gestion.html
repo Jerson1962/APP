@@ -1,50 +1,235 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sistema de Inventario</title>
+  <title>Sistema de Inventario & Caja</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    .btn-flotante { position: fixed; right: 20px; border-radius: 50px; padding:12px 20px; font-size:16px; z-index:1050; box-shadow:0 4px 8px rgba(0,0,0,0.2); }
-    .btn-resumen { bottom: 20px; background: #007bff; color:#fff; }
-    .btn-historial { bottom: 80px; background: #6c757d; color:#fff; }
-    .btn-venta-capital { bottom: 140px; background: #28a745; color:#fff; }
+    :root {
+      --primary: #0d6efd;
+      --secondary: #6c757d;
+      --success: #198754;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #0dcaf0;
+      --orange: #fd7e14;
+      --dark: #212529;
+    }
+    
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar-brand {
+      font-weight: 600;
+    }
+    
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card-header {
+      border-radius: 10px 10px 0 0 !important;
+      font-weight: 600;
+    }
+    
+    .btn-flotante {
+      position: fixed;
+      right: 20px;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-size: 16px;
+      z-index: 1050;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    .btn-flotante:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn-resumen {
+      bottom: 20px;
+      background: var(--primary);
+      color: #fff;
+    }
+    
+    .btn-historial {
+      bottom: 90px;
+      background: var(--secondary);
+      color: #fff;
+    }
+    
+    .btn-venta-capital {
+      bottom: 160px;
+      background: var(--success);
+      color: #fff;
+    }
+    
+    .btn-caja {
+      bottom: 230px;
+      background: var(--orange);
+      color: #fff;
+    }
+    
+    .total-caja {
+      background: linear-gradient(135deg, #d1edcc, #a8e6a8);
+      border: 2px solid var(--success);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cash-card {
+      border-left: 4px solid var(--orange);
+    }
+    
+    .table th {
+      position: sticky;
+      top: 0;
+      background-color: #f8f9fa;
+      z-index: 10;
+    }
+    
+    .modal-body .table-responsive {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .stock-positive {
+      color: var(--success);
+      font-weight: 600;
+    }
+    
+    .stock-warning {
+      color: var(--warning);
+      font-weight: 600;
+    }
+    
+    .stock-danger {
+      color: var(--danger);
+      font-weight: 600;
+    }
+    
+    .movimiento-entrada {
+      background-color: rgba(25, 135, 84, 0.1);
+    }
+    
+    .movimiento-salida {
+      background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 1060;
+      min-width: 300px;
+    }
+    
+    @media (max-width: 768px) {
+      .btn-flotante {
+        padding: 10px 16px;
+        font-size: 14px;
+        bottom: 15px;
+      }
+      
+      .btn-resumen {
+        bottom: 15px;
+      }
+      
+      .btn-historial {
+        bottom: 75px;
+      }
+      
+      .btn-venta-capital {
+        bottom: 135px;
+      }
+      
+      .btn-caja {
+        bottom: 195px;
+      }
+      
+      #btnProyeccion {
+        bottom: 255px;
+        left: 15px;
+        padding: 10px 16px;
+      }
+      
+      .container {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
   </style>
 </head>
 <body class="bg-light">
-  <nav class="navbar navbar-dark bg-primary">
-    <div class="container-fluid"><a class="navbar-brand" href="cronograma.html">Inventario</a></div>
+  <nav class="navbar navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-cash-register me-2"></i>Sistema de Inventario & Caja
+      </a>
+      <div class="d-flex">
+        <span class="navbar-text text-white">
+          <i class="fas fa-coins me-1"></i> Capital: S/ <span id="navCapital">0.00</span>
+        </span>
+      </div>
+    </div>
   </nav>
+  
   <div class="container py-4">
-    <div class="card mb-4">
-      <div class="card-header bg-secondary text-white">Registrar Movimiento</div>
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="fas fa-info-circle me-2"></i>
+      <div>Registra entradas y salidas de productos para mantener tu inventario actualizado</div>
+    </div>
+    
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-secondary text-white d-flex align-items-center">
+        <i class="fas fa-exchange-alt me-2"></i>Registrar Movimiento de Inventario
+      </div>
       <div class="card-body">
         <form id="formMovimiento" class="row g-3">
           <div class="col-md-3">
-            <label class="form-label">Fecha</label>
+            <label class="form-label"><i class="fas fa-calendar me-1"></i>Fecha</label>
             <input type="date" id="fecha" class="form-control" required>
           </div>
           <div class="col-md-3">
-            <label class="form-label">Producto</label>
-            <input type="text" id="producto" class="form-control" required>
+            <label class="form-label"><i class="fas fa-box me-1"></i>Producto</label>
+            <input type="text" id="producto" class="form-control" list="productosList" required>
+            <datalist id="productosList"></datalist>
           </div>
           <div class="col-md-2">
-            <label class="form-label">Entrada</label>
+            <label class="form-label"><i class="fas fa-arrow-down text-success me-1"></i>Entrada</label>
             <input type="number" id="entrada" class="form-control" min="0" value="0">
           </div>
           <div class="col-md-2">
-            <label class="form-label">Salida</label>
+            <label class="form-label"><i class="fas fa-arrow-up text-danger me-1"></i>Salida</label>
             <input type="number" id="salida" class="form-control" min="0" value="0">
           </div>
           <div class="col-md-2">
-            <label class="form-label">Costo Unit.</label>
+            <label class="form-label"><i class="fas fa-tag me-1"></i>Costo Unit.</label>
             <input type="number" id="costoMov" class="form-control" min="0" step="0.01" value="0">
           </div>
           <div class="col-12 text-end">
-            <button class="btn btn-primary" type="submit">Agregar</button>
-            <button class="btn btn-outline-secondary" type="reset">Limpiar</button>
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-plus-circle me-1"></i>Agregar
+            </button>
+            <button class="btn btn-outline-secondary" type="reset">
+              <i class="fas fa-broom me-1"></i>Limpiar
+            </button>
           </div>
         </form>
       </div>
@@ -52,16 +237,25 @@
   </div>
 
   <!-- Botones flotantes -->
-  <button class="btn btn-flotante btn-resumen" data-bs-toggle="modal" data-bs-target="#modalResumen">📊 Inventario</button>
-  <button class="btn btn-flotante btn-historial" data-bs-toggle="modal" data-bs-target="#modalHistorial">📄 Historial</button>
-  <button class="btn btn-flotante btn-venta-capital" data-bs-toggle="modal" data-bs-target="#modalVentaCapital">💰🛒 Venta & Capital</button>
+  <button class="btn btn-flotante btn-resumen" data-bs-toggle="modal" data-bs-target="#modalResumen">
+    <i class="fas fa-boxes me-1"></i>Inventario
+  </button>
+  <button class="btn btn-flotante btn-historial" data-bs-toggle="modal" data-bs-target="#modalHistorial">
+    <i class="fas fa-history me-1"></i>Historial
+  </button>
+  <button class="btn btn-flotante btn-venta-capital" data-bs-toggle="modal" data-bs-target="#modalVentaCapital">
+    <i class="fas fa-money-bill-wave me-1"></i>Venta & Capital
+  </button>
+  <button class="btn btn-flotante btn-caja" data-bs-toggle="modal" data-bs-target="#modalCaja">
+    <i class="fas fa-cash-register me-1"></i>Control de Caja
+  </button>
   
   <!-- Modal Resumen (Inventario) -->
   <div class="modal fade" id="modalResumen" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-secondary text-white">
-          <h5 class="modal-title">Stock y Costos</h5>
+          <h5 class="modal-title"><i class="fas fa-boxes me-2"></i>Stock y Costos</h5>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body p-0">
@@ -72,6 +266,7 @@
                   <th>Producto</th>
                   <th>Stock</th>
                   <th>Costo Unit.</th>
+                  <th>Valor Total</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -80,7 +275,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-danger me-auto" onclick="reiniciarTodo()">🗑 Reiniciar Todo</button>
+          <button class="btn btn-danger me-auto" onclick="reiniciarTodo()">
+            <i class="fas fa-trash-alt me-1"></i>Reiniciar Todo
+          </button>
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
@@ -92,9 +289,13 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-dark text-white">
-          <h5 class="modal-title">Historial de Movimientos</h5>
-          <button class="btn btn-secondary me-2" onclick="exportMovimientosPDF()">📥 PDF</button>
-          <button class="btn-close" data-bs-dismiss="modal"></button>
+          <h5 class="modal-title"><i class="fas fa-history me-2"></i>Historial de Movimientos</h5>
+          <div class="d-flex">
+            <button class="btn btn-sm btn-light me-2" onclick="exportMovimientosPDF()">
+              <i class="fas fa-file-pdf me-1"></i>PDF
+            </button>
+            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
         </div>
         <div class="modal-body p-0">
           <div class="table-responsive">
@@ -125,86 +326,255 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-success text-white">
-          <h5 class="modal-title">Venta & Capital</h5>
-          <div class="ms-auto">
-            <div>Capital: S/ <span id="capitalVC">0.00</span></div>
-            <div>Valor de Stock: S/ <span id="valorStock">0.00</span></div>
-            <div>Total General: S/ <span id="totalGeneral">0.00</span></div>
+          <h5 class="modal-title"><i class="fas fa-money-bill-wave me-2"></i>Venta & Capital</h5>
+          <div class="ms-auto text-end">
+            <div><i class="fas fa-coins me-1"></i>Capital: S/ <span id="capitalVC">0.00</span></div>
+            <div><i class="fas fa-boxes me-1"></i>Valor de Stock: S/ <span id="valorStock">0.00</span></div>
+            <div class="fw-bold"><i class="fas fa-chart-line me-1"></i>Total General: S/ <span id="totalGeneral">0.00</span></div>
           </div>
-          <button class="btn-close" data-bs-dismiss="modal"></button>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <div class="row">
             <!-- Formulario de Venta -->
             <div class="col-md-6">
-              <form id="formVenta" class="row g-3">
-                <div class="col-6">
-                  <label class="form-label">Producto</label>
-                  <select id="selectVenta" class="form-select" required></select>
+              <div class="card">
+                <div class="card-header bg-primary text-white">
+                  <i class="fas fa-cash-register me-2"></i>Registrar Venta
                 </div>
-                <div class="col-3">
-                  <label class="form-label">Cantidad</label>
-                  <input type="number" id="cantVenta" class="form-control" min="1" required>
+                <div class="card-body">
+                  <form id="formVenta" class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label">Producto</label>
+                      <select id="selectVenta" class="form-select" required></select>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Cantidad</label>
+                      <input type="number" id="cantVenta" class="form-control" min="1" required>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Costo Unit.</label>
+                      <input type="number" id="precioCosto" class="form-control" step="0.01" readonly>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Precio Venta</label>
+                      <input type="number" id="precioVenta" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-12 text-end">
+                      <button type="button" id="calcGain" class="btn btn-info">
+                        <i class="fas fa-calculator me-1"></i>Calcular Ganancia
+                      </button>
+                    </div>
+                  </form>
+                  <div class="alert alert-info mt-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Ganancia:</span>
+                      <strong>S/ <span id="gananciaCalc">0.00</span></strong>
+                    </div>
+                  </div>
+                  <div class="text-end mt-2">
+                    <button id="regVenta" class="btn btn-success">
+                      <i class="fas fa-check-circle me-1"></i>Registrar Venta
+                    </button>
+                  </div>
                 </div>
-                <div class="col-3">
-                  <label class="form-label">Costo Unit.</label>
-                  <input type="number" id="precioCosto" class="form-control" step="0.01" readonly>
-                </div>
-                <div class="col-3">
-                  <label class="form-label">Precio Venta</label>
-                  <input type="number" id="precioVenta" class="form-control" min="0" step="0.01" required>
-                </div>
-                <div class="col-12 text-end">
-                  <button type="button" id="calcGain" class="btn btn-info">Calcular Ganancia</button>
-                </div>
-              </form>
-              <div class="mt-2">Ganancia: S/ <span id="gananciaCalc">0.00</span></div>
-              <div class="text-end mt-2">
-                <button id="regVenta" class="btn btn-success">Registrar Venta</button>
               </div>
             </div>
             <!-- Historial Ventas -->
             <div class="col-md-6">
-              <h6>Historial de Ventas <button class="btn btn-sm btn-secondary ms-2" onclick="exportVentasPDF()">📥 PDF</button></h6>
-              <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                <table class="table table-bordered">
-                  <thead class="table-dark">
-                    <tr>
-                      <th>Fecha</th>
-                      <th>Producto</th>
-                      <th>Cant.</th>
-                      <th>Costo</th>
-                      <th>Precio Venta</th>
-                      <th>Total Costo</th>
-                      <th>Ganancia</th>
-                    </tr>
-                  </thead>
-                  <tbody id="bodyVentas"></tbody>
-                </table>
+              <div class="card h-100">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                  <span><i class="fas fa-receipt me-2"></i>Historial de Ventas</span>
+                  <button class="btn btn-sm btn-light" onclick="exportVentasPDF()">
+                    <i class="fas fa-file-pdf me-1"></i>PDF
+                  </button>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-bordered mb-0">
+                      <thead class="table-dark">
+                        <tr>
+                          <th>Fecha</th>
+                          <th>Producto</th>
+                          <th>Cant.</th>
+                          <th>Costo</th>
+                          <th>Precio Venta</th>
+                          <th>Total Costo</th>
+                          <th>Ganancia</th>
+                        </tr>
+                      </thead>
+                      <tbody id="bodyVentas"></tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Sección de ingreso de nueva mercadería -->
-          <hr>
-          <h6 class="mt-3">Ingresar Nueva Mercadería al Inventario</h6>
-          <form id="formIngresoProducto" class="row g-3 mt-1">
-            <div class="col-md-4">
-              <label class="form-label">Nombre del Producto</label>
-              <input type="text" id="nuevoProducto" class="form-control" required>
+          <div class="card mt-4">
+            <div class="card-header bg-primary text-white">
+              <i class="fas fa-plus-circle me-2"></i>Ingresar Nueva Mercadería al Inventario
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Cantidad</label>
-              <input type="number" id="nuevaCantidad" class="form-control" min="1" required>
+            <div class="card-body">
+              <form id="formIngresoProducto" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label">Nombre del Producto</label>
+                  <input type="text" id="nuevoProducto" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label">Cantidad</label>
+                  <input type="number" id="nuevaCantidad" class="form-control" min="1" required>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Costo Unitario</label>
+                  <input type="number" id="nuevoCosto" class="form-control" min="0" step="0.01" required>
+                </div>
+                <div class="col-md-3 d-grid">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Agregar al Inventario
+                  </button>
+                </div>
+              </form>
             </div>
-            <div class="col-md-2">
-              <label class="form-label">Costo Unitario</label>
-              <input type="number" id="nuevoCosto" class="form-control" min="0" step="0.01" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Control de Caja -->
+  <div class="modal fade" id="modalCaja" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content cash-card">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title"><i class="fas fa-cash-register me-2"></i>Control de Caja</h5>
+          <div class="d-flex">
+            <button class="btn btn-sm btn-light me-2" onclick="exportCajaPDF()">
+              <i class="fas fa-file-pdf me-1"></i>PDF
+            </button>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+        <div class="modal-body">
+          <!-- Indicador Total en Caja -->
+          <div class="total-caja text-center mb-4">
+            <h4>💰 Total Disponible en Caja: S/ <span id="totalCaja">0.00</span></h4>
+          </div>
+
+          <div class="row">
+            <!-- Panel de Venta Diaria -->
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header bg-success text-white">
+                  <h6 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Venta Diaria</h6>
+                </div>
+                <div class="card-body">
+                  <form id="formVentaDiaria" class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label">Producto del Inventario</label>
+                      <select id="selectVentaDiaria" class="form-select" required>
+                        <option value="">Seleccionar producto...</option>
+                      </select>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Cantidad</label>
+                      <input type="number" id="cantidadVentaDiaria" class="form-control" min="1" required>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Precio de Venta</label>
+                      <input type="number" id="precioVentaDiaria" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Descripción</label>
+                      <input type="text" id="descripcionVentaDiaria" class="form-control" placeholder="Descripción opcional">
+                    </div>
+                    <div class="col-12 text-end">
+                      <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-1"></i>Registrar Venta
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
-            <div class="col-md-4 d-flex align-items-end justify-content-end">
-              <button type="submit" class="btn btn-primary">Agregar al Inventario</button>
+
+            <!-- Panel de Gastos -->
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header bg-danger text-white">
+                  <h6 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Gastos</h6>
+                </div>
+                <div class="card-body">
+                  <form id="formGastos" class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label">Gastos (S/)</label>
+                      <input type="number" id="montoGastos" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Descripción de Gasto</label>
+                      <textarea id="descripcionGastos" class="form-control" rows="2" required placeholder="Describe el gasto..."></textarea>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Monto de Pago (S/)</label>
+                      <input type="number" id="montoPago" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label">Tipo de Pago</label>
+                      <select id="tipoPago" class="form-select" required>
+                        <option value="">Seleccione una opción</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="tarjeta">Tarjeta</option>
+                        <option value="otro">Otro</option>
+                      </select>
+                    </div>
+                    <div class="col-12 text-end">
+                      <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-check me-1"></i>Registrar Gasto
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
-          </form>
+          </div>
+
+          <!-- Historial de Movimientos de Caja -->
+          <div class="card mt-4">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+              <h6 class="mb-0"><i class="fas fa-history me-2"></i>Historial de Movimientos de Caja</h6>
+              <div>
+                <button class="btn btn-light btn-sm me-2" onclick="cerrarCaja()">
+                  <i class="fas fa-lock me-1"></i>Cerrar Caja
+                </button>
+                <button class="btn btn-outline-light btn-sm" onclick="reiniciarCaja()">
+                  <i class="fas fa-trash-alt me-1"></i>Reiniciar
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-striped mb-0" id="tablaMovimientosCaja">
+                  <thead class="table-dark sticky-top">
+                    <tr>
+                      <th>#</th>
+                      <th>Fecha/Hora</th>
+                      <th>Tipo</th>
+                      <th>Descripción</th>
+                      <th>Ingreso</th>
+                      <th>Egreso</th>
+                      <th>Saldo</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -216,13 +586,13 @@
   <!-- Botón Proyección -->
   <button
     id="btnProyeccion"
-    class="btn btn-warning rounded-circle"
-    style="position: fixed; left: 20px; bottom: 200px; padding:12px 20px; font-size:16px; z-index:1050;"
+    class="btn btn-warning btn-flotante"
+    style="left: 20px; right: auto;"
     data-bs-toggle="modal"
     data-bs-target="#modalProyeccion"
     title="Proyección de Ganancias"
   >
-    📈
+    <i class="fas fa-chart-line me-1"></i>Proyección
   </button>
 
   <!-- Modal Proyección -->
@@ -230,7 +600,7 @@
     <div class="modal-dialog">
       <div class="modal-content border-warning">
         <div class="modal-header bg-warning text-dark">
-          <h5 class="modal-title">Proyección de Ganancia</h5>
+          <h5 class="modal-title"><i class="fas fa-chart-line me-2"></i>Proyección de Ganancia</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -247,7 +617,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button id="btnCalcularProyeccion" class="btn btn-success">Calcular</button>
+          <button id="btnCalcularProyeccion" class="btn btn-success">
+            <i class="fas fa-calculator me-1"></i>Calcular
+          </button>
           <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
@@ -258,13 +630,19 @@
   <script>
     // Variables globales
     let stock = {}, costos = {}, movs = [], ventas = [], capital = 0;
+    let movimientosCaja = [], totalCaja = 0;
+    
     const tbRes = document.querySelector('#tablaResumen tbody'),
           tbMov = document.querySelector('#tablaMovimientos tbody'),
           selV = document.getElementById('selectVenta'),
           tbVen = document.getElementById('bodyVentas'),
           spanCapital = document.getElementById('capitalVC'),
           spanStock = document.getElementById('valorStock'),
-          spanTotal = document.getElementById('totalGeneral');
+          spanTotal = document.getElementById('totalGeneral'),
+          tbCaja = document.querySelector('#tablaMovimientosCaja tbody'),
+          spanTotalCaja = document.getElementById('totalCaja'),
+          selectVentaDiaria = document.getElementById('selectVentaDiaria'),
+          navCapital = document.getElementById('navCapital');
 
     // Guardar en localStorage
     function save() {
@@ -273,7 +651,8 @@
       localStorage.setItem('mov', JSON.stringify(movs));
       localStorage.setItem('ven', JSON.stringify(ventas));
       localStorage.setItem('cap', capital.toString());
-      console.log('Datos guardados:', { stock, costos, movs, ventas, capital });
+      localStorage.setItem('movCaja', JSON.stringify(movimientosCaja));
+      localStorage.setItem('totalCaja', totalCaja.toString());
     }
 
     // Cargar desde localStorage
@@ -283,7 +662,8 @@
       movs = JSON.parse(localStorage.getItem('mov') || '[]');
       ventas = JSON.parse(localStorage.getItem('ven') || '[]');
       capital = parseFloat(localStorage.getItem('cap') || '0');
-      console.log('Datos cargados:', { stock, costos, movs, ventas, capital });
+      movimientosCaja = JSON.parse(localStorage.getItem('movCaja') || '[]');
+      totalCaja = parseFloat(localStorage.getItem('totalCaja') || '0');
       renderAll();
     }
 
@@ -294,6 +674,217 @@
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
       document.getElementById('fecha').value = `${year}-${month}-${day}`;
+    }
+
+    // Mostrar notificación
+    function showNotification(message, type = 'info') {
+      // Crear elemento de notificación
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type} alert-dismissible fade show notification`;
+      notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      
+      // Agregar al cuerpo del documento
+      document.body.appendChild(notification);
+      
+      // Eliminar después de 3 segundos
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+
+    // Llenar select de venta diaria
+    function llenarSelectVentaDiaria() {
+      if (!selectVentaDiaria) return;
+      selectVentaDiaria.innerHTML = '<option value="">Seleccionar producto...</option>';
+      
+      for (const producto in stock) {
+        if (stock[producto] > 0) {
+          const option = document.createElement('option');
+          option.value = producto;
+          option.textContent = `${producto} (Stock: ${stock[producto]} - Costo: S/${(costos[producto] || 0).toFixed(2)})`;
+          selectVentaDiaria.appendChild(option);
+        }
+      }
+    }
+
+    // Registrar venta diaria
+    document.getElementById('formVentaDiaria')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const producto = selectVentaDiaria.value;
+      const cantidad = parseFloat(document.getElementById('cantidadVentaDiaria').value) || 0;
+      const precioVenta = parseFloat(document.getElementById('precioVentaDiaria').value) || 0;
+      const descripcion = document.getElementById('descripcionVentaDiaria').value.trim() || `Venta de ${producto}`;
+      
+      // Validaciones
+      if (!producto) {
+        showNotification('Selecciona un producto', 'danger');
+        return;
+      }
+      
+      if (cantidad <= 0) {
+        showNotification('La cantidad debe ser mayor a 0', 'danger');
+        return;
+      }
+      
+      if (cantidad > stock[producto]) {
+        showNotification(`Stock insuficiente. Stock disponible: ${stock[producto]}`, 'danger');
+        return;
+      }
+      
+      if (precioVenta <= 0) {
+        showNotification('El precio de venta debe ser mayor a 0', 'danger');
+        return;
+      }
+      
+      // Calcular totales
+      const costoUnitario = costos[producto] || 0;
+      const totalVenta = precioVenta * cantidad;
+      const totalCosto = costoUnitario * cantidad;
+      const ganancia = totalVenta - totalCosto;
+      
+      // Actualizar stock
+      stock[producto] -= cantidad;
+      
+      // Actualizar caja
+      totalCaja += totalVenta;
+      
+      // Agregar movimiento a caja
+      const now = new Date();
+      const fechaHora = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+      
+      const movimientoCaja = {
+        id: movimientosCaja.length + 1,
+        fechaHora: fechaHora,
+        tipo: 'Venta',
+        descripcion: descripcion,
+        ingreso: totalVenta,
+        egreso: 0,
+        saldo: totalCaja
+      };
+      
+      movimientosCaja.push(movimientoCaja);
+      
+      // Agregar a historial de ventas
+      const venta = {
+        fecha: fechaHora,
+        producto: producto,
+        cantidad: cantidad,
+        costo: costoUnitario.toFixed(2),
+        precioVenta: precioVenta.toFixed(2),
+        totalCosto: totalCosto.toFixed(2),
+        ganancia: ganancia.toFixed(2)
+      };
+      
+      ventas.push(venta);
+      
+      // Agregar movimiento de inventario
+      const movimiento = {
+        id: movs.length + 1,
+        fecha: now.toLocaleDateString(),
+        producto: `${producto} (Venta Caja)`,
+        entrada: 0,
+        salida: cantidad,
+        saldo: stock[producto]
+      };
+      
+      movs.push(movimiento);
+      
+      save();
+      renderAll();
+      e.target.reset();
+      
+      showNotification(`Venta registrada: S/ ${totalVenta.toFixed(2)} (Ganancia: S/ ${ganancia.toFixed(2)})`, 'success');
+    });
+
+    // Registrar gastos
+    document.getElementById('formGastos')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const montoGastos = parseFloat(document.getElementById('montoGastos').value) || 0;
+      const descripcionGastos = document.getElementById('descripcionGastos').value.trim();
+      const montoPago = parseFloat(document.getElementById('montoPago').value) || 0;
+      const tipoPago = document.getElementById('tipoPago').value;
+      
+      // Validaciones
+      if (montoGastos <= 0) {
+        showNotification('El monto de gastos debe ser mayor a 0', 'danger');
+        return;
+      }
+      
+      if (!descripcionGastos) {
+        showNotification('La descripción del gasto es obligatoria', 'danger');
+        return;
+      }
+      
+      if (montoPago <= 0) {
+        showNotification('El monto de pago debe ser mayor a 0', 'danger');
+        return;
+      }
+      
+      if (!tipoPago) {
+        showNotification('Selecciona el tipo de pago', 'danger');
+        return;
+      }
+      
+      if (montoPago > totalCaja) {
+        showNotification(`Fondos insuficientes en caja. Disponible: S/ ${totalCaja.toFixed(2)}`, 'danger');
+        return;
+      }
+      
+      // Actualizar caja
+      totalCaja -= montoPago;
+      
+      // Agregar movimiento a caja
+      const now = new Date();
+      const fechaHora = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+      
+      const movimientoCaja = {
+        id: movimientosCaja.length + 1,
+        fechaHora: fechaHora,
+        tipo: 'Gasto',
+        descripcion: `${descripcionGastos} (${tipoPago})`,
+        ingreso: 0,
+        egreso: montoPago,
+        saldo: totalCaja
+      };
+      
+      movimientosCaja.push(movimientoCaja);
+      
+      save();
+      renderAll();
+      e.target.reset();
+      
+      showNotification(`Gasto registrado: S/ ${montoPago.toFixed(2)}`, 'success');
+    });
+
+    // Renderizar movimientos de caja
+    function renderMovimientosCaja() {
+      if (!tbCaja) return;
+      tbCaja.innerHTML = '';
+      
+      movimientosCaja.slice().reverse().forEach(mov => {
+        const fila = document.createElement('tr');
+        const tipoClass = mov.tipo === 'Venta' ? 'text-success' : (mov.tipo === 'Gasto' ? 'text-danger' : 'text-info');
+        const ingresoText = mov.ingreso > 0 ? `S/ ${mov.ingreso.toFixed(2)}` : '-';
+        const egresoText = mov.egreso > 0 ? `S/ ${mov.egreso.toFixed(2)}` : '-';
+        
+        fila.innerHTML = `
+          <th>${mov.id}</th>
+          <td>${mov.fechaHora}</td>
+          <td><span class="${tipoClass} fw-bold">${mov.tipo}</span></td>
+          <td>${mov.descripcion}</td>
+          <td class="text-success fw-bold">${ingresoText}</td>
+          <td class="text-danger fw-bold">${egresoText}</td>
+          <td class="fw-bold">S/ ${mov.saldo.toFixed(2)}</td>
+        `;
+        tbCaja.appendChild(fila);
+      });
     }
 
     // Evento para movimientos de stock
@@ -308,17 +899,17 @@
       
       // Validaciones
       if (!f || !p) {
-        alert('Fecha y producto son obligatorios');
+        showNotification('Fecha y producto son obligatorios', 'danger');
         return;
       }
       
       if (ent > 0 && sal > 0) {
-        alert('Solo puedes registrar entrada O salida, no ambas');
+        showNotification('Solo puedes registrar entrada O salida, no ambas', 'danger');
         return;
       }
       
       if (ent === 0 && sal === 0) {
-        alert('Debes registrar al menos una entrada o salida');
+        showNotification('Debes registrar al menos una entrada o salida', 'danger');
         return;
       }
       
@@ -332,7 +923,7 @@
       
       // Verificar stock suficiente para salidas
       if (sal > 0 && sal > stock[p]) {
-        alert('Stock insuficiente. Stock actual: ' + stock[p]);
+        showNotification('Stock insuficiente. Stock actual: ' + stock[p], 'danger');
         return;
       }
       
@@ -361,7 +952,7 @@
       e.target.reset();
       setFechaActual();
       
-      alert('Movimiento registrado correctamente');
+      showNotification('Movimiento registrado correctamente', 'success');
     });
 
     // Render tabla resumen
@@ -370,14 +961,22 @@
       tbRes.innerHTML = '';
       
       for (const p in stock) {
+        const stockClass = stock[p] > 10 ? 'stock-positive' : (stock[p] > 0 ? 'stock-warning' : 'stock-danger');
+        const valorTotal = (stock[p] * (costos[p] || 0)).toFixed(2);
+        
         const fila = document.createElement('tr');
         fila.innerHTML = `
           <td>${p}</td>
-          <td>${stock[p]}</td>
+          <td class="${stockClass}">${stock[p]}</td>
           <td>S/ ${(costos[p] || 0).toFixed(2)}</td>
+          <td>S/ ${valorTotal}</td>
           <td>
-            <button class='btn btn-sm btn-outline-primary me-1' onclick="editNombre('${p.replace(/'/g, "\\\'")}')" title="Editar Nombre">✏️</button>
-            <button class='btn btn-sm btn-outline-warning' onclick="editCosto('${p.replace(/'/g, "\\\'")}')" title="Editar Costo">💰</button>
+            <button class='btn btn-sm btn-outline-primary me-1' onclick="editNombre('${p.replace(/'/g, "\\\'")}')" title="Editar Nombre">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class='btn btn-sm btn-outline-warning' onclick="editCosto('${p.replace(/'/g, "\\\'")}')" title="Editar Costo">
+              <i class="fas fa-tag"></i>
+            </button>
           </td>
         `;
         tbRes.appendChild(fila);
@@ -391,12 +990,13 @@
       
       movs.forEach(m => {
         const fila = document.createElement('tr');
+        fila.className = m.entrada > 0 ? 'movimiento-entrada' : (m.salida > 0 ? 'movimiento-salida' : '');
         fila.innerHTML = `
           <th>${m.id}</th>
           <td>${m.fecha}</td>
           <td>${m.producto}</td>
-          <td class="text-success">${m.entrada}</td>
-          <td class="text-danger">${m.salida}</td>
+          <td class="text-success fw-bold">${m.entrada > 0 ? '+' + m.entrada : ''}</td>
+          <td class="text-danger fw-bold">${m.salida > 0 ? '-' + m.salida : ''}</td>
           <td>${m.saldo}</td>
         `;
         tbMov.appendChild(fila);
@@ -409,6 +1009,7 @@
       tbVen.innerHTML = '';
       
       ventas.forEach(v => {
+        const gananciaClass = parseFloat(v.ganancia) >= 0 ? 'text-success' : 'text-danger';
         const fila = document.createElement('tr');
         fila.innerHTML = `
           <td>${v.fecha}</td>
@@ -417,7 +1018,7 @@
           <td>S/ ${v.costo}</td>
           <td>S/ ${v.precioVenta}</td>
           <td>S/ ${v.totalCosto}</td>
-          <td>S/ ${v.ganancia}</td>
+          <td class="${gananciaClass} fw-bold">S/ ${v.ganancia}</td>
         `;
         tbVen.appendChild(fila);
       });
@@ -427,6 +1028,8 @@
     function fillSel() {
       if (!selV) return;
       selV.innerHTML = '<option value="">Seleccionar producto...</option>';
+      const datalist = document.getElementById('productosList');
+      if (datalist) datalist.innerHTML = '';
       
       for (const p in stock) {
         if (stock[p] > 0) {
@@ -434,6 +1037,13 @@
           option.value = p;
           option.textContent = `${p} (Stock: ${stock[p]})`;
           selV.appendChild(option);
+          
+          // Agregar al datalist para autocompletar
+          if (datalist) {
+            const datalistOption = document.createElement('option');
+            datalistOption.value = p;
+            datalist.appendChild(datalistOption);
+          }
         }
       }
     }
@@ -453,18 +1063,30 @@
     const calcGainBtn = document.getElementById('calcGain');
     if (calcGainBtn) {
       calcGainBtn.addEventListener('click', function() {
+        const p = selV.value;
         const q = parseFloat(document.getElementById('cantVenta').value) || 0;
         const c = parseFloat(document.getElementById('precioCosto').value) || 0;
         const pv = parseFloat(document.getElementById('precioVenta').value) || 0;
         
+        if (!p) {
+          showNotification('Selecciona un producto primero', 'danger');
+          return;
+        }
+        
         if (q <= 0) {
-          alert('Cantidad debe ser mayor a 0');
+          showNotification('Cantidad debe ser mayor a 0', 'danger');
+          return;
+        }
+        
+        if (q > stock[p]) {
+          showNotification(`Stock insuficiente. Stock disponible: ${stock[p]}`, 'danger');
           return;
         }
         
         if (pv < c) {
-          alert('Precio de venta no puede ser menor al costo');
-          return;
+          if (!confirm('Precio de venta es menor al costo. ¿Deseas continuar?')) {
+            return;
+          }
         }
         
         const ganancia = (pv - c) * q;
@@ -483,22 +1105,22 @@
         const gan = parseFloat(document.getElementById('gananciaCalc').textContent) || 0;
         
         if (!p) {
-          alert('Selecciona un producto');
+          showNotification('Selecciona un producto', 'danger');
           return;
         }
         
         if (q <= 0) {
-          alert('La cantidad debe ser mayor a 0');
+          showNotification('La cantidad debe ser mayor a 0', 'danger');
           return;
         }
         
         if (q > stock[p]) {
-          alert('Stock insuficiente. Stock disponible: ' + stock[p]);
+          showNotification('Stock insuficiente. Stock disponible: ' + stock[p], 'danger');
           return;
         }
         
         if (pv <= 0) {
-          alert('El precio de venta debe ser mayor a 0');
+          showNotification('El precio de venta debe ser mayor a 0', 'danger');
           return;
         }
         
@@ -544,7 +1166,7 @@
         selV.value = '';
         document.getElementById('precioCosto').value = '';
         
-        alert('Venta registrada correctamente');
+        showNotification('Venta registrada correctamente', 'success');
       });
     }
 
@@ -559,17 +1181,17 @@
         const costoUnitario = parseFloat(document.getElementById('nuevoCosto').value) || 0;
         
         if (!nombre) {
-          alert('El nombre del producto es obligatorio');
+          showNotification('El nombre del producto es obligatorio', 'danger');
           return;
         }
         
         if (cantidad <= 0) {
-          alert('La cantidad debe ser mayor a 0');
+          showNotification('La cantidad debe ser mayor a 0', 'danger');
           return;
         }
         
         if (costoUnitario < 0) {
-          alert('El costo unitario no puede ser negativo');
+          showNotification('El costo unitario no puede ser negativo', 'danger');
           return;
         }
         
@@ -583,8 +1205,6 @@
         
         // Agregar movimiento
         const now = new Date();
-        const fh = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-        
         const movimiento = {
           id: movs.length + 1,
           fecha: now.toLocaleDateString(),
@@ -600,11 +1220,18 @@
         renderAll();
         e.target.reset();
         
-        alert('Mercadería agregada al inventario correctamente');
+        showNotification('Mercadería agregada al inventario correctamente', 'success');
       });
     }
 
-    // NUEVA FUNCIÓN: Editar nombre del producto
+    // Actualizar total de caja
+    function actualizarTotalCaja() {
+      if (spanTotalCaja) {
+        spanTotalCaja.textContent = totalCaja.toFixed(2);
+      }
+    }
+
+    // Editar nombre del producto
     function editNombre(nombreAntiguo) {
       if (prompt('Contraseña:') !== 'fernandez') {
         alert('Contraseña incorrecta');
@@ -620,27 +1247,22 @@
       
       const nombreTrim = nuevoNombre.trim();
       
-      // Verificar que el nuevo nombre no exista ya (excepto si es el mismo)
       if (nombreTrim !== nombreAntiguo && stock[nombreTrim] !== undefined) {
         alert('Ya existe un producto con ese nombre');
         return;
       }
       
-      // Si el nombre no cambió, no hacer nada
       if (nombreTrim === nombreAntiguo) {
         alert('El nombre no ha cambiado');
         return;
       }
       
-      // Actualizar el stock y costos con el nuevo nombre
       stock[nombreTrim] = stock[nombreAntiguo];
       costos[nombreTrim] = costos[nombreAntiguo];
       
-      // Eliminar las entradas antiguas
       delete stock[nombreAntiguo];
       delete costos[nombreAntiguo];
       
-      // Actualizar movimientos históricos
       movs.forEach(mov => {
         if (mov.producto === nombreAntiguo) {
           mov.producto = nombreTrim;
@@ -651,7 +1273,6 @@
         }
       });
       
-      // Actualizar ventas históricas
       ventas.forEach(venta => {
         if (venta.producto === nombreAntiguo) {
           venta.producto = nombreTrim;
@@ -660,7 +1281,7 @@
       
       save(); 
       renderAll(); 
-      alert(`Producto renombrado de "${nombreAntiguo}" a "${nombreTrim}"`);
+      showNotification(`Producto renombrado de "${nombreAntiguo}" a "${nombreTrim}"`, 'success');
     }
 
     // Editar costo con contraseña
@@ -677,7 +1298,7 @@
         costos[p] = valor;
         save();
         renderRes();
-        alert('Costo actualizado correctamente');
+        showNotification('Costo actualizado correctamente', 'success');
       } else {
         alert('Valor inválido');
       }
@@ -697,8 +1318,65 @@
         movs = [];
         ventas = [];
         capital = 0;
+        movimientosCaja = [];
+        totalCaja = 0;
         renderAll();
-        alert('Sistema reiniciado correctamente');
+        showNotification('Sistema reiniciado correctamente', 'success');
+      }
+    }
+
+    // Cerrar caja
+    function cerrarCaja() {
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      const resumen = `
+RESUMEN DE CIERRE DE CAJA
+=========================
+Total en Caja: S/ ${totalCaja.toFixed(2)}
+Ventas del día: ${movimientosCaja.filter(m => m.tipo === 'Venta').length}
+Gastos del día: ${movimientosCaja.filter(m => m.tipo === 'Gasto').length}
+
+¿Confirmar cierre de caja?`;
+      
+      if (confirm(resumen)) {
+        // Agregar movimiento de cierre
+        const now = new Date();
+        const fechaHora = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        
+        const movimientoCierre = {
+          id: movimientosCaja.length + 1,
+          fechaHora: fechaHora,
+          tipo: 'Cierre',
+          descripcion: 'Cierre de caja',
+          ingreso: 0,
+          egreso: 0,
+          saldo: totalCaja
+        };
+        
+        movimientosCaja.push(movimientoCierre);
+        save();
+        renderMovimientosCaja();
+        
+        showNotification('Caja cerrada correctamente', 'success');
+      }
+    }
+
+    // Reiniciar caja
+    function reiniciarCaja() {
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      if (confirm('¿Estás seguro de que quieres reiniciar la caja? Se perderán todos los movimientos de caja.')) {
+        movimientosCaja = [];
+        totalCaja = 0;
+        save();
+        renderAll();
+        showNotification('Caja reiniciada correctamente', 'success');
       }
     }
 
@@ -730,9 +1408,22 @@
         .save();
     }
 
+    // Exportar PDF caja
+    function exportCajaPDF() {
+      const tabla = document.getElementById('tablaMovimientosCaja').parentElement;
+      html2pdf()
+        .set({
+          margin: 0.4,
+          filename: 'MovimientosCaja_' + new Date().toLocaleDateString().replace(/\//g, '-') + '.pdf',
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+        })
+        .from(tabla)
+        .save();
+    }
+
     // Calcular y mostrar indicadores
     function actualizarIndicadores() {
-      // Valor stock = sum(stock[p] * costos[p])
       let valorStock = 0;
       for (const p in stock) {
         valorStock += stock[p] * (costos[p] || 0);
@@ -741,6 +1432,7 @@
       if (spanStock) spanStock.textContent = valorStock.toFixed(2);
       if (spanCapital) spanCapital.textContent = capital.toFixed(2);
       if (spanTotal) spanTotal.textContent = (capital + valorStock).toFixed(2);
+      if (navCapital) navCapital.textContent = capital.toFixed(2);
     }
 
     // Renderizar todo
@@ -751,6 +1443,9 @@
       fillSel();
       actualizarIndicadores();
       llenarSelectProyeccion();
+      llenarSelectVentaDiaria();
+      renderMovimientosCaja();
+      actualizarTotalCaja();
     }
 
     // Llenar selector de proyección
@@ -827,7 +1522,7 @@
       setFechaActual();
       load();
       
-      // Event listener para limpiar proyección al cerrar modal
+      // Event listeners para modales
       const modalProyeccion = document.getElementById('modalProyeccion');
       if (modalProyeccion) {
         modalProyeccion.addEventListener('hidden.bs.modal', function() {
@@ -837,7 +1532,6 @@
         });
       }
 
-      // Event listener para actualizar selector al abrir modal de proyección
       const btnProyeccion = document.getElementById('btnProyeccion');
       if (btnProyeccion) {
         btnProyeccion.addEventListener('click', function() {
@@ -845,7 +1539,6 @@
         });
       }
 
-      // Event listener para actualizar selectores al abrir modal de ventas
       const modalVentaCapital = document.getElementById('modalVentaCapital');
       if (modalVentaCapital) {
         modalVentaCapital.addEventListener('show.bs.modal', function() {
@@ -853,16 +1546,39 @@
           actualizarIndicadores();
         });
       }
+
+      const modalCaja = document.getElementById('modalCaja');
+      if (modalCaja) {
+        modalCaja.addEventListener('show.bs.modal', function() {
+          llenarSelectVentaDiaria();
+          renderMovimientosCaja();
+          actualizarTotalCaja();
+        });
+      }
+      
+      // Event listener para entrada/salida
+      document.getElementById('entrada').addEventListener('input', function() {
+        if (this.value > 0) {
+          document.getElementById('salida').value = 0;
+        }
+      });
+      
+      document.getElementById('salida').addEventListener('input', function() {
+        if (this.value > 0) {
+          document.getElementById('entrada').value = 0;
+        }
+      });
     });
 
-    // Hacer funciones globales para que funcionen los onclick
+    // Hacer funciones globales
     window.editNombre = editNombre;
     window.editCosto = editCosto;
     window.reiniciarTodo = reiniciarTodo;
     window.exportMovimientosPDF = exportMovimientosPDF;
     window.exportVentasPDF = exportVentasPDF;
+    window.exportCajaPDF = exportCajaPDF;
+    window.cerrarCaja = cerrarCaja;
+    window.reiniciarCaja = reiniciarCaja;
   </script>
 </body>
-</html>   
-        
-   
+</html>
