@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -138,6 +138,11 @@
       right: 20px;
       z-index: 1060;
       min-width: 300px;
+    }
+    
+    .btn-editar-venta {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
     }
     
     @media (max-width: 768px) {
@@ -385,9 +390,14 @@
               <div class="card h-100">
                 <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                   <span><i class="fas fa-receipt me-2"></i>Historial de Ventas</span>
-                  <button class="btn btn-sm btn-light" onclick="exportVentasPDF()">
-                    <i class="fas fa-file-pdf me-1"></i>PDF
-                  </button>
+                  <div>
+                    <button class="btn btn-sm btn-light me-2" onclick="exportVentasPDF()">
+                      <i class="fas fa-file-pdf me-1"></i>PDF
+                    </button>
+                    <button class="btn btn-sm btn-warning" onclick="reiniciarHistorialVentas()" title="Reiniciar Historial">
+                      <i class="fas fa-trash-alt me-1"></i>Reiniciar
+                    </button>
+                  </div>
                 </div>
                 <div class="card-body p-0">
                   <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
@@ -401,6 +411,7 @@
                           <th>Precio Venta</th>
                           <th>Total Costo</th>
                           <th>Ganancia</th>
+                          <th>Acciones</th>
                         </tr>
                       </thead>
                       <tbody id="bodyVentas"></tbody>
@@ -621,6 +632,47 @@
             <i class="fas fa-calculator me-1"></i>Calcular
           </button>
           <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Editar Venta -->
+  <div class="modal fade" id="modalEditarVenta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Editar Venta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formEditarVenta">
+            <input type="hidden" id="editVentaIndex">
+            <div class="mb-3">
+              <label class="form-label">Fecha</label>
+              <input type="text" id="editVentaFecha" class="form-control" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Producto</label>
+              <input type="text" id="editVentaProducto" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Cantidad</label>
+              <input type="number" id="editVentaCantidad" class="form-control" min="1">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Costo Unitario</label>
+              <input type="number" id="editVentaCosto" class="form-control" step="0.01" min="0">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Precio Venta</label>
+              <input type="number" id="editVentaPrecio" class="form-control" step="0.01" min="0">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="guardarEdicionVenta()">Guardar Cambios</button>
         </div>
       </div>
     </div>
@@ -1003,12 +1055,12 @@
       });
     }
 
-    // Render historial ventas
+    // Render historial ventas (modificado para incluir botones de edición)
     function renderVen() {
       if (!tbVen) return;
       tbVen.innerHTML = '';
       
-      ventas.forEach(v => {
+      ventas.forEach((v, index) => {
         const gananciaClass = parseFloat(v.ganancia) >= 0 ? 'text-success' : 'text-danger';
         const fila = document.createElement('tr');
         fila.innerHTML = `
@@ -1019,6 +1071,11 @@
           <td>S/ ${v.precioVenta}</td>
           <td>S/ ${v.totalCosto}</td>
           <td class="${gananciaClass} fw-bold">S/ ${v.ganancia}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-warning btn-editar-venta" onclick="editarVenta(${index})" title="Editar Venta">
+              <i class="fas fa-edit"></i>
+            </button>
+          </td>
         `;
         tbVen.appendChild(fila);
       });
@@ -1435,6 +1492,107 @@ Gastos del día: ${movimientosCaja.filter(m => m.tipo === 'Gasto').length}
       if (navCapital) navCapital.textContent = capital.toFixed(2);
     }
 
+    // Función para editar venta
+    function editarVenta(index) {
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      const venta = ventas[index];
+      
+      document.getElementById('editVentaIndex').value = index;
+      document.getElementById('editVentaFecha').value = venta.fecha;
+      document.getElementById('editVentaProducto').value = venta.producto;
+      document.getElementById('editVentaCantidad').value = venta.cantidad;
+      document.getElementById('editVentaCosto').value = venta.costo;
+      document.getElementById('editVentaPrecio').value = venta.precioVenta;
+      
+      // Mostrar modal de edición
+      const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarVenta'));
+      modalEditar.show();
+    }
+
+    // Función para guardar la edición de venta
+    function guardarEdicionVenta() {
+      const index = document.getElementById('editVentaIndex').value;
+      const producto = document.getElementById('editVentaProducto').value.trim();
+      const cantidad = parseFloat(document.getElementById('editVentaCantidad').value) || 0;
+      const costo = parseFloat(document.getElementById('editVentaCosto').value) || 0;
+      const precioVenta = parseFloat(document.getElementById('editVentaPrecio').value) || 0;
+      
+      // Validaciones
+      if (!producto) {
+        showNotification('El producto es obligatorio', 'danger');
+        return;
+      }
+      
+      if (cantidad <= 0) {
+        showNotification('La cantidad debe ser mayor a 0', 'danger');
+        return;
+      }
+      
+      if (costo < 0) {
+        showNotification('El costo no puede ser negativo', 'danger');
+        return;
+      }
+      
+      if (precioVenta < 0) {
+        showNotification('El precio de venta no puede ser negativo', 'danger');
+        return;
+      }
+      
+      // Calcular nuevos valores
+      const totalCosto = (costo * cantidad).toFixed(2);
+      const ganancia = (precioVenta * cantidad - costo * cantidad).toFixed(2);
+      
+      // Actualizar venta
+      ventas[index].producto = producto;
+      ventas[index].cantidad = cantidad;
+      ventas[index].costo = costo.toFixed(2);
+      ventas[index].precioVenta = precioVenta.toFixed(2);
+      ventas[index].totalCosto = totalCosto;
+      ventas[index].ganancia = ganancia;
+      
+      // Recalcular capital (diferencia entre la ganancia anterior y la nueva)
+      const gananciaAnterior = parseFloat(ventas[index].ganancia);
+      const nuevaGanancia = parseFloat(ganancia);
+      capital = capital - gananciaAnterior + nuevaGanancia;
+      
+      save();
+      renderAll();
+      
+      // Cerrar modal
+      const modalEditar = bootstrap.Modal.getInstance(document.getElementById('modalEditarVenta'));
+      modalEditar.hide();
+      
+      showNotification('Venta actualizada correctamente', 'success');
+    }
+
+    // Función para reiniciar historial de ventas
+    function reiniciarHistorialVentas() {
+      if (prompt('Contraseña:') !== 'fernandez') {
+        alert('Contraseña incorrecta');
+        return;
+      }
+      
+      if (confirm('¿Estás seguro de que quieres reiniciar el historial de ventas? Esta acción no se puede deshacer.')) {
+        // Restar el capital generado por las ventas
+        let totalVentas = 0;
+        ventas.forEach(v => {
+          totalVentas += parseFloat(v.precioVenta) * parseFloat(v.cantidad);
+        });
+        
+        capital -= totalVentas;
+        ventas = [];
+        
+        save();
+        renderAll();
+        
+        showNotification('Historial de ventas reiniciado correctamente', 'success');
+      }
+    }
+
     // Renderizar todo
     function renderAll() {
       renderRes();
@@ -1579,6 +1737,9 @@ Gastos del día: ${movimientosCaja.filter(m => m.tipo === 'Gasto').length}
     window.exportCajaPDF = exportCajaPDF;
     window.cerrarCaja = cerrarCaja;
     window.reiniciarCaja = reiniciarCaja;
+    window.editarVenta = editarVenta;
+    window.guardarEdicionVenta = guardarEdicionVenta;
+    window.reiniciarHistorialVentas = reiniciarHistorialVentas;
   </script>
 </body>
 </html>
